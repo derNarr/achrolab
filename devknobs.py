@@ -38,7 +38,7 @@ class DevKnobs(object):
     -------
 
         >>> devknobs = DevKnobs(dummy=True)
-        >>> states = devtub.getStates()
+        >>> states = devknobs.getStates()
 
     """
     def __init__(self, dummy=False):
