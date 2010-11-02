@@ -1,0 +1,6 @@
+[submodule "EyeOne"]
+	path = EyeOne
+	url = http://homepages.uni-tuebingen.de/student/konstantin.sering/git/EyeOne.git
+[submodule "wasco"]
+	path = wasco
+	url = http://homepages.uni-tuebingen.de/student/konstantin.sering/git/wasco.git
