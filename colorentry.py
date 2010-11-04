@@ -83,7 +83,7 @@ class ColorEntry(object):
     def measureTubes(self, tubes, n=10):
         """
         Measures the voltages color n times and overwrites
-        slef.tubes_xyY with the mean and self.tubes_xyY_sd with the
+        self.tubes_xyY with the mean and self.tubes_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
         """
         xyY_list = tubes.measureVoltage(self.voltages, n=n)
