@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-02, KS
+# last mod 2010-11-05, KS
 
 class ColorEntry(object):
     """
@@ -53,7 +53,7 @@ class ColorEntry(object):
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
             return
-        self.voltages = findVoltages(tubes, self.monitor_xyY)
+        (self.voltages, xyY) = tubes.findVoltages(self.monitor_xyY)
 
         self.measureTubes(tubes)
 

@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-02, KS
+# last mod 2010-11-05, KS
 
 from visionlab.EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -96,9 +96,8 @@ class Tubes(object):
 
         #start measurement
         for i in range(n):
-            # TODO set voltages with wasco
-            __tub.setVoltage(voltages) # old version
-            core.wait(.5)
+            self.setVoltages(voltages)
+            time.sleep(.5)
 
             if(EyeOne.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
@@ -122,5 +121,12 @@ class Tubes(object):
 
         return (voltages, xyY)
 
- 
+    def setVoltages(self, voltages):
+        """
+        sets the tubes to the given voltages.
+        """
+        # TODO set voltages with wasco
+        __tub.setVoltage(voltages) # old version
+
+
 

@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-02, KS
+# last mod 2010-11-05, KS
 
 from visionlab.EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -28,6 +28,7 @@ class Monitor(object):
     def __init__(self, eye_one):
         self.eye_one = eye_one
         self.eye_one_calibrated = False
+        self._mywin = None
 
     def calibrateEyeOne(self):
         """
@@ -90,10 +91,12 @@ class Monitor(object):
         """
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
+            self.startMeasurement()
         
-        mywin = visual.Window(size=(2048,1536), monitor='mymon', color=(0,0,0),
-            screen=1)
-        patch_stim = visual.PatchStim(mywin, tex=None, size=(2,2),
+        if not self._mywin:
+            self._mywin = visual.Window(size=(2048,1536), monitor='mymon',
+                    color=(0,0,0), screen=1)
+        patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
                 color=patch_stim_color)
         
         xyY_list <- []
@@ -102,7 +105,7 @@ class Monitor(object):
         #start measurement
         for i in range(n):
             patch_stim.draw()
-            mywin.update() # todo -- is there a function mywin.flip()?
+            self._mywin.update() # todo -- is there a function mywin.flip()?
             core.wait(.5)
 
             if(EyeOne.I1_TriggerMeasurement() != eNoError):
@@ -128,6 +131,19 @@ class Monitor(object):
         """
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
+            self.startMeasurement()
         print("measureColor is not implemented yet")
+        # TODO
         pass
+    
+    def setPatchStimColor(self, patch_stim_color):
+        """
+        sets the monitor to patch_stim_color.
+        """
+        if not self._mywin:
+            self._mywin = visual.Window(size=(2048,1536), monitor='mymon',
+                    color=(0,0,0), screen=1)
+        patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
+                color=patch_stim_color)
+        self._mywin.update()
 
