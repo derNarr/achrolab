@@ -96,7 +96,7 @@ class Tubes(object):
 
         #start measurement
         for i in range(n):
-            # todo set voltages with wasco
+            # TODO set voltages with wasco
             __tub.setVoltage(voltages) # old version
             core.wait(.5)
 
@@ -107,6 +107,20 @@ class Tubes(object):
             xyY_list.append( tuple(tri_stim) )
 
         return xyY_list
+
+    def findVoltages(self, color):
+        """
+        findVoltages tries to find the voltages for a given color in xyY
+        space.
+        """
+        if not self.eye_one_calibrated:
+            self.calibrateEyeOne()
+
+        (voltages, xyY) = iterativeColorTubes.iterativeColormatch(
+                color, self.eye_one, __tub,
+                epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
+
+        return (voltages, xyY)
 
  
 
