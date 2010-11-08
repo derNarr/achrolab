@@ -5,10 +5,11 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-05, KS
+# last mod 2010-11-08, KS
 
-from psychopy import event,mouse
+from psychopy import event
 from colorentry import ColorEntry
+import pickle
 
 # TODO save measurements of each EyeOne Pro measurement in a folder
 # ./measurements/ with date (as R-Datafile)
@@ -53,7 +54,7 @@ class ColorTable(object):
                 print("patch_stim_value_list and voltages_list must have same length")
                 return
         if name_list:
-            if not len(name_list) == len(patch_stim_value_list).
+            if not len(name_list) == len(patch_stim_value_list):
                 print("name_list and patch_stim_value_list must have same length")
                 return
         else:
@@ -87,6 +88,7 @@ class ColorTable(object):
         for colorentry in self.color_list:
             self.monitor.setPatchStimColor(colorentry.patch_stim_color)
             self.tubes.setVoltages(colorentry.voltages)
+            mouse = event.Mouse()
             event.clearEvents()
             show = True 
             while show:
@@ -113,6 +115,9 @@ class ColorTable(object):
         """
         saves object to pickle-file.
         """
+        f = open(filename, "b")
+        pickle.dump(self.color_list, f)
+        f.close()
         pass
 
     def loadFromR(self, filename):
@@ -131,6 +136,20 @@ class ColorTable(object):
         """
         loads object to pickle-file.
         """
+        f = open(filename, "b")
+        self.color_list = pickle.load(self.color_list, f)
+        f.close()
         pass
 
+
+if __name__ == "__main__":
+    from EyeOne import EyeOne
+    from monitor2 import Monitor
+    from tubes2 import Tubes
+    eye_one = EyeOne.EyeOne(dummy=True)
+    mon = Monitor(eye_one)
+    tub = Tubes(eye_one)
+ 
+    color_table = ColorTable(mon, tub)
+    color_table.createColorList(patch_stim_value_list=[-0.3,-0.2,-0.1,0.0])
 

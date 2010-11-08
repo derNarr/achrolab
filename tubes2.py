@@ -5,9 +5,9 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-05, KS
+# last mod 2010-11-08, KS
 
-from visionlab.EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
@@ -17,10 +17,11 @@ from visionlab.EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE,
 from ctypes import c_float
 import time
 
-# only need __tub.setVoltage
+# only need _tub.setVoltage
 import tubes as tubes_old
-__tub = tubes_old.Tubes()
+_tub = tubes_old.Tubes()
 
+import iterativeColorTubes
 
 class Tubes(object):
     """
@@ -74,7 +75,7 @@ class Tubes(object):
         """
         print("\nPlease put Eye One Pro in measurement position and hit"
                 + " the button to start measurement.")
-        while(EyeOne.I1_KeyPressed() != eNoError):
+        while(self.eye_one.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
 
     def measureVoltages(self, voltages, n=1):
@@ -91,7 +92,7 @@ class Tubes(object):
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
 
-        xyY_list <- []
+        xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
         #start measurement
@@ -99,9 +100,9 @@ class Tubes(object):
             self.setVoltages(voltages)
             time.sleep(.5)
 
-            if(EyeOne.I1_TriggerMeasurement() != eNoError):
+            if(self.eye_one.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
-            if(EyeOne.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+            if(self.eye_one.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get tri stimulus.")
             xyY_list.append( tuple(tri_stim) )
 
@@ -116,7 +117,7 @@ class Tubes(object):
             self.calibrateEyeOne()
 
         (voltages, xyY) = iterativeColorTubes.iterativeColormatch(
-                color, self.eye_one, __tub,
+                color, self.eye_one, _tub,
                 epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
 
         return (voltages, xyY)
@@ -126,7 +127,7 @@ class Tubes(object):
         sets the tubes to the given voltages.
         """
         # TODO set voltages with wasco
-        __tub.setVoltage(voltages) # old version
+        _tub.setVoltage(voltages) # old version
 
 
 

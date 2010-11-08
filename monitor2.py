@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-07, KS
+# last mod 2010-11-08, KS
 
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -94,12 +94,12 @@ class Monitor(object):
             self.startMeasurement()
         
         if not self._mywin:
-            self._mywin = visual.Window(size=(2048,1536), monitor='mymon',
-                    color=(0,0,0), screen=1)
+            self._mywin = visual.Window(size=(800,600), monitor='mymon',
+                    color=(0,0,0))#, screen=1)
         patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
                 color=patch_stim_color)
         
-        xyY_list <- []
+        xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
         #start measurement

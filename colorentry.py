@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-05, KS
+# last mod 2010-11-08, KS
 
 class ColorEntry(object):
     """
@@ -86,7 +86,10 @@ class ColorEntry(object):
         self.tubes_xyY with the mean and self.tubes_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
         """
-        xyY_list = tubes.measureVoltage(self.voltages, n=n)
+        if not self.voltages:
+            print("No voltages available. Please run findVoltages or set voltages manually.")
+            return
+        xyY_list = tubes.measureVoltages(self.voltages, n=n)
         x_list = [xyY[0] for xyY in xyY_list]
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
@@ -104,16 +107,15 @@ class ColorEntry(object):
 
         
 if __name__ == "__main__":
-    #from monitor2 import Monitor
-    print("1")
+    from monitor2 import Monitor
     from EyeOne import EyeOne
     from tubes2 import Tubes
-    #eye_one = EyeOne.EyeOne(dummy=True)
-    #tub = Tubes(eye_one)
-    #mon = Monitor(eye_one)
-    #testentry = ColorEntry("grey1", patch_stim_value=0.2)
-    #testentry.measureMonitor(mon, n=1)
-    #testentry.measureTubes(tub, n=1)
-    #testentry.findVoltages(tub)
+    eye_one = EyeOne.EyeOne(dummy=True)
+    tub = Tubes(eye_one)
+    mon = Monitor(eye_one)
+    testentry = ColorEntry("grey1", patch_stim_value=0.2)
+    testentry.measureMonitor(mon, n=1)
+    testentry.measureTubes(tub, n=1)
+    testentry.findVoltages(tub)
 
 
