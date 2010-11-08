@@ -31,7 +31,7 @@ from ctypes import c_float
 
 # want to run R-commands with R("command")
 R = robjects.r
-
+EyeOne = EyeOne(dummy=True)
 
 
 class Tubes(object):

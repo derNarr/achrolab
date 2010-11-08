@@ -5,9 +5,9 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-05, KS
+# last mod 2010-11-07, KS
 
-from visionlab.EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
@@ -73,7 +73,7 @@ class Monitor(object):
         """
         print("\nPlease put Eye One Pro in measurement position and hit"
                 + " the button to start measurement.")
-        while(EyeOne.I1_KeyPressed() != eNoError):
+        while(self.eye_one.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
 
 
@@ -108,9 +108,9 @@ class Monitor(object):
             self._mywin.update() # todo -- is there a function mywin.flip()?
             core.wait(.5)
 
-            if(EyeOne.I1_TriggerMeasurement() != eNoError):
+            if(self.eye_one.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
-            if(EyeOne.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+            if(self.eye_one.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get tri stimulus.")
             xyY_list.append( tuple(tri_stim) )
 
@@ -146,4 +146,13 @@ class Monitor(object):
         patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
                 color=patch_stim_color)
         self._mywin.update()
+
+
+
+if __name__ == "__main__":
+    print("1")
+    from EyeOne import EyeOne
+    eye_one = EyeOne.EyeOne(dummy=True)
+    mon = Monitor(eye_one)
+    print("2")
 

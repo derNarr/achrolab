@@ -22,7 +22,7 @@ class ColorEntry(object):
       * standard deviation for the xyY values
     """
 
-    def __init__(self, name, patch_stim_value=None, voltages=None)
+    def __init__(self, name, patch_stim_value=None, voltages=None):
         """
         * name (string) -- "color1" 
         * patch_stim_value (float or triple of floats) -- 0.1 or (0.3, -0.3, -0.3)
@@ -64,7 +64,7 @@ class ColorEntry(object):
         slef.monitor_xyY with the mean and self.monitor_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
         """
-        xyY_list = monitor.measurePatchStimColor(self.patch_stim_color, n=n)
+        xyY_list = monitor.measurePatchStimColor(self.patch_stim_value, n=n)
         x_list = [xyY[0] for xyY in xyY_list]
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
@@ -74,9 +74,9 @@ class ColorEntry(object):
                              sum(Y_list)/float(len(Y_list)) )
         # calculate standard deviaion 1/n * sum((x-mean(x))**2)
         # should we use 1/(n+1) ?? todo
-        self.monitor_xyY_sd = ( 
-                sum([(x-self.monitor_xyY[0])**2 for x in x_list])/float(len(x_list))
-                sum([(y-self.monitor_xyY[1])**2 for y in y_list])/float(len(y_list))
+        self.monitor_xyY_sd = (  
+                sum([(x-self.monitor_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                sum([(y-self.monitor_xyY[1])**2 for y in y_list])/float(len(y_list)),
                 sum([(Y-self.monitor_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) )
 
 
@@ -97,8 +97,23 @@ class ColorEntry(object):
         # calculate standard deviaion 1/n * sum((x-mean(x))**2)
         # should we use 1/(n+1) ?? todo
         self.tubes_xyY_sd = ( 
-                sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list))
-                sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list))
+                sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
                 sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) )
+
+
+        
+if __name__ == "__main__":
+    #from monitor2 import Monitor
+    print("1")
+    from EyeOne import EyeOne
+    from tubes2 import Tubes
+    #eye_one = EyeOne.EyeOne(dummy=True)
+    #tub = Tubes(eye_one)
+    #mon = Monitor(eye_one)
+    #testentry = ColorEntry("grey1", patch_stim_value=0.2)
+    #testentry.measureMonitor(mon, n=1)
+    #testentry.measureTubes(tub, n=1)
+    #testentry.findVoltages(tub)
 
 
