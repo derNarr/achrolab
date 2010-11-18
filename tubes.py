@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-05-25, KS
+# last mod 2010-11-18, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -69,7 +69,7 @@ class Tubes(object):
         * color should be a colormath color object"""
 
         #transform to sRGB
-        rgb = color.convert_to('rgb', target_rgb='sRGB')
+        rgb = color.convert_to('rgb', target_rgb='sRGB', clip=True)
 
         #set the wasco-card to the right voltage
         self.setVoltage( (self._sRGBtoU_r(rgb.rgb_r), 
@@ -90,9 +90,9 @@ class Tubes(object):
         else:
             print("failed to set measurement mode.")
             return
-        if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_RGB) ==
+        if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
-            print("color space set to RGB.")
+            print("color space set to CIExyY.")
         else:
             print("failed to set color space.")
             return
@@ -127,29 +127,28 @@ class Tubes(object):
 
         tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where the EyeOne
                                             # Pro saves the tristim.
-        rgb_list = list()
+        xyY_list = list()
         
         for voltage in voltages:
             self.setVoltage(voltage)
             time.sleep(imi) # to give the EyeOne Pro time to adapt and to
                             # reduce carry-over effects
-            # TODO still needs the EyeOne.Constants not encapsulated
-            # tottaly
             if(self.EyeOne.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed for voltage %s ." %str(voltage))
             if(self.EyeOne.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get spectrum for voltage %s ."
                         %str(voltage))
-            rgb_list.append(list(tri_stim))
+            xyY_list.append(list(tri_stim))
         
         print("finished measurement")
         self.setVoltage( (0x0, 0x0, 0x0) ) # to signal that the
                                            # measurement is over
         xyY_list = list()
-        for rgb in rgb_list:
-            tmp_rgb = RGBColor(rgb[0], rgb[1], rgb[2])
-            tmp_xyY = tmp_rgb.convert_to('xyY')
-            xyY_list.append( (tmp_xyY.xyy_y, tmp_xyY.xyy_y, tmp_xyY.xyy_Y))
+        for xyY in xyY_list:
+            tmp_xyY = xyYColor(xyY[0], xyY[1], xyY[2])
+            tmp_rgb = tmp_xyY.convert_to('rgb', target_rgb='sRGB',
+                    clip=False)
+            xyY_list.append( (tmp_rgb.rgb_r, tmp_rgb.rgb_g, tmp_rgb.rgb_b))
 
         
         # get python objects into R -- maybe there is a better way TODO

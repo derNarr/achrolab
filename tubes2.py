@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-08, KS
+# last mod 2010-11-18, KS
 
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -115,9 +115,13 @@ class Tubes(object):
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
 
-        (voltages, xyY) = iterativeColorTubes.iterativeColormatch(
+        #(voltages, xyY) = iterativeColorTubes.iterativeColormatch(
+        #        color, self.eye_one, _tub,
+        #        epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
+        (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
                 color, self.eye_one, _tub,
-                epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
+                epsilon=0.1, streckung=1.0, imi=0.5, max_iterations=50)
+        xyY = rgb.convert_to('xyY')
 
         return (voltages, xyY)
 

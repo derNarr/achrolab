@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-08, KS
+# last mod 2010-11-18, KS
 
 from psychopy import event
 from colorentry import ColorEntry
@@ -188,9 +188,9 @@ if __name__ == "__main__":
  
     color_table = ColorTable(mon, tub)
     #color_table.loadFromPickle("./test_tino.pkl")
-    #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
-    color_table.createColorList(
-            patch_stim_value_list=[x/128.0 for x in range(-128,129)])
+    color_table.createColorList(patch_stim_value_list=[0.3,0.2])
+    #color_table.createColorList(
+    #        patch_stim_value_list=[x/128.0 for x in range(-128,129)])
     color_table.saveToPickle("./color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".pkl")
     color_table.saveToCsv("./color_table_" + 
