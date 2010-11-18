@@ -16,11 +16,12 @@ from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
                                     COLOR_SPACE_CIExyY,
-                                    SPECTRUM_SIZE)
+                                    COLOR_SPACE_RGB,
+                                    TRISTIMULUS_SIZE)
 
 from math import exp,log
 
-from colormath.color_objects import SpectralColor
+from colormath.color_objects import SpectralColor, xyYColor,RGBColor
 
 import rpy2.robjects as robjects
 
@@ -31,7 +32,7 @@ from ctypes import c_float
 
 # want to run R-commands with R("command")
 R = robjects.r
-EyeOne = EyeOne(dummy=True)
+EyeOne = EyeOne()
 
 
 class Tubes(object):
@@ -42,9 +43,9 @@ class Tubes(object):
         self.wascocard = wasco
         self.wasco_boardId = boardId 
 
-        self.red_out = DAOUT3_16
+        self.red_out = DAOUT2_16
         self.green_out = DAOUT1_16
-        self.blue_out = DAOUT2_16
+        self.blue_out = DAOUT3_16
 
         self.IsCalibrated = False
 
@@ -89,16 +90,12 @@ class Tubes(object):
         else:
             print("failed to set measurement mode.")
             return
-            
-        
-        if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
+        if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_RGB) ==
                 eNoError):
-            print("color space set to CIExyY.")
+            print("color space set to RGB.")
         else:
             print("failed to set color space.")
             return
-
-
         # calibrate EyeOne Pro
         print("\nPlease put the EyeOne-Pro on the calibration plate and "
         + "press the key to start calibration.")
@@ -112,37 +109,25 @@ class Tubes(object):
             return
         
         ## Measurement
-        
         print("\nPlease put the EyeOne-Pro in measurement position and hit"
         + "the button to start the measurement.")
         while(EyeOne.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-
         print("Start measurement...")
-        
-        spectra = list() # saves the measured spectra
 
         # define some variables
         # generating the tested voltages (r, g, b)
         voltages = list()
-        ## MIT Mischkappe
-        for i in range(30):
-            voltages.append( ((0x200 + 4*0x010 * i), 0x0, 0x0) )
-        for i in range(30):
-            voltages.append( (0x0, (0x200 + 4*0x010 * i), 0x0) )
-        for i in range(30):
-            voltages.append( (0x0, 0x0, (0x200 + 2*0x010 * i)) )
+        for i in range(50):
+            voltages.append( ((0x400 + 61 * i), 0x0, 0x0) )
+        for i in range(50):
+            voltages.append( (0x0, (0x400 + 61 * i), 0x0) )
+        for i in range(50):
+            voltages.append( (0x0, 0x0, (0x400 + 61 * i)) )
 
-        ## OHNE Mischkappe
-        #for i in range(22):
-        #    voltages.append( ((0x200 + 2*0x010 * i), 0x0, 0x0) )
-        #for i in range(22):
-        #    voltages.append( (0x0, (0x200 + 2*0x010 * i), 0x0) )
-        #for i in range(22):
-        #    voltages.append( (0x0, 0x0, (0x200 + 2*0x010 * i)) )
-
-        spect = (c_float * SPECTRUM_SIZE)() # memory to where the EyeOne
-                                            # Pro saves the spectrum.
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where the EyeOne
+                                            # Pro saves the tristim.
+        rgb_list = list()
         
         for voltage in voltages:
             self.setVoltage(voltage)
@@ -152,86 +137,29 @@ class Tubes(object):
             # tottaly
             if(self.EyeOne.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed for voltage %s ." %str(voltage))
-            if(self.EyeOne.I1_GetSpectrum(spect, 0) != eNoError):
+            if(self.EyeOne.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get spectrum for voltage %s ."
                         %str(voltage))
-            spectra.append(list(spect))
+            rgb_list.append(list(tri_stim))
         
         print("finished measurement")
         self.setVoltage( (0x0, 0x0, 0x0) ) # to signal that the
                                            # measurement is over
-        xyY = list()
-        xyz = list()
-        rgb = list()
+        xyY_list = list()
+        for rgb in rgb_list:
+            tmp_rgb = RGBColor(rgb[0], rgb[1], rgb[2])
+            tmp_xyY = tmp_rgb.convert_to('xyY')
+            xyY_list.append( (tmp_xyY.xyy_y, tmp_xyY.xyy_y, tmp_xyY.xyy_Y))
 
-#        # set negative values to zero
-#        # negative intensity is not reasonable
-#        for i in range(len(spectra)):
-#            for j in range(len(spectra[i])):
-#                if spectra[i][j] < 0:
-#                    spectra[i][j] = 0.0
-                    
-
-        # convert spectra to colormath object SpectralColor
-        for spectrum in spectra:
-            spectral = SpectralColor(observer=2, illuminant='d65',
-                spec_380nm=spectrum[0],
-                spec_390nm=spectrum[1],
-                spec_400nm=spectrum[2],
-                spec_410nm=spectrum[3],
-                spec_420nm=spectrum[4],
-                spec_430nm=spectrum[5],
-                spec_440nm=spectrum[6],
-                spec_450nm=spectrum[7],
-                spec_460nm=spectrum[8],
-                spec_470nm=spectrum[9],
-                spec_480nm=spectrum[10],
-                spec_490nm=spectrum[11],
-                spec_500nm=spectrum[12],
-                spec_510nm=spectrum[13],
-                spec_520nm=spectrum[14],
-                spec_530nm=spectrum[15],
-                spec_540nm=spectrum[16],
-                spec_550nm=spectrum[17],
-                spec_560nm=spectrum[18],
-                spec_570nm=spectrum[19],
-                spec_580nm=spectrum[20],
-                spec_590nm=spectrum[21],
-                spec_600nm=spectrum[22],
-                spec_610nm=spectrum[23],
-                spec_620nm=spectrum[24],
-                spec_630nm=spectrum[25],
-                spec_640nm=spectrum[26],
-                spec_650nm=spectrum[27],
-                spec_660nm=spectrum[28],
-                spec_670nm=spectrum[29],
-                spec_680nm=spectrum[30],
-                spec_690nm=spectrum[31],
-                spec_700nm=spectrum[32],
-                spec_710nm=spectrum[33],
-                spec_720nm=spectrum[34],
-                spec_730nm=spectrum[35])
-            
-            tmp_xyY = spectral.convert_to('xyY')
-            tmp_xyz = spectral.convert_to('xyz')
-            tmp_rgb = spectral.convert_to('rgb')
-            
-            xyY.append( (tmp_xyY.xyy_x, tmp_xyY.xyy_y, tmp_xyY.xyy_Y) )
-            xyz.append( (tmp_xyz.xyz_x, tmp_xyz.xyz_y, tmp_xyz.xyz_z) )
-            rgb.append( (tmp_rgb.rgb_r, tmp_rgb.rgb_g, tmp_rgb.rgb_b) )
         
         # get python objects into R -- maybe there is a better way TODO
-        r_spectra = [robjects.FloatVector(x) for x in spectra]
         voltage_r = robjects.IntVector([x[0] for x in voltages])
         voltage_g = robjects.IntVector([x[1] for x in voltages])
         voltage_b = robjects.IntVector([x[2] for x in voltages])
-        rgb_r = robjects.FloatVector([x[0] for x in rgb])
-        rgb_g = robjects.FloatVector([x[1] for x in rgb])
-        rgb_b = robjects.FloatVector([x[2] for x in rgb])
+        rgb_r = robjects.FloatVector([x[0] for x in rgb_list])
+        rgb_g = robjects.FloatVector([x[1] for x in rgb_list])
+        rgb_b = robjects.FloatVector([x[2] for x in rgb_list])
         
-        R("spectra <- data.frame()")
-        for r_spectrum in r_spectra:
-            R("spectra <- rbind(spectra," + r_spectrum.r_repr() + ")")
         R("voltage_r <- " + voltage_r.r_repr())
         R("voltage_g <- " + voltage_g.r_repr())
         R("voltage_b <- " + voltage_b.r_repr())
@@ -240,9 +168,9 @@ class Tubes(object):
         R("rgb_b <- " + rgb_b.r_repr())
         
         # put xyY into R for the plotCalibration method
-        xyY_x = robjects.FloatVector([x[0] for x in xyY])
-        xyY_y = robjects.FloatVector([x[1] for x in xyY])
-        xyY_Y = robjects.FloatVector([x[2] for x in xyY])
+        xyY_x = robjects.FloatVector([x[0] for x in xyY_list])
+        xyY_y = robjects.FloatVector([x[1] for x in xyY_list])
+        xyY_Y = robjects.FloatVector([x[2] for x in xyY_list])
         R("xyY_x <- " + xyY_x.r_repr())
         R("xyY_y <- " + xyY_y.r_repr())
         R("xyY_Y <- " + xyY_Y.r_repr())
@@ -256,7 +184,7 @@ class Tubes(object):
             ## red channel
             R('''
             len3 <- floor(length(voltage_r)/3)
-            idr <- rgb_r >= 90 & rgb_r != 255 #only use rgb values between 90 and 255
+            idr <- rgb_r >= 10 & rgb_r != 255 #only use rgb values between 10 and 255
             idr[-(1:len3)] = FALSE # area measured the red values
             rgb_r_small <- rgb_r[idr]
             voltage_r_small <- voltage_r[idr]
@@ -267,7 +195,7 @@ class Tubes(object):
             ''')
             ## green channel
             R('''
-            idg <- rgb_g >= 90 & rgb_g != 255 #only use rgb values between 90 and 255
+            idg <- rgb_g >= 10 & rgb_g != 255 #only use rgb values between 10 and 255
             idg[-((len3+1):(2*len3))] = FALSE # area measured the green values
             rgb_g_small <- rgb_g[idg]
             voltage_g_small <- voltage_g[idg]
@@ -278,7 +206,7 @@ class Tubes(object):
             ''')
             ## blue channel
             R('''
-            idb <- rgb_b >= 90 & rgb_b != 255 #only use rgb values between 90 and 255
+            idb <- rgb_b >= 10 & rgb_b != 255 #only use rgb values between 10 and 255
             idb[-((2*len3+1):(3*len3))] = FALSE # area measured the blue values
             rgb_b_small <- rgb_b[idb]
             voltage_b_small <- voltage_b[idb]

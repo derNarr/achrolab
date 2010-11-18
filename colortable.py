@@ -9,7 +9,7 @@
 
 from psychopy import event
 from colorentry import ColorEntry
-import pickle
+import pickle,time
 
 # TODO save measurements of each EyeOne Pro measurement in a folder
 # ./measurements/ with date (as R-Datafile)
@@ -88,7 +88,7 @@ class ColorTable(object):
         for colorentry in self.color_list:
             self.monitor.setPatchStimColor(colorentry.patch_stim_color)
             self.tubes.setVoltages(colorentry.voltages)
-            mouse = event.Mouse()
+            mouse = event.Mouse() 
             event.clearEvents()
             show = True 
             while show:
@@ -105,20 +105,54 @@ class ColorTable(object):
         """
         pass
 
-    def saveToCvs(self, filename):
+    def saveToCsv(self, filename):
         """
         saves object to comma sperated textfile.
         """
-        pass
+        f = open(filename, "w")
+        f.write("name, patch_stim_value, "
+                +"monitor_xyY_x, monitor_xyY_y, monitor_xyY_Y, "
+                +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, " 
+                +"voltages_r, voltages_g, voltages_b, "
+                +"tubes_xyY_x, tubes_xyY_y, tubes_xyY_Y, "
+                +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n") 
+        for ce in self.color_list: 
+            f.write(ce.name+", "+str(ce.patch_stim_value))
+            if not ce.monitor_xyY:
+                f.write(", NA, NA, NA")
+            else: 
+                for x in ce.monitor_xyY:
+                    f.write(", "+str(x))
+            if not ce.monitor_xyY_sd:
+                f.write(", NA, NA, NA")
+            else:
+                for x in ce.monitor_xyY_sd:
+                    f.write(", "+str(x))
+            if not ce.voltages:
+                f.write(", NA, NA, NA")
+            else:
+                for x in ce.voltages:
+                    f.write(", "+str(x))
+            if not ce.tubes_xyY:
+                f.write(", NA, NA, NA")
+            else:
+                for x in ce.tubes_xyY:
+                    f.write(", "+str(x))
+            if not ce.tubes_xyY_sd:
+                f.write(", NA, NA, NA")
+            else:
+                for x in ce.tubes_xyY_sd:
+                    f.write(", "+str(x))
+            f.write("\n")
+
 
     def saveToPickle(self, filename):
         """
         saves object to pickle-file.
         """
-        f = open(filename, "b")
+        f = open(filename, "wb")
         pickle.dump(self.color_list, f)
         f.close()
-        pass
 
     def loadFromR(self, filename):
         """
@@ -126,7 +160,7 @@ class ColorTable(object):
         """
         pass
 
-    def loadFromCvs(self, filename):
+    def loadFromCsv(self, filename):
         """
         loads object to comma sperated textfile.
         """
@@ -136,20 +170,32 @@ class ColorTable(object):
         """
         loads object to pickle-file.
         """
-        f = open(filename, "b")
-        self.color_list = pickle.load(self.color_list, f)
+        f = open(filename, "rb")
+        self.color_list = pickle.load(f)
         f.close()
-        pass
 
 
 if __name__ == "__main__":
     from EyeOne import EyeOne
+    from psychopy import visual
     from monitor2 import Monitor
     from tubes2 import Tubes
-    eye_one = EyeOne.EyeOne(dummy=True)
-    mon = Monitor(eye_one)
+    eye_one = EyeOne.EyeOne()#dummy=True)
+    mywin = visual.Window(size=(2048,1536), monitor='mymon',
+                    color=(0,0,0), screen=1)
+    mon = Monitor(eye_one, mywin)
     tub = Tubes(eye_one)
  
     color_table = ColorTable(mon, tub)
-    color_table.createColorList(patch_stim_value_list=[-0.3,-0.2,-0.1,0.0])
+    #color_table.loadFromPickle("./test_tino.pkl")
+    #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
+    color_table.createColorList(
+            patch_stim_value_list=[x/128.0 for x in range(-128,129)])
+    color_table.saveToPickle("./color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".pkl")
+    color_table.saveToCsv("./color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".csv")
+    
+
+
 

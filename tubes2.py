@@ -20,6 +20,7 @@ import time
 # only need _tub.setVoltage
 import tubes as tubes_old
 _tub = tubes_old.Tubes()
+_tub.loadParameter("./parameterTubes20101108_2234.pkl")
 
 import iterativeColorTubes
 
@@ -43,14 +44,12 @@ class Tubes(object):
                 eNoError):
             print("measurement mode set to single emission.")
         else:
-            # todo put here an exception
             print("failed to set measurement mode.")
             return
         if(self.eye_one.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
             print("color space set to CIExyY.")
         else:
-            # todo put here an exception
             print("failed to set color space.")
             return
         # calibrate EyeOne Pro
@@ -61,7 +60,6 @@ class Tubes(object):
         if (self.eye_one.I1_Calibrate() == eNoError):
             print("Calibration of the EyeOne Pro done.")
         else:
-            # todo put here an exception
             print("Calibration of the EyeOne Pro failed. Please RESTART "
             + "the calibration of the monitor.")
             return
@@ -73,10 +71,11 @@ class Tubes(object):
         Simply prompt to move the Eye One Pro to measurement position and
         wait for button response.
         """
-        print("\nPlease put Eye One Pro in measurement position and hit"
-                + " the button to start measurement.")
+        print("\nPlease put Eye One Pro in measurement position for TUBES"
+                + " and hit the button to start measurement.")
         while(self.eye_one.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
+        print("Start measurement...")
 
     def measureVoltages(self, voltages, n=1):
         """

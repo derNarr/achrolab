@@ -1,0 +1,7 @@
+* Add "start measurement..." after clicking the button of the eye one
+* devision by zero -- how to handle (catch and set value to None and give
+  output to terminal?) [when mean and sd are calculated]
+* ColorTable -- getColorByName(self, name)?
+* ColorTable -- measureMonitor, measureTubes, findVoltgees as seperate
+  functions
+

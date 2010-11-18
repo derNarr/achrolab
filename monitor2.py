@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-08, KS
+# last mod 2010-11-09, KS
 
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -25,10 +25,10 @@ class Monitor(object):
     colors with an Eye One Pro.
     """
     
-    def __init__(self, eye_one):
+    def __init__(self, eye_one, psychopy_win=None):
         self.eye_one = eye_one
         self.eye_one_calibrated = False
-        self._mywin = None
+        self.psychopy_win = psychopy_win
 
     def calibrateEyeOne(self):
         """
@@ -40,14 +40,12 @@ class Monitor(object):
                 eNoError):
             print("measurement mode set to single emission.")
         else:
-            # todo put here an exception
             print("failed to set measurement mode.")
             return
         if(self.eye_one.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
             print("color space set to CIExyY.")
         else:
-            # todo put here an exception
             print("failed to set color space.")
             return
         # calibrate EyeOne Pro
@@ -58,7 +56,6 @@ class Monitor(object):
         if (self.eye_one.I1_Calibrate() == eNoError):
             print("Calibration of the EyeOne Pro done.")
         else:
-            # todo put here an exception
             print("Calibration of the EyeOne Pro failed. Please RESTART "
             + "the calibration of the monitor.")
             return
@@ -71,10 +68,12 @@ class Monitor(object):
         Simply prompt to move the Eye One Pro to measurement position and
         wait for button response.
         """
-        print("\nPlease put Eye One Pro in measurement position and hit"
-                + " the button to start measurement.")
+        print("\nPlease put Eye One Pro in measurement position for"
+                + "MONITOR and hit the button to start measurement.")
         while(self.eye_one.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
+        print("Start measurement...")
+        
 
 
     def measurePatchStimColor(self, patch_stim_color, n=1):
@@ -93,10 +92,10 @@ class Monitor(object):
             self.calibrateEyeOne()
             self.startMeasurement()
         
-        if not self._mywin:
-            self._mywin = visual.Window(size=(800,600), monitor='mymon',
-                    color=(0,0,0))#, screen=1)
-        patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
+        if not self.psychopy_win:
+            self.psychopy_win = visual.Window(size=(800,600), monitor='mymon',
+                    color=(0,0,0))
+        patch_stim = visual.PatchStim(self.psychopy_win, tex=None, size=(2,2),
                 color=patch_stim_color)
         
         xyY_list = []
@@ -105,7 +104,7 @@ class Monitor(object):
         #start measurement
         for i in range(n):
             patch_stim.draw()
-            self._mywin.update() # todo -- is there a function mywin.flip()?
+            self.psychopy_win.update() # todo -- is there a function mywin.flip()?
             core.wait(.5)
 
             if(self.eye_one.I1_TriggerMeasurement() != eNoError):
@@ -140,12 +139,12 @@ class Monitor(object):
         """
         sets the monitor to patch_stim_color.
         """
-        if not self._mywin:
-            self._mywin = visual.Window(size=(2048,1536), monitor='mymon',
+        if not self.psychopy_win:
+            self.psychopy_win = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
-        patch_stim = visual.PatchStim(self._mywin, tex=None, size=(2,2),
+        patch_stim = visual.PatchStim(self.psychopy_win, tex=None, size=(2,2),
                 color=patch_stim_color)
-        self._mywin.update()
+        self.psychopy_win.update()
 
 
 

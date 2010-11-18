@@ -16,7 +16,7 @@ from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
                                     COLOR_SPACE_CIExyY,
-                                    SPECTRUM_SIZE)
+                                    TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from psychopy import visual
@@ -78,7 +78,11 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
     i=0
     print("\n\nTarget: " + str(targetColor) + "\n")
     
-    while ((norm(diffColor) > epsilon) & (i < max_iterations)):
+    while ((norm(diffColor) > epsilon)):
+        if i == max_iterations:
+            inputColor = None
+            print("not converged")
+            return (None, None)
         tubes.setColor(inputColor)
         i = i + 1 # new round
         time.sleep(imi)
@@ -94,9 +98,10 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
         diffColor = [x*streckung for x in xyYdiff(measuredColor, targetColor)]
         print("diff: " + str(diffColor))
         inputColor = xyYnew_color(inputColor, diffColor)
+            
     
     print("\nFinal inputColor: " + str(inputColor) + "\n\n")
-    rgb = color.convert_to('rgb', target_rgb='sRGB')
+    rgb = inputColor.convert_to('rgb', target_rgb='sRGB')
     voltages = (tubes._sRGBtoU_r(rgb.rgb_r), 
                 tubes._sRGBtoU_g(rgb.rgb_g),
                 tubes._sRGBtoU_b(rgb.rgb_b))
