@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-09, KS
+# last mod 2010-11-25, KS
 
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -29,6 +29,7 @@ class Monitor(object):
         self.eye_one = eye_one
         self.eye_one_calibrated = False
         self.psychopy_win = psychopy_win
+        self.patch_stim = None
 
     def calibrateEyeOne(self):
         """
@@ -76,12 +77,12 @@ class Monitor(object):
         
 
 
-    def measurePatchStimColor(self, patch_stim_color, n=1):
+    def measurePatchStimColor(self, patch_stim_value, n=1):
         """
-        Measures the patch_stim_color on the monitor.
+        Measures the patch_stim_value on the monitor.
 
         input:
-            patch_stim_color -- psychopy.visual.PatchStim color value
+            patch_stim_value -- psychopy.visual.PatchStim color value
             n -- number of measures (positive integer)
 
         
@@ -95,16 +96,19 @@ class Monitor(object):
         if not self.psychopy_win:
             self.psychopy_win = visual.Window(size=(800,600), monitor='mymon',
                     color=(0,0,0))
-        patch_stim = visual.PatchStim(self.psychopy_win, tex=None, size=(2,2),
-                color=patch_stim_color)
+        if not self.patch_stim:
+            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
+                    size=(2,2), color=patch_stim_value)
+        else:
+            self.patch_stim.setColor(color=patch_stim_value)
         
         xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
         #start measurement
         for i in range(n):
-            patch_stim.draw()
-            self.psychopy_win.update() # todo -- is there a function mywin.flip()?
+            self.patch_stim.draw()
+            self.psychopy_win.flip()
             core.wait(.5)
 
             if(self.eye_one.I1_TriggerMeasurement() != eNoError):
@@ -135,16 +139,20 @@ class Monitor(object):
         # TODO
         pass
     
-    def setPatchStimColor(self, patch_stim_color):
+    def setPatchStimColor(self, patch_stim_value):
         """
         sets the monitor to patch_stim_color.
         """
         if not self.psychopy_win:
             self.psychopy_win = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
-        patch_stim = visual.PatchStim(self.psychopy_win, tex=None, size=(2,2),
-                color=patch_stim_color)
-        self.psychopy_win.update()
+        if not self.patch_stim:
+            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
+                    size=(2,2), color=patch_stim_value)
+        else:
+            self.patch_stim.setColor(color=patch_stim_value)
+        self.patch_stim.draw()
+        self.psychopy_win.flip()
 
 
 

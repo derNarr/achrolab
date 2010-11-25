@@ -5,9 +5,9 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-18, KS
+# last mod 2010-11-25, KS
 
-from psychopy import event
+from psychopy import event, core
 from colorentry import ColorEntry
 import pickle,time
 
@@ -65,11 +65,23 @@ class ColorTable(object):
             self.color_list.append( ColorEntry(name_list[i],
                 patch_stim_value_list[i]) )
 
+
+    def measureColorListMonitor(self):
+        """
+        measures the monitor for every colorentry in colorlist and
+        overwrites the monitor entries in the colorentry
+        """
         self.monitor.calibrateEyeOne()
         self.monitor.startMeasurement()
         for colorentry in self.color_list:
             colorentry.measureMonitor(self.monitor, n=10)
 
+
+    def measureColorListTubes(self):
+        """
+        measures the tubes for every colorentry in colorlist and
+        overwrites the tubes' entries in the colorentry
+        """
         self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         for colorentry in self.color_list:
@@ -83,15 +95,18 @@ class ColorTable(object):
         tubes to the corresponding voltage. Left mouse click changes to the
         next color in color list.
         """
+        # TODO implement index_list and name_list
         print('''Click the left mouse button to move to the next
         corresponding colors of the tubes and monitor.''')
         for colorentry in self.color_list:
-            self.monitor.setPatchStimColor(colorentry.patch_stim_color)
+            self.monitor.setPatchStimColor(colorentry.patch_stim_value)
             self.tubes.setVoltages(colorentry.voltages)
-            mouse = event.Mouse() 
+            mouse = event.Mouse(win=self.monitor.psychopy_win) 
             event.clearEvents()
             show = True 
+            print("Show color " + colorentry.name + ".")
             while show:
+                core.wait(0.01)
                 left, middle, right = mouse.getPressed()
                 if left: 
                     core.wait(0.2)
@@ -187,14 +202,20 @@ if __name__ == "__main__":
     tub = Tubes(eye_one)
  
     color_table = ColorTable(mon, tub)
-    #color_table.loadFromPickle("./test_tino.pkl")
-    color_table.createColorList(patch_stim_value_list=[0.3,0.2])
+    #color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
+    color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
+    #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
     #color_table.createColorList(
-    #        patch_stim_value_list=[x/128.0 for x in range(-128,129)])
-    color_table.saveToPickle("./color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".pkl")
-    color_table.saveToCsv("./color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".csv")
+    #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
+
+    #color_table.measureColorListMonitor()
+    #color_table.measureColorListTubes()
+    #color_table.saveToPickle("./data/color_table_" + 
+    #        time.strftime("%Y%m%d_%H%M") +".pkl")
+    #color_table.saveToCsv("./data/color_table_" + 
+    #        time.strftime("%Y%m%d_%H%M") +".csv")
+
+    color_table.showColorList()
     
 
 

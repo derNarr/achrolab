@@ -5,8 +5,8 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-18, KS
-
+# last mod 2010-11-25, KS
+from colormath.color_objects import xyYColor
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
@@ -20,7 +20,7 @@ import time
 # only need _tub.setVoltage
 import tubes as tubes_old
 _tub = tubes_old.Tubes()
-_tub.loadParameter("./parameterTubes20101108_2234.pkl")
+_tub.loadParameter("./data/parameterTubes20101118_1923.pkl")
 
 import iterativeColorTubes
 
@@ -118,10 +118,17 @@ class Tubes(object):
         #(voltages, xyY) = iterativeColorTubes.iterativeColormatch(
         #        color, self.eye_one, _tub,
         #        epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
+        if isinstance(color, tuple):
+            color = xyYColor(color[0], color[1], color[2])
+            color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
+        print("tubes2.findVoltages color: " + str(color))
         (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
                 color, self.eye_one, _tub,
-                epsilon=0.1, streckung=1.0, imi=0.5, max_iterations=50)
-        xyY = rgb.convert_to('xyY')
+                epsilon=1.0, streckung=0.9, imi=0.5, max_iterations=50)
+        if rgb:
+            xyY = rgb.convert_to('xyY')
+        else:
+            xyY = None
 
         return (voltages, xyY)
 

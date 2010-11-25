@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-18, KS
+# last mod 2010-11-23, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from tubes import Tubes
@@ -109,7 +109,7 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
     voltages = (tubes._sRGBtoU_r(rgb.rgb_r), 
                 tubes._sRGBtoU_g(rgb.rgb_g),
                 tubes._sRGBtoU_b(rgb.rgb_b))
-    return (voltages, tri_stim)
+    return (voltages, measuredColor)
 
 
 ##########################################################################
@@ -185,7 +185,8 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
                     %str(inputColor))
         xyY = xyYColor(tri_stim[0], tri_stim[1], tri_stim[2])
         measuredColor = xyY.convert_to('rgb', target_rgb='sRGB', clip=False)
-        print(str(measuredColor))
+        print("target color: " + str(targetColor))
+        print("measured color: " + str(measuredColor))
         # correct the new color to a probably reduced (streckung < 1)
         # negative difference to the measured color.
         diffColor = [x*streckung for x in RGBdiff(measuredColor, targetColor)]
@@ -198,5 +199,5 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
     voltages = (tubes._sRGBtoU_r(inputColor.rgb_r), 
                 tubes._sRGBtoU_g(inputColor.rgb_g),
                 tubes._sRGBtoU_b(inputColor.rgb_b))
-    return (voltages, tri_stim)
+    return (voltages, measuredColor)
 
