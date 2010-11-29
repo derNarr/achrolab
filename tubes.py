@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-22, KS
+# last mod 2010-11-29, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -62,6 +62,11 @@ class Tubes(object):
         self.blue_p1 =  263.734050868
         self.blue_p2 = -187.047396719
         self.blue_p3 =   -6.45686046205
+
+        # voltage wich is set at the moment
+        self.U_r = 0x800
+        self.U_b = 0x800 
+        self.U_g = 0x800
 
 
     def setColor(self, color):
@@ -278,37 +283,76 @@ class Tubes(object):
         if x >= self.red_p1:
             print("red channel is on maximum")
             return 0xFFF
-        return (-log((x - self.red_p1)/(self.red_p2 - self.red_p1)) / 
+        U_r = (-log((x - self.red_p1)/(self.red_p2 - self.red_p1)) / 
                 exp(self.red_p3))
+        if U_r < 0x800:
+            print("red channel is on minimum")
+            return 0x800
+        if U_r > 0xFFF:
+            print("red channel is on maximum")
+            return 0xFFF
+        return U_r
 
     def _sRGBtoU_g(self, green_sRGB):
         x = float(green_sRGB)
         if x >= self.green_p1:
             print("green channel is on maximum")
             return 0xFFF
-        return (-log((x - self.green_p1)/(self.green_p2 - self.green_p1)) / 
+        U_g = (-log((x - self.green_p1)/(self.green_p2 - self.green_p1)) / 
                 exp(self.green_p3))
+        if U_g < 0x800:
+            print("green channel is on minimum")
+            return 0x800
+        if U_g > 0xFFF:
+            print("green channel is on maximum")
+            return 0xFFF
+        return U_g
 
     def _sRGBtoU_b(self, blue_sRGB):
         x = float(blue_sRGB)
         if x >= self.blue_p1:
             print("blue channel is on maximum")
             return 0xFFF
-        return (-log((x - self.blue_p1)/(self.blue_p2 - self.blue_p1)) / 
+        U_b = (-log((x - self.blue_p1)/(self.blue_p2 - self.blue_p1)) / 
                 exp(self.blue_p3))
+        if U_b < 0x800:
+            print("blue channel is on minimum")
+            return 0x800
+        if U_b > 0xFFF:
+            print("blue channel is on maximum")
+            return 0xFFF
+        return U_b
 
     def setVoltage(self, U_rgb):
         """setVoltage set the voltage in the list or tuple of U_rgb to the 
         wasco card.
         U_rgb should contain three integers between 0x000 and 0xFFF."""
-        
-        #set the wasco-card to the right voltage
-        self.wascocard.wasco_outportW(self.wasco_boardId, self.red_out,
-                                int(U_rgb[0]))
-        self.wascocard.wasco_outportW(self.wasco_boardId, self.green_out,
-                                int(U_rgb[1]))
-        self.wascocard.wasco_outportW(self.wasco_boardId, self.blue_out,
-                                int(U_rgb[2]))
+        #set the wasco-card stepwise to the right voltage
+        U_r_new = int(U_rgb[0])
+        U_g_new = int(U_rgb[1])
+        U_b_new = int(U_rgb[2])
+
+        diff_r = U_r_new - self.U_r
+        diff_g = U_g_new - self.U_g
+        diff_b = U_b_new - self.U_b
+
+        steps = max( abs(diff_r), abs(diff_g), abs(diff_b))
+
+        slope_r = diff_r/float(steps)
+        slope_g = diff_g/float(steps)
+        slope_b = diff_b/float(steps)
+
+        for i in range(steps):
+            time.wait(0.001)
+            self.wascocard.wasco_outportW(self.wasco_boardId, 
+                    self.red_out, int(self.U_r + slope_r*i))
+            self.wascocard.wasco_outportW(self.wasco_boardId, 
+                    self.green_out, int(self.U_g + slope_g*i))
+            self.wascocard.wasco_outportW(self.wasco_boardId, 
+                    self.blue_out, int(self.U_b + slope_b*i))
+        self.U_r = U_r_new
+        self.U_g = U_g_new
+        self.U_b = U_b_new
         return
 
     def saveParameter(self, filename="./lastParameterTubes.pkl"):
