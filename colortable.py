@@ -76,6 +76,17 @@ class ColorTable(object):
         for colorentry in self.color_list:
             colorentry.measureMonitor(self.monitor, n=10)
 
+    def findVoltages(self, name_list=None):
+        if name_list:
+            color_dict = {}
+            for ce in self.color_list:
+                color_dict[ce.name] = ce
+            for name in name_list:
+                color_dict[name].findVoltages(self.tubes)
+        else:
+            for ce in self.color_list:
+                ce.findVoltages(self.tubes)
+
 
     def measureColorListTubes(self):
         """
@@ -85,7 +96,8 @@ class ColorTable(object):
         self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         for colorentry in self.color_list:
-            colorentry.findVoltages(self.tubes)
+            colorentry.tubes_xyY = None
+            colorentry.tubes_xyY_sd = None
             colorentry.measureTubes(self.tubes, n=10)
 
 
@@ -200,6 +212,11 @@ if __name__ == "__main__":
                     color=(0,0,0), screen=1)
     mon = Monitor(eye_one, mywin)
     tub = Tubes(eye_one)
+
+    #interessting colors
+    color_list = []
+    for i in range(10):
+        color_list.append( "color" + str(164 + i) )
  
     color_table = ColorTable(mon, tub)
     color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
@@ -209,6 +226,7 @@ if __name__ == "__main__":
     #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
 
     #color_table.measureColorListMonitor()
+    color_table.findVoltages(color_list)
     color_table.measureColorListTubes()
     color_table.saveToPickle("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".pkl")

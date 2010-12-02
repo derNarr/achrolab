@@ -159,7 +159,7 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
                 clip=False)
     inputColor = targetColor
     measuredColor = RGBColor(0,0,0)
-    diffColor = (1.0, 1.0, 1.0)
+    diffColor = (100.0, 100.0, 100.0)
     
     tubes.setColor(inputColor)
     
@@ -176,6 +176,9 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
             return (None, None)
         i = i + 1 # new round
         tubes.setColor(inputColor)
+        print("set tubes to: " + str( (tubes._sRGBtoU_r(inputColor.rgb_r), 
+                tubes._sRGBtoU_g(inputColor.rgb_g),
+                tubes._sRGBtoU_b(inputColor.rgb_b)) ) )
         time.sleep(imi)
         if(eyeone.I1_TriggerMeasurement() != eNoError):
             print("Measurement failed for color %s ." %str(inputColor))
@@ -189,7 +192,7 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
         # correct the new color to a probably reduced (streckung < 1)
         # negative difference to the measured color.
         diffColor = [x*streckung for x in RGBdiff(measuredColor, targetColor)]
-        print("diff: " + str(diffColor))
+        print("diff: " + str(diffColor) + "\n")
         inputColor = RGBnew_color(inputColor, diffColor)
             
     
