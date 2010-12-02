@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-25, KS
+# last mod 2010-12-02, KS
 from colormath.color_objects import xyYColor
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -82,7 +82,7 @@ class Tubes(object):
         Measures the color of the tubes for given voltages.
 
         input:
-            voltges -- tripel of three integers (0x000, 0x000, 0x000) 
+            voltages -- triple of three integers (0x000, 0x000, 0x000) 
             n -- number of measures (positive integer)
         
         returns list of tuples of xyY values
@@ -124,7 +124,7 @@ class Tubes(object):
         print("tubes2.findVoltages color: " + str(color))
         (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
                 color, self.eye_one, _tub,
-                epsilon=1.0, streckung=0.9, imi=0.5, max_iterations=50)
+                epsilon=3.0, streckung=0.9, imi=0.5, max_iterations=50)
         if rgb:
             xyY = rgb.convert_to('xyY')
         else:

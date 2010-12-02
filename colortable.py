@@ -202,20 +202,20 @@ if __name__ == "__main__":
     tub = Tubes(eye_one)
  
     color_table = ColorTable(mon, tub)
-    #color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
-    color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
+    color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
+    #color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
     #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
     #color_table.createColorList(
     #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
 
     #color_table.measureColorListMonitor()
-    #color_table.measureColorListTubes()
-    #color_table.saveToPickle("./data/color_table_" + 
-    #        time.strftime("%Y%m%d_%H%M") +".pkl")
-    #color_table.saveToCsv("./data/color_table_" + 
-    #        time.strftime("%Y%m%d_%H%M") +".csv")
+    color_table.measureColorListTubes()
+    color_table.saveToPickle("./data/color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".pkl")
+    color_table.saveToCsv("./data/color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".csv")
 
-    color_table.showColorList()
+    #color_table.showColorList()
     
 
 

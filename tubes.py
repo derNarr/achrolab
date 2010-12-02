@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-29, KS
+# last mod 2010-12-02, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -64,9 +64,9 @@ class Tubes(object):
         self.blue_p3 =   -6.45686046205
 
         # voltage wich is set at the moment
-        self.U_r = 0x800
-        self.U_b = 0x800 
-        self.U_g = 0x800
+        self.U_r = 0xFFF
+        self.U_b = 0xFFF 
+        self.U_g = 0xFFF
 
 
     def setColor(self, color):
@@ -74,7 +74,7 @@ class Tubes(object):
         * color should be a colormath color object"""
 
         #transform to sRGB
-        rgb = color.convert_to('rgb', target_rgb='sRGB', clip=True)
+        rgb = color.convert_to('rgb', target_rgb='sRGB', clip=False)
 
         #set the wasco-card to the right voltage
         self.setVoltage( (self._sRGBtoU_r(rgb.rgb_r), 
@@ -326,11 +326,29 @@ class Tubes(object):
     def setVoltage(self, U_rgb):
         """setVoltage set the voltage in the list or tuple of U_rgb to the 
         wasco card.
-        U_rgb should contain three integers between 0x000 and 0xFFF."""
+        U_rgb should contain three integers between 0x800 and 0xFFF."""
         #set the wasco-card stepwise to the right voltage
         U_r_new = int(U_rgb[0])
         U_g_new = int(U_rgb[1])
         U_b_new = int(U_rgb[2])
+        if U_r_new < 0x800:
+            print("red channel is on minimum (0x800)")
+            U_r_new = 0x800
+        if U_r_new > 0xFFF:
+            print("red channel is on maximum (0xFFF)")
+            U_r_new = 0xFFF
+        if U_g_new < 0x800:
+            print("green channel is on minimum (0x800)")
+            U_g_new = 0x800
+        if U_g_new > 0xFFF:
+            print("green channel is on maximum (0xFFF)")
+            U_g_new = 0xFFF
+        if U_b_new < 0x800:
+            print("blue channel is on minimum (0x800)")
+            U_b_new = 0x800
+        if U_b_new > 0xFFF:
+            print("blue channel is on maximum (0xFFF)")
+            U_b_new = 0xFFF
 
         diff_r = U_r_new - self.U_r
         diff_g = U_g_new - self.U_g
@@ -338,12 +356,15 @@ class Tubes(object):
 
         steps = max( abs(diff_r), abs(diff_g), abs(diff_b))
 
+        if steps == 0:
+            return
+
         slope_r = diff_r/float(steps)
         slope_g = diff_g/float(steps)
         slope_b = diff_b/float(steps)
 
         for i in range(steps):
-            time.wait(0.001)
+            time.sleep(0.001)
             self.wascocard.wasco_outportW(self.wasco_boardId, 
                     self.red_out, int(self.U_r + slope_r*i))
             self.wascocard.wasco_outportW(self.wasco_boardId, 
