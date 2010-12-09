@@ -137,7 +137,7 @@ def RGBnew_color(old_color, vec):
 
 
 # returns tuple (voltages, tri_stim)  (last inputColor)
-def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=0.1,
+def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=5,
     streckung=1.0, imi=0.5, max_iterations=50):
     """
     iterativeColormatch tries to match the measurement of the tubes to the
