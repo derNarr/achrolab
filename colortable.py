@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-25, KS
+# last mod 2010-12-09, KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -77,6 +77,8 @@ class ColorTable(object):
             colorentry.measureMonitor(self.monitor, n=10)
 
     def findVoltages(self, name_list=None):
+        self.tubes.calibrateEyeOne()
+        self.tubes.startMeasurement()
         if name_list:
             color_dict = {}
             for ce in self.color_list:
@@ -107,10 +109,20 @@ class ColorTable(object):
         tubes to the corresponding voltage. Left mouse click changes to the
         next color in color list.
         """
-        # TODO implement index_list and name_list
+        # TODO implement index_list 
         print('''Click the left mouse button to move to the next
         corresponding colors of the tubes and monitor.''')
-        for colorentry in self.color_list:
+        color_list = []
+        if name_list:
+            color_dict = {}
+            for ce in self.color_list:
+                color_dict[ce.name] = ce
+            for name in name_list:
+                color_list.append(color_dict[name])
+        else:
+            color_list = self.color_list
+
+        for colorentry in color_list:
             self.monitor.setPatchStimColor(colorentry.patch_stim_value)
             self.tubes.setVoltages(colorentry.voltages)
             mouse = event.Mouse(win=self.monitor.psychopy_win) 
@@ -216,7 +228,7 @@ if __name__ == "__main__":
     #interessting colors
     color_list = []
     for i in range(10):
-        color_list.append( "color" + str(164 + i) )
+        color_list.append( "color" + str(170 + i) )
  
     color_table = ColorTable(mon, tub)
     color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
@@ -226,12 +238,13 @@ if __name__ == "__main__":
     #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
 
     #color_table.measureColorListMonitor()
-    color_table.findVoltages(color_list)
+    color_table.findVoltages(name_list=color_list)
     color_table.measureColorListTubes()
     color_table.saveToPickle("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".pkl")
     color_table.saveToCsv("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".csv")
+    color_table.showColorList(name_list=color_list)
 
     #color_table.showColorList()
     

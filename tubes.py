@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-02, KS
+# last mod 2010-12-09, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -46,6 +46,8 @@ class Tubes(object):
         self.red_out = DAOUT2_16
         self.green_out = DAOUT1_16
         self.blue_out = DAOUT3_16
+        self.low_threshold = 0x400 # min voltages
+        self.high_threshold = 0xFFF # max voltages
 
         self.IsCalibrated = False
 
@@ -64,9 +66,9 @@ class Tubes(object):
         self.blue_p3 =   -6.45686046205
 
         # voltage wich is set at the moment
-        self.U_r = 0xFFF
-        self.U_b = 0xFFF 
-        self.U_g = 0xFFF
+        self.U_r = self.high_threshold
+        self.U_b = self.high_threshold 
+        self.U_g = self.high_threshold
 
 
     def setColor(self, color):
@@ -282,73 +284,79 @@ class Tubes(object):
         x = float(red_sRGB)
         if x >= self.red_p1:
             print("red channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         U_r = (-log((x - self.red_p1)/(self.red_p2 - self.red_p1)) / 
                 exp(self.red_p3))
-        if U_r < 0x800:
+        if U_r < self.low_threshold:
             print("red channel is on minimum")
-            return 0x800
-        if U_r > 0xFFF:
+            return self.low_threshold
+        if U_r > self.high_threshold:
             print("red channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         return U_r
 
     def _sRGBtoU_g(self, green_sRGB):
         x = float(green_sRGB)
         if x >= self.green_p1:
             print("green channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         U_g = (-log((x - self.green_p1)/(self.green_p2 - self.green_p1)) / 
                 exp(self.green_p3))
-        if U_g < 0x800:
+        if U_g < self.low_threshold:
             print("green channel is on minimum")
-            return 0x800
-        if U_g > 0xFFF:
+            return self.low_threshold
+        if U_g > self.high_threshold:
             print("green channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         return U_g
 
     def _sRGBtoU_b(self, blue_sRGB):
         x = float(blue_sRGB)
         if x >= self.blue_p1:
             print("blue channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         U_b = (-log((x - self.blue_p1)/(self.blue_p2 - self.blue_p1)) / 
                 exp(self.blue_p3))
-        if U_b < 0x800:
+        if U_b < self.low_threshold:
             print("blue channel is on minimum")
-            return 0x800
-        if U_b > 0xFFF:
+            return self.low_threshold
+        if U_b > self.high_threshold:
             print("blue channel is on maximum")
-            return 0xFFF
+            return self.high_threshold
         return U_b
 
     def setVoltage(self, U_rgb):
         """setVoltage set the voltage in the list or tuple of U_rgb to the 
         wasco card.
-        U_rgb should contain three integers between 0x800 and 0xFFF."""
+        U_rgb should contain three integers between self.low_threshold and 
+        self.high_threshold."""
         #set the wasco-card stepwise to the right voltage
         U_r_new = int(U_rgb[0])
         U_g_new = int(U_rgb[1])
         U_b_new = int(U_rgb[2])
-        if U_r_new < 0x800:
-            print("red channel is on minimum (0x800)")
-            U_r_new = 0x800
-        if U_r_new > 0xFFF:
-            print("red channel is on maximum (0xFFF)")
-            U_r_new = 0xFFF
-        if U_g_new < 0x800:
-            print("green channel is on minimum (0x800)")
-            U_g_new = 0x800
-        if U_g_new > 0xFFF:
-            print("green channel is on maximum (0xFFF)")
-            U_g_new = 0xFFF
-        if U_b_new < 0x800:
-            print("blue channel is on minimum (0x800)")
-            U_b_new = 0x800
-        if U_b_new > 0xFFF:
-            print("blue channel is on maximum (0xFFF)")
-            U_b_new = 0xFFF
+        if U_r_new < self.low_threshold:
+            print("red channel is on minimum (" + str(self.low_threshold) +")")
+            U_r_new = self.low_threshold
+        if U_r_new > self.high_threshold:
+            print("red channel is on maximum (" + str(self.high_threshold)
+                    +")")
+            U_r_new = self.high_threshold
+        if U_g_new < self.low_threshold:
+            print("green channel is on minimum (" + str(self.low_threshold)
+            +")")
+            U_g_new = self.low_threshold
+        if U_g_new > self.high_threshold:
+            print("green channel is on maximum (" + str(self.high_threshold)
+                    +")")
+            U_g_new = self.high_threshold
+        if U_b_new < self.low_threshold:
+            print("blue channel is on minimum (" + str(self.low_threshold)
+                    +")")
+            U_b_new = self.low_threshold
+        if U_b_new > self.high_threshold:
+            print("blue channel is on maximum (" + str(self.high_threshold)
+                    +")")
+            U_b_new = self.high_threshold
 
         diff_r = U_r_new - self.U_r
         diff_g = U_g_new - self.U_g
@@ -449,7 +457,7 @@ class Tubes(object):
         par(mfrow=c(3,3))
         len3 <- floor(length(voltage_r)/3)
         # only red voltage
-        plot(voltage_r[1:len3], rgb_r[1:len3], col="red", ylim=c(0,1000),
+        plot(voltage_r[1:len3], rgb_r[1:len3], col="red", ylim=c(0,1500),
             pch=19,
             main="red channel vs. voltage\ndata points and
             calibration curve",
@@ -462,7 +470,7 @@ class Tubes(object):
         
         # only green voltage
         plot(voltage_g[(len3+1):(2*len3)], rgb_g[(len3+1):(2*len3)], 
-            col="green", ylim=c(0,1000), pch=19,
+            col="green", ylim=c(0,1500), pch=19,
             main="green channel vs. voltage\ndata points and
             calibration curve",
             xlab="voltage", ylab="green rgb-value")
@@ -476,7 +484,7 @@ class Tubes(object):
         
         # only blue voltage
         plot(voltage_b[(2*len3+1):(3*len3)], rgb_b[(2*len3+1):(3*len3)],
-            col="blue", ylim=c(0,1000), pch=19,
+            col="blue", ylim=c(0,1500), pch=19,
             main="blue channel vs. voltage\ndata points and
             calibration curve",
             xlab="voltage", ylab="blue rgb-value")

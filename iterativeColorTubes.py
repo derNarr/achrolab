@@ -3,9 +3,10 @@
 # ./visionlab-utils/iterativColorTubes.py
 #
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+#     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-23, KS
+# last mod 2010-12-09, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from tubes import Tubes
@@ -18,6 +19,7 @@ from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
+import ValueError
 from psychopy import visual
 import rpy2.robjects as robjects
 # want to run R-commands with R("command")
@@ -36,7 +38,12 @@ def xyYdiff(color1, color2):
 
 # returns tuble
 def xyYnorm(color):
-    return (color.xyy_x**2 + color.xyy_y**2 + color.xyy_Y**2)**0.5
+    if isinstance(color, tuple):
+        xyY = xyYColor(color[0], color[1], color[2])
+    else:
+        xyY = color
+    rgb = xyY.convert_to('rgb', target_rgb='sRGB', clip=False)
+    return (rgb.rgb_r**2 + rgb.rgb_g**2 + rgb.rgb_b**2)**0.5
 
 # returns float
 def norm(vec):
@@ -110,6 +117,189 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
                 tubes._sRGBtoU_b(rgb.rgb_b))
     return (voltages, measuredColor)
 
+# returns xyYColor
+def newVoltages(old_voltages, vec):
+    return (old_voltages[0] + vec[0],
+            old_voltages[1] + vec[1],
+            old_voltages[2] + vec[2])
+
+
+
+# return tuple of (voltages, color)
+def measureColor(voltages, imi=0.5):
+    """
+    measureColor measures inputColor and sleeps imi-time. Returns measured Color.
+    * inputColor
+    * imi-- intermeasurement intervall
+    """
+    tri_stim = (c_float * TRISTIMULUS_SIZE)()
+    tubes.setVoltages(voltages)
+    time.sleep(imi)
+    if(eyeone.I1_TriggerMeasurement() != eNoError):
+        print("Measurement failed for color %s ." %str(inputColor))
+    if(eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+        print("Failed to get tri stimulus for color %s ."
+                %str(inputColor))
+    measuredColor = xyYColor(tri_stim[0], tri_stim[1], tri_stim[2])
+    return (voltages, measuredColor)
+
+
+def createMeasurementSeries(starting_voltages, step_R=0, step_G=0, step_B=0, series_quantity=50, imi=0.5):
+    """
+    createMeasurementSeries creates and returns a list of measured Points
+    (voltages, xyYColor).
+    * starting_voltages
+    * step_R -- red value step between two points
+    * step_G -- green value step between two points
+    * step_B -- blue value step between two points
+    * series_quantity -- number of measurements
+    * imi -- sleep time between two measurements
+    """
+    diff_voltages = (-(1/2)*series_quantity*step_R,
+                 -(1/2)*series_quantity*step_G,
+                 -(1/2)*series_quantity*step_B)
+    input_voltages = newVoltages(starting_voltages, diff_voltages)
+    i = 0
+    diff_voltages = (step_R,step_G,step_B)
+    measured_series = []
+    while (i < series_quantity):
+        i = i + 1 # new round
+        measured_color = measureColor(input_voltages, imi=imi)
+        measured_series.append( (input_voltages, measured_color) )
+        print(str(measured_color))
+        print("diff: " + str(diff_voltages))
+        input_voltages = newVoltages(input_voltages, diff_voltages)
+    return measured_series
+
+def findNearestColors(measured_color_list, target_color):
+    """
+    findNearestColors returns the nearest and the second nearest measured
+    colorspoints (voltages, xyYColor) to targetColor.
+    * measured_color_list -- contains the measured Colors
+    * target_color
+    """
+# TODO take the two _seond_ nearest points and not the nearest point!
+    series_quantity = len(measuredColor)
+    nearest = measured_color_list[0]
+    second_nearest = measured_color_list[1]
+    for voltage_color in measured_color_list:
+        if ( xyYnorm(xyYdiff(voltage_color[1], targetColor)) <=
+                xyYnorm(nearest[1]) ):
+            second_nearest = nearest
+            nearest = voltage_color
+        elif ( xyYnorm(xyYdiff(voltage_color[1], targetColor)) <
+                xyYnorm(second_nearest[1]) ):
+            second_nearest = voltage_color
+    return (nearest, second_nearest) 
+
+def measureBetweenColors(two_voltages_colors, channel, stepsize=1):
+    """
+    measureBetweenColors returns a list of measured Colors between
+    the first and second element of two_voltages_color.
+    * two_voltages_colors contains a pair (tuple with two elements) of
+          voltage_color
+    * count -- number of measurements between colors
+    """
+# TODO implement stepsize
+    if channel=="red":
+        index = 0
+    elif channel=="green":
+        index = 1
+    elif channel=="blue":
+        index = 2
+    else:
+        raise ValueError("channel must be one of 'red', 'green' or 'blue'")
+    
+    voltages = two_voltages_color[0][0] # should be the same for the two
+                                        # channels that are not varied
+    voltage1 = two_voltages_color[0][0][index]
+    voltage2 = two_voltages_color[1][0][index]
+
+    measured_series = []
+
+    if voltage1 > voltage2:
+        (voltage1, voltage2) = (voltage2, voltage1)
+    
+    for voltage in range(voltage1, voltage2+1):
+        voltages[index] = voltage
+        measured_series.append( voltages, measureColor(voltages) )
+
+    return measured_series
+
+
+def findBestColor(measured_color_red, measured_color_green,
+        measured_color_blue, target_color):
+    """
+    findBestColor returns a color, which is nearest targetColor.
+    * measured_color -- contains the measured colors for each channel
+    * target_color
+    """
+    voltage_color_list = []
+    voltage_color_list.extend( measured_color_red, measured_color_green,
+        measured_color_blue )
+    return min(voltage_color_norm_list, key=(lambda a: xyYnorm(a[1])))
+
+
+# returns tuple (voltages, tri_stim)  (last inputColor)
+def iterativeColormatch_2(targetColor, eyeone, tubes, iterations=50,
+    stepsize=10):
+    """
+    iterativeColormatch_2 tries to match the measurement of the tubes to the
+    targetColor (with a different method than iterativeColormatch).
+    * targetColor -- colormath color object
+    * eyeone -- calibrated EyeOne object
+    * tubes -- visionlab.tubes.Tubes object
+    * iterations
+    """
+    # TODO: extra iterations for the measurement points
+    # set colors
+    if isinstance(targetColor, tuple):
+        targetColor = xyYColor(targetColor[0], targetColor[1],
+                targetColor[2])
+    else:
+        targetColor = targetColor.convert_to('xyY')
+
+    rgb = targetColor.convert_to('rgb', target_rgb='sRGB', clip=False)
+    input_voltages = (tubes._sRGBtoU_r(rgb.rgb_r), 
+                     tubes._sRGBtoU_g(rgb.rgb_g),
+                     tubes._sRGBtoU_b(rgb.rgb_b))
+    measuredColor = xyYColor(0,0,0)
+    diffColor = (1.0, 1.0, 1.0)
+    
+    print("Start measurement...")
+    
+    i=0
+    print("\n\nTarget: " + str(targetColor) + "\n")
+
+    while (i < iterations):
+        i = i + 1
+
+        # create (voltages, color) list
+        measuredColorList_R = createMeasurementSeries(input_voltages,
+            step_R=stepsize)
+        measuredColorList_G = createMeasurementSeries(input_voltages,
+            step_G=stepsize)
+        measuredColorList_B = createMeasurementSeries(input_voltages,
+            step_B=stepsize)
+
+        # 2 nearest points of the list
+        two_points_R = findNearestColors(measuredColorList_R, targetColor)
+        two_points_G = findNearestColors(measuredColorList_G, targetColor)
+        two_points_B = findNearestColors(measuredColorList_B, targetColor)
+
+        # new measurement between 2 nearest points
+        measuredColor_R = measureBetweenColors(two_points_R, channel="red")
+        measuredColor_G = measureBetweenColors(two_points_G, channel="green")
+        measuredColor_B = measureBetweenColors(two_points_B, channel="blue")
+
+        # now serch for point with the smallest distance to targetColor
+        # should return inputColor or inputVoltages
+        best_voltage_color = findBestColor(measuredColor_R, measuredColor_G, measured_Color_B, targetColor)
+        input_voltages = best_voltage_color[0]
+    
+    print("\nFinal voltages:" + str(best_voltage_color[0]) + "\n\n")
+    return best_voltage_color
+
 
 ##########################################################################
 ###  Use RGB colors  #####################################################
@@ -137,7 +327,7 @@ def RGBnew_color(old_color, vec):
 
 
 # returns tuple (voltages, tri_stim)  (last inputColor)
-def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=5,
+def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=5.0,
     streckung=1.0, imi=0.5, max_iterations=50):
     """
     iterativeColormatch tries to match the measurement of the tubes to the

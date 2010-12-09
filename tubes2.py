@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-02, KS
+# last mod 2010-12-09, KS
 from colormath.color_objects import xyYColor
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -20,7 +20,7 @@ import time
 # only need _tub.setVoltage
 import tubes as tubes_old
 _tub = tubes_old.Tubes()
-_tub.loadParameter("./data/parameterTubes20101118_1923.pkl")
+_tub.loadParameter("./data/parameterTubes20101209_1136.pkl")
 
 import iterativeColorTubes
 
