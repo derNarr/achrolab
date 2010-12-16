@@ -6,7 +6,7 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-09, KS
+# last mod 2010-12-16, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from tubes import Tubes
@@ -244,7 +244,8 @@ def findBestColor(measured_color_red, measured_color_green,
     voltage_color_list.extend( measured_color_red )
     voltage_color_list.extend( measured_color_green )
     voltage_color_list.extend( measured_color_blue )
-    return min(voltage_color_list, key=(lambda a: xyYnorm(a[1])))
+    return min(voltage_color_list, key=(lambda a: xyYnorm(xyYdiff(a[1],
+        target_color))))
 
 
 # returns tuple (voltages, tri_stim)  (last inputColor)
