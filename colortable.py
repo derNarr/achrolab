@@ -89,6 +89,19 @@ class ColorTable(object):
             for ce in self.color_list:
                 ce.findVoltages(self.tubes)
 
+    def findVoltagesTuning(self, name_list=None):
+        self.tubes.calibrateEyeOne()
+        self.tubes.startMeasurement()
+        if name_list:
+            color_dict = {}
+            for ce in self.color_list:
+                color_dict[ce.name] = ce
+            for name in name_list:
+                color_dict[name].findVoltagesTuning(self.tubes)
+        else:
+            for ce in self.color_list:
+                ce.findVoltagesTuning(self.tubes)
+
 
     def measureColorListTubes(self):
         """
@@ -231,20 +244,22 @@ if __name__ == "__main__":
         color_list.append( "color" + str(170 + i) )
  
     color_table = ColorTable(mon, tub)
-    color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
+    color_table.loadFromPickle("./data/color_table_20101209_1220.pkl")
+    #color_table.loadFromPickle("./data/color_table_20101209_2042.pkl")
     #color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
     #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
     #color_table.createColorList(
     #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
 
     #color_table.measureColorListMonitor()
-    color_table.findVoltages(name_list=color_list)
+    #color_table.findVoltages(name_list=color_list)
+    color_table.findVoltagesTuning(name_list=color_list)
     color_table.measureColorListTubes()
     color_table.saveToPickle("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".pkl")
     color_table.saveToCsv("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".csv")
-    color_table.showColorList(name_list=color_list)
+    #color_table.showColorList(name_list=color_list)
 
     #color_table.showColorList()
     

@@ -132,6 +132,22 @@ class Tubes(object):
 
         return (voltages, xyY)
 
+    def findVoltagesTuning(self, color, start_voltages=None):
+        """
+        findVoltagesTuning tries to aproach the voltages for a given color
+        in xyY space.
+        """
+        if not self.eye_one_calibrated:
+            self.calibrateEyeOne()
+
+        if isinstance(color, tuple):
+            color = xyYColor(color[0], color[1], color[2])
+            color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
+        print("tubes2.findVoltagesTuning color: " + str(color))
+        return iterativeColorTubes.iterativeColormatch2(
+                color, self.eye_one, _tub, start_voltages=start_voltages,
+                iterations=5, stepsize=10, imi=0.5)
+        
     def setVoltages(self, voltages):
         """
         sets the tubes to the given voltages.

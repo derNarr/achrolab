@@ -4,4 +4,7 @@
 * ColorTable -- getColorByName(self, name)?
 * ColorTable -- measureMonitor, measureTubes, findVoltgees as seperate
   functions
+* implement iterativeColorTubes as class
+* check voltages in iterativeColorTubes, should be always integer (not
+        float)!!!
 

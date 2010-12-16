@@ -57,6 +57,17 @@ class ColorEntry(object):
 
         self.measureTubes(tubes)
 
+    def findVoltagesTuning(self, tubes):
+        """
+        tunes the voltages towards the target monitor color.
+        """
+        if not self.monitor_xyY:
+            print("No monitor_xyY color. Please run measureMonitor.")
+            return
+        (self.voltages, xyY) = tubes.findVoltagesTuning(self.monitor_xyY,
+                self.voltages)
+
+        self.measureTubes(tubes)
 
     def measureMonitor(self, monitor, n=10):
         """
