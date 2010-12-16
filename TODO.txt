@@ -7,4 +7,16 @@
 * implement iterativeColorTubes as class
 * check voltages in iterativeColorTubes, should be always integer (not
         float)!!!
+* save all measurements in RData file in ./data/measurements/
+* is our code python3 compatible? (should be; test it!)
+* with statement for file operations?
+* write down wich conventions are used (README.txt)
+* checkColorTable -- what should this method return?
+    - list with True / False?
+    - list with differences from mean
+* rename tubes.py to devtubes.py
+* rename tubes2.py to tubes.py
+* rename monitor2.py to monitor.py
+* add method setVoltages in tubes.py (with "s" ;) )
+
 
