@@ -135,6 +135,11 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
                 tubes._sRGBtoU_b(rgb.rgb_b))
     return (voltages, measuredColor)
 
+
+###########################################################################
+### TUNING ################################################################
+###########################################################################
+
 # returns xyYColor
 def newVoltages(old_voltages, vec):
     return (old_voltages[0] + vec[0],
@@ -153,6 +158,7 @@ def measureColor(voltages, tubes, eyeone, imi=0.5):
     tri_stim = (c_float * TRISTIMULUS_SIZE)()
     tubes.setVoltage(voltages)
     time.sleep(imi)
+    # TODO average multiple measurement
     if(eyeone.I1_TriggerMeasurement() != eNoError):
         print("Measurement failed for color %s ." %str(inputColor))
     if(eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
@@ -174,9 +180,9 @@ def createMeasurementSeries(starting_voltages, tubes, eyeone, step_R=0,
     * series_quantity -- number of measurements
     * imi -- sleep time between two measurements
     """
-    diff_voltages = (-(1/2)*series_quantity*step_R,
-                 -(1/2)*series_quantity*step_G,
-                 -(1/2)*series_quantity*step_B)
+    diff_voltages = (-0.5*series_quantity*step_R,
+                 -0.5*series_quantity*step_G,
+                 -0.5*series_quantity*step_B)
     input_voltages = newVoltages(starting_voltages, diff_voltages)
     i = 0
     diff_voltages = (step_R,step_G,step_B)
@@ -240,6 +246,7 @@ def measureBetweenColors(two_voltages_colors, tubes, eyeone, channel, stepsize=1
     
     for voltage in range(voltage1, voltage2+1):
         voltages[index] = voltage
+        print("between points voltages: " + str(voltages))
         measured_series.append( measureColor(voltages, tubes, eyeone) )
 
     return measured_series
@@ -303,7 +310,8 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
                 tubes, eyeone, step_G=stepsize, series_quantity=20)
         measuredColorList_B = createMeasurementSeries(input_voltages,
                 tubes, eyeone, step_B=stepsize, series_quantity=20)
-
+        
+        # save data for debugging
         filename = ("tuned_r" + str(rgb.rgb_r) + "g" + str(rgb.rgb_g) + "b" +
                 str(rgb.rgb_b) + "_iteration" + str(i) + ".csv")
         write_data(measuredColorList_R, filename)
