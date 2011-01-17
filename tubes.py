@@ -43,9 +43,9 @@ class Tubes(object):
         self.wascocard = wasco
         self.wasco_boardId = boardId 
 
-        self.red_out = DAOUT2_16
+        self.red_out = DAOUT3_16
         self.green_out = DAOUT1_16
-        self.blue_out = DAOUT3_16
+        self.blue_out = DAOUT2_16
         self.low_threshold = 0x400 # min voltages
         self.high_threshold = 0xFFF # max voltages
 

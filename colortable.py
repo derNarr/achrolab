@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-09, KS
+# last mod 2010-12-16, KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -77,7 +77,7 @@ class ColorTable(object):
             colorentry.measureMonitor(self.monitor, n=10)
 
     def findVoltages(self, name_list=None):
-        self.tubes.calibrateEyeOne()
+        #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         if name_list:
             color_dict = {}
@@ -90,7 +90,7 @@ class ColorTable(object):
                 ce.findVoltages(self.tubes)
 
     def findVoltagesTuning(self, name_list=None):
-        self.tubes.calibrateEyeOne()
+        #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         if name_list:
             color_dict = {}
@@ -108,7 +108,7 @@ class ColorTable(object):
         measures the tubes for every colorentry in colorlist and
         overwrites the tubes' entries in the colorentry
         """
-        self.tubes.calibrateEyeOne()
+        #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         for colorentry in self.color_list:
             colorentry.tubes_xyY = None
@@ -237,6 +237,7 @@ if __name__ == "__main__":
                     color=(0,0,0), screen=1)
     mon = Monitor(eye_one, mywin)
     tub = Tubes(eye_one)
+    tub.calibrateEyeOne()
 
     #interessting colors
     color_list = []
@@ -252,7 +253,7 @@ if __name__ == "__main__":
     #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
 
     #color_table.measureColorListMonitor()
-    #color_table.findVoltages(name_list=color_list)
+    color_table.findVoltages(name_list=color_list)
     color_table.findVoltagesTuning(name_list=color_list)
     color_table.measureColorListTubes()
     color_table.saveToPickle("./data/color_table_" + 
