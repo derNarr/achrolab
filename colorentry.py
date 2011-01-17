@@ -64,6 +64,7 @@ class ColorEntry(object):
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
             return
+
         (self.voltages, xyY) = tubes.findVoltagesTuning(self.monitor_xyY,
                 self.voltages)
 

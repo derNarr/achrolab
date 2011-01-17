@@ -26,6 +26,18 @@ import rpy2.robjects as robjects
 R = robjects.r
 
 
+def write_data(voltage_color_list, filename):
+    f = open(filename, "w")
+    f.write("voltage_r, voltage_g, voltage_b, rgb_r, rgb_g, rgb_b\n") 
+    for vc in voltage_color_list:
+        for voltage in vc[0]:
+            f.write(str(voltage) + ", ")
+        rgb = vc[1]
+        f.write(str(rgb.rgb_r) + ", " + str(rgb.rgb_g) + ", " +
+                str(rgb.rgb-g) + "\n")
+ 
+
+
 ##########################################################################
 ###  Use xyY colors  #####################################################
 ##########################################################################
@@ -252,9 +264,9 @@ def findBestColor(measured_color_red, measured_color_green,
 def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
         iterations=50, stepsize=10, imi=0.5):
     """
-    iterativeColormatch_2 tries to match the measurement of the tubes to the
+    iterativeColormatch2 tries to match the measurement of the tubes to the
     targetColor (with a different method than iterativeColormatch).
-    * targetColor -- colormath color object
+    * targetColor -- colormath color object or tuple of (x, y, Y)
     * eyeone -- calibrated EyeOne object
     * tubes -- visionlab.tubes.Tubes object
     * iterations
@@ -265,8 +277,6 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
     if isinstance(targetColor, tuple):
         targetColor = xyYColor(targetColor[0], targetColor[1],
                 targetColor[2])
-    else:
-        targetColor = targetColor.convert_to('xyY')
 
     rgb = targetColor.convert_to('rgb', target_rgb='sRGB', clip=False)
     if start_voltages:
@@ -293,6 +303,12 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
                 tubes, eyeone, step_G=stepsize, series_quantity=20)
         measuredColorList_B = createMeasurementSeries(input_voltages,
                 tubes, eyeone, step_B=stepsize, series_quantity=20)
+
+        filename = ("tuned_r" + str(rgb.rgb_r) + "g" + str(rgb.rgb_g) + "b" +
+                str(rgb.rgb_b) + "_iteration" + str(i) + ".csv")
+        write_data(measuredColorList_R, filename)
+        write_data(measuredColorList_G, filename)
+        write_data(measuredColorList_B, filename)
 
         # 2 nearest points of the list
         two_points_R = findNearestColors(measuredColorList_R, targetColor)
