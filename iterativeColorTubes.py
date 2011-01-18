@@ -27,14 +27,15 @@ R = robjects.r
 
 
 def write_data(voltage_color_list, filename):
-    f = open(filename, "w")
-    f.write("voltage_r, voltage_g, voltage_b, rgb_r, rgb_g, rgb_b\n") 
+    f = open("./tune/" + filename, "w")
+    f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
     for vc in voltage_color_list:
         for voltage in vc[0]:
             f.write(str(voltage) + ", ")
-        rgb = vc[1]
-        f.write(str(rgb.rgb_r) + ", " + str(rgb.rgb_g) + ", " +
-                str(rgb.rgb-g) + "\n")
+        xyY = vc[1]
+        f.write(str(xyY.xyy_x) + ", " + str(xyY.xyy_y) + ", " +
+                str(xyY.xyy_Y) + "\n")
+    f.close()
  
 
 
@@ -310,13 +311,14 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
                 tubes, eyeone, step_G=stepsize, series_quantity=20)
         measuredColorList_B = createMeasurementSeries(input_voltages,
                 tubes, eyeone, step_B=stepsize, series_quantity=20)
-        
+
         # save data for debugging
-        filename = ("tuned_r" + str(rgb.rgb_r) + "g" + str(rgb.rgb_g) + "b" +
-                str(rgb.rgb_b) + "_iteration" + str(i) + ".csv")
-        write_data(measuredColorList_R, filename)
-        write_data(measuredColorList_G, filename)
-        write_data(measuredColorList_B, filename)
+        filename = ("tune_r" + str(int(rgb.rgb_r)) + "g" +
+                str(int(rgb.rgb_g)) + "b" +
+                str(int(rgb.rgb_b)) + "_iteration" + str(i))
+        write_data(measuredColorList_R, filename + "_chR.csv")
+        write_data(measuredColorList_G, filename + "_chG.csv")
+        write_data(measuredColorList_B, filename + "_chB.csv")
 
         # 2 nearest points of the list
         two_points_R = findNearestColors(measuredColorList_R, targetColor)
