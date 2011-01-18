@@ -43,7 +43,7 @@ def write_data(voltage_color_list, filename):
 ###  Use xyY colors  #####################################################
 ##########################################################################
 
-# returns tuble
+# returns tuple
 def xyYdiff(color1, color2):
     if isinstance(color1, xyYColor):
         (x1, y1, z1) = (color1.xyy_x, color1.xyy_y, color1.xyy_Y)
@@ -55,14 +55,16 @@ def xyYdiff(color1, color2):
         (x2, y2, z2) = (color2[0], color2[1], color2[2])
     return (x2 - x1, y2 - y1, z2 - z1)
 
-# returns tuble
+# returns float
 def xyYnorm(color):
     if isinstance(color, tuple):
         xyY = xyYColor(color[0], color[1], color[2])
     else:
         xyY = color
-    rgb = xyY.convert_to('rgb', target_rgb='sRGB', clip=False)
-    return (rgb.rgb_r**2 + rgb.rgb_g**2 + rgb.rgb_b**2)**0.5
+    x = 1 * xyY.xyy_x
+    y = 1 * xyY.xyy_y
+    z = 10**-2 * xyY.xyy_Y
+    return (x**2 + y**2 + z**2)**0.5
 
 # returns float
 def norm(vec):
