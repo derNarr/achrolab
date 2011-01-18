@@ -20,7 +20,7 @@ import time
 # only need _tub.setVoltage
 import tubes as tubes_old
 _tub = tubes_old.Tubes()
-_tub.loadParameter("./data/parameterTubes20101209_1136.pkl")
+_tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
 
 import iterativeColorTubes
 
@@ -148,7 +148,7 @@ class Tubes(object):
         return iterativeColorTubes.iterativeColormatch2(
                 target_color, self.eye_one, _tub,
                 start_voltages=start_voltages,
-                iterations=5, stepsize=10, imi=0.5)
+                iterations=50, stepsize=10, imi=0.5)
         
     def setVoltages(self, voltages):
         """

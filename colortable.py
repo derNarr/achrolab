@@ -241,8 +241,8 @@ if __name__ == "__main__":
 
     #interessting colors
     color_list = []
-    for i in range(10):
-        color_list.append( "color" + str(170 + i) )
+    for i in range(20):
+        color_list.append( "color" + str(160 + i) )
  
     color_table = ColorTable(mon, tub)
     color_table.loadFromPickle("./data/color_table_20101209_1220.pkl")
@@ -254,8 +254,13 @@ if __name__ == "__main__":
 
     #color_table.measureColorListMonitor()
     color_table.findVoltages(name_list=color_list)
+    color_table.saveToPickle("./data/color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".pkl")
+    color_table.saveToCsv("./data/color_table_" + 
+            time.strftime("%Y%m%d_%H%M") +".csv")
+
     color_table.findVoltagesTuning(name_list=color_list)
-    color_table.measureColorListTubes()
+    #color_table.measureColorListTubes()
     color_table.saveToPickle("./data/color_table_" + 
             time.strftime("%Y%m%d_%H%M") +".pkl")
     color_table.saveToCsv("./data/color_table_" + 
