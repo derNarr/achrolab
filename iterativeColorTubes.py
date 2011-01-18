@@ -2,11 +2,11 @@
 # -*- encoding: utf-8 -*-
 # ./visionlab-utils/iterativColorTubes.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-16, KS
+# last mod 2011-01-18, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from tubes import Tubes
@@ -197,61 +197,6 @@ def createMeasurementSeries(starting_voltages, tubes, eyeone, step_R=0,
         input_voltages = newVoltages(input_voltages, diff_voltages)
     return measured_series
 
-def findNearestColors(measured_color_list, target_color):
-    """
-    findNearestColors returns the nearest and the second nearest measured
-    colorspoints (voltages, xyYColor) to targetColor.
-    * measured_color_list -- contains the measured Colors
-    * target_color
-    """
-# TODO take the two _seond_ nearest points and not the nearest point!
-    nearest = measured_color_list[0]
-    second_nearest = measured_color_list[1]
-    for voltage_color in measured_color_list:
-        if ( xyYnorm(xyYdiff(voltage_color[1], target_color)) <=
-                xyYnorm(xyYdiff(nearest[1], target_color)) ):
-            second_nearest = nearest
-            nearest = voltage_color
-        elif ( xyYnorm(xyYdiff(voltage_color[1], target_color)) <
-                xyYnorm(xyYdiff(second_nearest[1], target_color)) ):
-            second_nearest = voltage_color
-    return (nearest, second_nearest) 
-
-def measureBetweenColors(two_voltages_colors, tubes, eyeone, channel, stepsize=1):
-    """
-    measureBetweenColors returns a list of measured Colors between
-    the first and second element of two_voltages_color.
-    * two_voltages_colors contains a pair (tuple with two elements) of
-          voltage_color
-    * count -- number of measurements between colors
-    """
-# TODO implement stepsize
-    if channel=="red":
-        index = 0
-    elif channel=="green":
-        index = 1
-    elif channel=="blue":
-        index = 2
-    else:
-        raise ValueError("channel must be one of 'red', 'green' or 'blue'")
-    
-    voltages = list(two_voltages_colors[0][0]) # should be the same for the two
-                                         # channels that are not varied
-    voltage1 = int(two_voltages_colors[0][0][index])
-    voltage2 = int(two_voltages_colors[1][0][index])
-
-    measured_series = []
-
-    if voltage1 > voltage2:
-        (voltage1, voltage2) = (voltage2, voltage1)
-    
-    for voltage in range(voltage1, voltage2+1):
-        voltages[index] = voltage
-        print("between points voltages: " + str(voltages))
-        measured_series.append( measureColor(voltages, tubes, eyeone) )
-
-    return measured_series
-
 
 def findBestColor(measured_color_red, measured_color_green,
         measured_color_blue, target_color):
@@ -266,6 +211,35 @@ def findBestColor(measured_color_red, measured_color_green,
     voltage_color_list.extend( measured_color_blue )
     return min(voltage_color_list, key=(lambda a: xyYnorm(xyYdiff(a[1],
         target_color))))
+
+def measureAtColor(voltage_color, tubes, eyeone, channel, span, stepsize=1):
+    """
+    measureAtColor returns a list of measured Colors wich are half of range
+    size up and down the channel.
+    * voltage_color
+    * span -- number of points
+    * stepsize -- integer
+    """
+    if channel=="red":
+        index = 0
+    elif channel=="green":
+        index = 1
+    elif channel=="blue":
+        index = 2
+    else:
+        raise ValueError("channel must be one of 'red', 'green' or 'blue'")
+    
+    voltages = list(voltages_color[0]) 
+    measured_series = []
+
+    voltages[index] = voltages[index] - 0.5 * span * stepsize
+
+    for i in range(span+1):
+        voltages[index] = voltages[index] + i * stepsize
+        print("between points voltages: " + str(voltages))
+        measured_series.append( measureColor(voltages, tubes, eyeone) )
+
+    return measured_series
 
 
 # returns tuple (voltages, tri_stim)  (last inputColor)
@@ -320,22 +294,21 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
         write_data(measuredColorList_G, filename + "_chG.csv")
         write_data(measuredColorList_B, filename + "_chB.csv")
 
-        # 2 nearest points of the list
-        two_points_R = findNearestColors(measuredColorList_R, targetColor)
-        two_points_G = findNearestColors(measuredColorList_G, targetColor)
-        two_points_B = findNearestColors(measuredColorList_B, targetColor)
-
-        # new measurement between 2 nearest points
-        measuredColor_R = measureBetweenColors(two_points_R, tubes,
-                eyeone, channel="red")
-        measuredColor_G = measureBetweenColors(two_points_G, tubes,
-                eyeone, channel="green")
-        measuredColor_B = measureBetweenColors(two_points_B, tubes,
-                eyeone, channel="blue")
+        # measure in the surrounding of the nearest points 
+        measuredColor_R = measureAtColor(
+                findBestColor(measuredColorList_R), tubes,
+                eyeone, channel="red", span=stepsize)
+        measuredColor_G = measureAtColor(
+                findBestColor(measuredColorList_G), tubes,
+                eyeone, channel="green", span=stepsize)
+        measuredColor_B = measureAtColor(
+                findBestColor(measuredColorList_B), tubes,
+                eyeone, channel="blue", span=stepsize)
 
         # now serch for point with the smallest distance to targetColor
         # should return inputColor or inputVoltages
-        best_voltage_color = findBestColor(measuredColor_R, measuredColor_G, measuredColor_B, targetColor)
+        best_voltage_color = findBestColor(measuredColor_R,
+                measuredColor_G, measuredColor_B, targetColor)
         input_voltages = best_voltage_color[0]
     
     print("\nFinal voltages:" + str(best_voltage_color[0]) + "\n\n")
