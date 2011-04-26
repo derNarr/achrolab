@@ -1,7 +1,7 @@
-visionlab-utils collects some useful scripts which uses the visionlab
-package.
+visionlab provides some classes and algorithms to calibrate lightning and
+use the calibrated colors in a vision lab.
 
-Copyright (C) 2010  Konstantin Sering <konstantin.sering [aet] gmail.com>
+Copyright (C) 2010-2011  Konstantin Sering <konstantin.sering [aet] gmail.com>
 
 This program is dual licensed. You have three options:
 
@@ -11,7 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version. (See gpl-3.0.txt or
 <http://www.gnu.org/licenses/>)
 
-2) You can also redistribute this programm and/or modify it under the terms of
+2) You can also redistribute this program and/or modify it under the terms of
 the Creative Commons Attribution-Share Alike License, either version 3 of
 the License or (at your option) any later version. (See
 <http://creativecommons.org/licenses/by-sa/3.0/>)
