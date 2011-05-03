@@ -6,13 +6,13 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-13-01, DW
+# last mod 2011-05-01, DW
 
 import pyglet
 from EyeOne import EyeOne
 from psychopy import visual
-from monitor2 import Monitor
-from tubes2 import Tubes
+from monitor import Monitor
+from tubes import Tubes
 from colortable import ColorTable
 eye_one = EyeOne.EyeOne(dummy=True)
 mywin = visual.Window(size=(2048,1536), monitor='mymon',

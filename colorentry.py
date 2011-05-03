@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-11-08, KS
+# last mod 2011-05-01, DW
 
 class ColorEntry(object):
     """
@@ -121,9 +121,9 @@ class ColorEntry(object):
 
         
 if __name__ == "__main__":
-    from monitor2 import Monitor
+    from monitor import Monitor
     from EyeOne import EyeOne
-    from tubes2 import Tubes
+    from tubes import Tubes
     eye_one = EyeOne.EyeOne(dummy=True)
     tub = Tubes(eye_one)
     mon = Monitor(eye_one)

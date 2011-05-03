@@ -14,9 +14,9 @@
 * write down wich conventions are used (README.txt)
 * checkColorTable -- what should this method return?
     - list with differences from mean
-* rename tubes.py to devtubes.py
-* rename tubes2.py to tubes.py
-* rename monitor2.py to monitor.py
+X rename tubes.py to devtubes.py
+X rename tubes2.py to tubes.py
+X rename monitor2.py to monitor.py
 * add method setVoltages in tubes.py (with "s" ;) )
 * local minmas in findVoltagesTuning? How to handle?
 * epsilon in findVoltagesTuning, run until differens is lower than epsilon?

@@ -9,7 +9,7 @@
 # last mod 2011-01-18, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
-from tubes import Tubes
+from devtubes import Tubes
 from EyeOne.EyeOne import EyeOne
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./tubes2.py
+# ./monitor2.py
 #
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2010-12-09, KS
-from colormath.color_objects import xyYColor
+# last mod 2011-05-01, DW
+
 from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
@@ -16,28 +16,25 @@ from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
+from psychopy import visual, core
 
-# only need _tub.setVoltage
-import tubes as tubes_old
-_tub = tubes_old.Tubes()
-_tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
 
-import iterativeColorTubes
-
-class Tubes(object):
+class Monitor(object):
     """
-    Tubes provides an easy interface to measure a color with the Eye One
-    Pro and to find for a given color the corresponding voltages.
+    Monitor provides an easy interface to measure psychopy.visual.PatchStim
+    colors with an Eye One Pro.
     """
-
-    def __init__(self, eye_one):
+    
+    def __init__(self, eye_one, psychopy_win=None):
         self.eye_one = eye_one
         self.eye_one_calibrated = False
+        self.psychopy_win = psychopy_win
+        self.patch_stim = None
 
     def calibrateEyeOne(self):
         """
         Sets the Eye One Pro to the right measurement mode and 
-        calibrates the Eye One Pro for the use with the tubes.
+        calibrates the Eye One Pro for the use on the monitor.
         """
         # set EyeOne Pro variables
         if(self.eye_one.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
@@ -65,39 +62,54 @@ class Tubes(object):
             return
 
         self.eye_one_calibrated = True
+    
 
     def startMeasurement(self):
         """
         Simply prompt to move the Eye One Pro to measurement position and
         wait for button response.
         """
-        print("\nPlease put Eye One Pro in measurement position for TUBES"
-                + " and hit the button to start measurement.")
+        print("\nPlease put Eye One Pro in measurement position for"
+                + "MONITOR and hit the button to start measurement.")
         while(self.eye_one.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Start measurement...")
+        
 
-    def measureVoltages(self, voltages, n=1):
+
+    def measurePatchStimColor(self, patch_stim_value, n=1):
         """
-        Measures the color of the tubes for given voltages.
+        Measures the patch_stim_value on the monitor.
 
         input:
-            voltages -- triple of three integers (0x000, 0x000, 0x000) 
+            patch_stim_value -- psychopy.visual.PatchStim color value
             n -- number of measures (positive integer)
+
         
         returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
-
+            self.startMeasurement()
+        
+        if not self.psychopy_win:
+            self.psychopy_win = visual.Window(size=(800,600), monitor='mymon',
+                    color=(0,0,0))
+        if not self.patch_stim:
+            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
+                    size=(2,2), color=patch_stim_value)
+        else:
+            self.patch_stim.setColor(color=patch_stim_value)
+        
         xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
         #start measurement
         for i in range(n):
-            self.setVoltages(voltages)
-            time.sleep(.5)
+            self.patch_stim.draw()
+            self.psychopy_win.flip()
+            core.wait(.5)
 
             if(self.eye_one.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
@@ -107,55 +119,47 @@ class Tubes(object):
 
         return xyY_list
 
-    def findVoltages(self, color):
+
+    def measureColor(self, color, n=1):
         """
-        findVoltages tries to find the voltages for a given color in xyY
-        space.
+        Converts colormath color to psychopy.visual.PatchStim color and
+        measures the color on the monitor.
+
+        input: 
+            color -- colormath color
+            n -- number of measures (positive integer)
+
+        returns list of tuples of xyY values
+            [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eye_one_calibrated:
             self.calibrateEyeOne()
-
-        #(voltages, xyY) = iterativeColorTubes.iterativeColormatch(
-        #        color, self.eye_one, _tub,
-        #        epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
-        if isinstance(color, tuple):
-            color = xyYColor(color[0], color[1], color[2])
-            color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
-        print("tubes2.findVoltages color: " + str(color))
-        (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
-                color, self.eye_one, _tub,
-                epsilon=3.0, streckung=0.9, imi=0.5, max_iterations=50)
-        if rgb:
-            xyY = rgb.convert_to('xyY')
+            self.startMeasurement()
+        print("measureColor is not implemented yet")
+        # TODO
+        pass
+    
+    def setPatchStimColor(self, patch_stim_value):
+        """
+        sets the monitor to patch_stim_color.
+        """
+        if not self.psychopy_win:
+            self.psychopy_win = visual.Window(size=(2048,1536), monitor='mymon',
+                    color=(0,0,0), screen=1)
+        if not self.patch_stim:
+            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
+                    size=(2,2), color=patch_stim_value)
         else:
-            xyY = None
-
-        return (voltages, xyY)
-
-    def findVoltagesTuning(self, target_color, start_voltages=None):
-        """
-        findVoltagesTuning tries to aproach the voltages for a given color
-        in xyY space.
-        """
-        if not self.eye_one_calibrated:
-            self.calibrateEyeOne()
-
-        #if isinstance(target_color, tuple):
-        #    target_color = xyYColor(color[0], color[1], color[2])
-        #    target_color = target_color.convert_to('rgb', target_rgb='sRGB',
-        #           clip=False)
-        print("tubes2.findVoltagesTuning color: " + str(target_color))
-        return iterativeColorTubes.iterativeColormatch2(
-                target_color, self.eye_one, _tub,
-                start_voltages=start_voltages,
-                iterations=50, stepsize=10, imi=0.5)
-        
-    def setVoltages(self, voltages):
-        """
-        sets the tubes to the given voltages.
-        """
-        # TODO set voltages with wasco
-        _tub.setVoltage(voltages) # old version
+            self.patch_stim.setColor(color=patch_stim_value)
+        self.patch_stim.draw()
+        self.psychopy_win.flip()
 
 
+
+if __name__ == "__main__":
+    print("1")
+    from EyeOne import EyeOne
+    eye_one = EyeOne.EyeOne(dummy=True)
+    mon = Monitor(eye_one)
+    print("2")
 
