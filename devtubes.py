@@ -2,10 +2,11 @@
 # -*- encoding: utf-8 -*-
 # ./tubes.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com> and
+# Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-01, DW
+# last mod 2011-05-03, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -37,7 +38,7 @@ EyeOne = EyeOne()
 
 class Tubes(object):
     """The class Tubes encapsulates all functions controlling the light
-    tubes in the box."""
+    tubes in the box. It provides all the low level functionality."""
     def __init__(self):
         """Setting some "global" variables."""
         self.wascocard = wasco
@@ -46,8 +47,8 @@ class Tubes(object):
         self.red_out = DAOUT3_16
         self.green_out = DAOUT1_16
         self.blue_out = DAOUT2_16
-        self.low_threshold = 0x400 # min voltages
-        self.high_threshold = 0xFFF # max voltages
+        self.low_threshold = 0x400 # min voltages must be integer
+        self.high_threshold = 0xFFF # max voltages must be integer
 
         self.IsCalibrated = False
 
@@ -87,40 +88,40 @@ class Tubes(object):
         """calibrate calibrates the tubes with the EyeOne Pro. The EyeOne
         Pro should be connected to the computer. The calibration takes
         around 2 minutes.
-        * imi -- is the inter mesurement intervall in seconds."""
+        * imi -- is the inter measurement interval in seconds."""
         # TODO generate logfile for every calibration
 
         # set EyeOne Pro variables
         if(EyeOne.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
                 eNoError):
-            print("measurement mode set to single emission.")
+            print("Measurement mode set to single emission.")
         else:
-            print("failed to set measurement mode.")
+            print("Failed to set measurement mode.")
             return
         if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
-            print("color space set to CIExyY.")
+            print("Color space set to CIExyY.")
         else:
-            print("failed to set color space.")
+            print("Failed to set color space.")
             return
         # calibrate EyeOne Pro
-        print("\nPlease put the EyeOne-Pro on the calibration plate and "
-        + "press the key to start calibration.")
+        print("\nPlease put EyeOne Pro on calibration plate and "
+        + "press key to start calibration.")
         while(EyeOne.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         if (EyeOne.I1_Calibrate() == eNoError):
-            print("Calibration of the EyeOne Pro done.")
+            print("Calibration of EyeOne Pro done.")
         else:
-            print("Calibration of the EyeOne Pro failed. Please RESTART"
-            + "the calibration of the tubes.")
+            print("Calibration of EyeOne Pro failed. Please RESTART"
+            + " calibration of tubes.")
             return
         
         ## Measurement
-        print("\nPlease put the EyeOne-Pro in measurement position and hit"
-        + "the button to start the measurement.")
+        print("\nPlease put EyeOne Pro in measurement position and "
+        + "press key to start measurement.")
         while(EyeOne.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        print("Start measurement...")
+        print("Starting measurement...")
 
         # define some variables
         # generating the tested voltages (r, g, b)
@@ -147,7 +148,7 @@ class Tubes(object):
                         %str(voltage))
             xyY_list.append(list(tri_stim))
         
-        print("finished measurement")
+        print("Measurement finished.")
         self.setVoltage( (0x0, 0x0, 0x0) ) # to signal that the
                                            # measurement is over
         rgb_list = list()
@@ -183,8 +184,9 @@ class Tubes(object):
 
         print("Data read into R")
 
-        ## fit a nonlinear least squares function (using nls() in R)
-        ## y(x) = p1 + (p2 - p1) * exp[-exp(p3)x] (cf. Pinheiro & Bates, p. 511)
+        ## fit a gamma function (using nls() in R) -- formula based on
+        ## PXlab manual:
+        ## y(x) = (ax + s)^gamma (cf. Brainard et al. (2002), gamma.pdf)
         
         try:
             ## red channel
@@ -222,16 +224,16 @@ class Tubes(object):
             #             start=c(p1=0, p2=1))
             ''')
             
-            print("Parameter estimated.")
+            print("Parameters estimated.")
         except:
-            print("failed to estimate parameters, saved data anyway")
+            print("Failed to estimate parameters, saved data anyway.")
             # save all created R objects to the file calibration_tubes.RData
             R('save(list=ls(), file="calibration_tubes' + 
                     time.strftime("%Y%m%d_%H%M") + '.RData")')
             return
 
-        # extract extimated parameters in R to make them easier available
-        # in pyhton
+        # extract estimated parameters in R to make them easier available
+        # in python
         R('''
         p_r <- coef(nls_r)
         p_g <- coef(nls_g)
@@ -265,8 +267,7 @@ class Tubes(object):
         
         # finished calibration :)
         self.IsCalibrated = True
-        print("Calibration of the tubes finished.")
-
+        print("Calibration of tubes finished.")
 
     #def _sRGBtoU_r(self, red_sRGB):
     #    x = float(red_sRGB)
@@ -293,7 +294,7 @@ class Tubes(object):
         if U_r > self.high_threshold:
             print("red channel is on maximum")
             return self.high_threshold
-        return U_r
+        return int(U_r)
 
     def _sRGBtoU_g(self, green_sRGB):
         x = float(green_sRGB)
@@ -308,7 +309,7 @@ class Tubes(object):
         if U_g > self.high_threshold:
             print("green channel is on maximum")
             return self.high_threshold
-        return U_g
+        return int(U_g)
 
     def _sRGBtoU_b(self, blue_sRGB):
         x = float(blue_sRGB)
@@ -323,9 +324,15 @@ class Tubes(object):
         if U_b > self.high_threshold:
             print("blue channel is on maximum")
             return self.high_threshold
-        return U_b
+        return int(U_b)
 
     def setVoltage(self, U_rgb):
+        """DEPRECATED version. Please use setVoltages (with s in the
+        end)."""
+        print("DEPRECATED -- use devtubes.Tubes.setVoltages instead")
+        return self.setVoltages(U_rgb)
+
+    def setVoltages(self, U_rgb):
         """setVoltage set the voltage in the list or tuple of U_rgb to the 
         wasco card.
         U_rgb should contain three integers between self.low_threshold and 
@@ -385,7 +392,7 @@ class Tubes(object):
         return
 
     def saveParameter(self, filename="./lastParameterTubes.pkl"):
-        """Saves the for the interpolation fuction used parameter."""
+        """Saves the for the interpolation function used parameter."""
         # TODO what to do, if file don't exists? Throw exception?
         f = open(filename, 'wb')
         pickle.dump(self.red_p1, f)
@@ -400,7 +407,7 @@ class Tubes(object):
         f.close()
 
     def loadParameter(self, filename="./lastParamterTubes.pkl"):
-        """Loads the for the interpolation fuction used parameter."""
+        """Loads the for the interpolation function used parameter."""
         # TODO warn if a file get replaced?
         f = open(filename, 'rb')
         self.red_p1   = pickle.load(f)

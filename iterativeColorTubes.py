@@ -85,7 +85,7 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
     targetColor.
     * targetColor -- colormath color object
     * eyeone -- calibrated EyeOne object
-    * tubes -- visionlab.tubes.Tubes object
+    * tubes -- visionlab.devtubes.Tubes object
     * epsilon
     * streckung
     * imi -- intermeasurement intervall
@@ -145,9 +145,9 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
 
 # returns xyYColor
 def newVoltages(old_voltages, vec):
-    return (old_voltages[0] + vec[0],
-            old_voltages[1] + vec[1],
-            old_voltages[2] + vec[2])
+    return [int(x) for x in (old_voltages[0] + vec[0],
+                             old_voltages[1] + vec[1],
+                             old_voltages[2] + vec[2])]
 
 
 
@@ -214,11 +214,11 @@ def findBestColor(measured_color_red, measured_color_green,
     return min(voltage_color_list, key=(lambda a: xyYnorm(xyYdiff(a[1],
         target_color))))
 
-def measureAtColor(voltage_color, tubes, eyeone, channel, span, stepsize=1):
+def measureAtColor(voltages_color, tubes, eyeone, channel, span, stepsize=1):
     """
     measureAtColor returns a list of measured Colors wich are half of range
     size up and down the channel.
-    * voltage_color
+    * voltages_color
     * span -- number of points
     * stepsize -- integer
     """
@@ -234,10 +234,10 @@ def measureAtColor(voltage_color, tubes, eyeone, channel, span, stepsize=1):
     voltages = list(voltages_color[0]) 
     measured_series = []
 
-    voltages[index] = voltages[index] - 0.5 * span * stepsize
+    voltages[index] = int(voltages[index] - 0.5 * span * stepsize)
 
     for i in range(span+1):
-        voltages[index] = voltages[index] + i * stepsize
+        voltages[index] = int(voltages[index] + i * stepsize)
         print("between points voltages: " + str(voltages))
         measured_series.append( measureColor(voltages, tubes, eyeone) )
 
