@@ -6,7 +6,7 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-01-18, KS
+# last mod 2011-05-03, KS
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from devtubes import Tubes

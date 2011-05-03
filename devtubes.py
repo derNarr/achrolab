@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./tubes.py
+# ./devtubes.py
 #
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com> and
 # Dominik Wabersich <wabersich [aet] gmx.net>
