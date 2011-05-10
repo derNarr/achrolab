@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-01, DW
+# last mod 2011-05-10, DW
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -35,14 +35,35 @@ class ColorTable(object):
         self.color_list = []
    
 
-    def checkColors(self, index_list=None, name_list=None):
+    def checkColorTable(self, index_list=None, name_list=None):
         """
-        checkColors checks if the color entries are still consistent. It
+        checkColorTable checks if the color entries are still consistent. It
         measures the color of the monitor and the tubes and compares the
         measurements with the saved values.
         """
-        pass
-
+	if index_list is not None :
+	    ref_list = []
+	    for i in index_list:
+		ref_list.append((color_list[i].tubes_xyY, color_list[i].tubes_xyY_sd))
+	    measured_list = []
+	    for i in len(index_list):
+		measured_list.append(color_list.measureTubes(return_only=True) # @TINO: do i need to add the self and tubes object?
+	    diff_list = []
+	    for i in len(index_list):
+	    	# calculate (x - x') / sd(x) and store in diff_list
+		diff_list.append((index_list[i], (ref_list[0][2] - measured_list[0][2]) / ref_list[1][2]))
+	    # write txt, which can be used for further analysis in R
+	    f = open("data/checkColorTable_%Y%m%d_%H%M.txt", "w")
+	    f.write(index_list[0])
+	    for i in index_list[-0]: # @TINO: how does it work to exclude the first element? 
+		f.write(", "+i)
+	    f.write("\n"+diff_list[0])
+	    for i in diff_list[-0]: # @TINO: same question ;)
+		f.write(", "+i)
+	    f.write("\n")
+	    f.close()
+	else
+	    pass
     
     def createColorList(self, name_list=None, patch_stim_value_list=None,
             voltages_list=None):
@@ -196,6 +217,7 @@ class ColorTable(object):
                 for x in ce.tubes_xyY_sd:
                     f.write(", "+str(x))
             f.write("\n")
+	f.close()
 
 
     def saveToPickle(self, filename):
