@@ -5,7 +5,7 @@
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-10, DW
+# last mod 2011-05-11, KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -33,7 +33,6 @@ class ColorTable(object):
         self.monitor = monitor
         self.tubes = tubes
         self.color_list = []
-   
 
     def checkColorTable(self, index_list=None, name_list=None):
         """
@@ -41,29 +40,47 @@ class ColorTable(object):
         measures the color of the monitor and the tubes and compares the
         measurements with the saved values.
         """
-	if index_list is not None :
-	    ref_list = []
-	    for i in index_list:
-		ref_list.append((color_list[i].tubes_xyY, color_list[i].tubes_xyY_sd))
-	    measured_list = []
-	    for i in len(index_list):
-		measured_list.append(color_list.measureTubes(return_only=True) # @TINO: do i need to add the self and tubes object?
-	    diff_list = []
-	    for i in len(index_list):
-	    	# calculate (x - x') / sd(x) and store in diff_list
-		diff_list.append((index_list[i], (ref_list[0][2] - measured_list[0][2]) / ref_list[1][2]))
-	    # write txt, which can be used for further analysis in R
-	    f = open("data/checkColorTable_%Y%m%d_%H%M.txt", "w")
-	    f.write(index_list[0])
-	    for i in index_list[-0]: # @TINO: how does it work to exclude the first element? 
-		f.write(", "+i)
-	    f.write("\n"+diff_list[0])
-	    for i in diff_list[-0]: # @TINO: same question ;)
-		f.write(", "+i)
-	    f.write("\n")
-	    f.close()
-	else
-	    pass
+        print("""WARNING ColorTable.checkColorTable not implemented yet.
+                Use ColorTable.checkColorTableTubes at the moment.""")
+        pass
+   
+
+    def checkColorTableTubes(self, index_list=None, name_list=None):
+        """
+        checkColorTableTubes checks if the color entries for the tubes are
+        still consistent. It measures the color of the tubes and compares the
+        measurements with the saved values.
+
+        returns a list of transformed differences ((d_x, d_y, d_Y), ...).
+        The differences are defined as d_x = (x-x')/x_sd where x
+        is the old, stored value and x' is the new, measured value.
+        """
+	    if index_list:
+	        diff_list = []
+	        # write txt, which can be used for further analysis in R
+	        f = open("data/checkColorTable_%Y%m%d_%H%M.txt", "w")
+            f.write("name, d_x, d_y, d_Y\n")
+	        for idx in index_list:
+                ce = self.color_list[idx] #ce = ColorEntry(-object)
+                # extract xyY values
+                xyY = ce.tubes_xyY
+                xyY_sd = ce.tubes_xyY_sd
+                new_xyY, new_xyY_sd = ce.measureTubes(return_only=True)
+	        	# calculate (x - x') / sd(x) and store in diff_list
+                diff_list.append( ([xyY[j] - new_xyY[j])/xyY_sd[j] for j in
+                    range(3)] )
+                # write results in file
+                f.write(ce.name)
+                for x in diff_list[-1]:
+                    f.write(", " + str(x))
+                f.write("\n")
+                    
+	        f.close()
+            return diff_list
+        else:
+            print("""WARNING ColorTable.checkColorTableTubes not
+                    implemented for this way of usage.""")
+	        pass
     
     def createColorList(self, name_list=None, patch_stim_value_list=None,
             voltages_list=None):
