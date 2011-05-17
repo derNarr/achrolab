@@ -99,7 +99,7 @@ class ColorEntry(object):
         Measures the voltages color n times and overwrites
         self.tubes_xyY with the mean and self.tubes_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
-	* return_only -- if return_only is True, the function does NOT change 
+	* return_only (boolean) -- if return_only is True, the function does NOT change 
 	    self.tubes_xyY and self.tubes_xyY_sd. Instead it returns a Tuple, 
 	    which contains the xyY Values and the sd values, both
 	    stored in a Tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).

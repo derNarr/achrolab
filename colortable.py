@@ -39,11 +39,21 @@ class ColorTable(object):
         checkColorTable checks if the color entries are still consistent. It
         measures the color of the monitor and the tubes and compares the
         measurements with the saved values.
+	* index_list (List) -- List with the color indexes: [100,101,...]
         """
         print("""WARNING ColorTable.checkColorTable not implemented yet.
                 Use ColorTable.checkColorTableTubes at the moment.""")
-        pass
-   
+        if index_list:
+            diff_list_tubes = checkColorTableTubes(index_list=index_list)
+            diff_list_monitor = checkColorTableMonitor(index_list=index_list)
+            diff_list = []
+            for i in len(index_list):
+	      diff_list.append((index_list[i], diff_list_tubes[i][1:4], diff_list_monitor[i][1:4]))
+            return diff_list
+        else:
+            print("""WARNING ColorTable.checkColorTable not
+                    implemented for this way of usage.""")
+            pass
 
     def checkColorTableTubes(self, index_list=None, name_list=None):
         """
@@ -55,33 +65,68 @@ class ColorTable(object):
         The differences are defined as d_x = (x-x')/x_sd where x
         is the old, stored value and x' is the new, measured value.
         """
-	    if index_list:
-	        diff_list = []
-	        # write txt, which can be used for further analysis in R
-	        f = open("data/checkColorTable_%Y%m%d_%H%M.txt", "w")
+        if index_list:
+            diff_list = []
+            # write txt, which can be used for further analysis in R
+            f = open("data/checkColorTableTubes_%Y%m%d_%H%M.txt", "w")
             f.write("name, d_x, d_y, d_Y\n")
-	        for idx in index_list:
+            for idx in index_list:
                 ce = self.color_list[idx] #ce = ColorEntry(-object)
                 # extract xyY values
                 xyY = ce.tubes_xyY
                 xyY_sd = ce.tubes_xyY_sd
                 new_xyY, new_xyY_sd = ce.measureTubes(return_only=True)
-	        	# calculate (x - x') / sd(x) and store in diff_list
-                diff_list.append( ([xyY[j] - new_xyY[j])/xyY_sd[j] for j in
-                    range(3)] )
+                # calculate (x - x') / sd(x) and store in diff_list
+                diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
+                   range(3)] )
+                # write results in file
+                f.write(ce.name)
+                for x in diff_list[-1]:
+                    f.write(", " + str(x))
+		f.write("\n")
+            f.close()
+            return diff_list
+	else:
+            print("""WARNING ColorTable.checkColorTableTubes not
+                    implemented for this way of usage.""")
+            pass
+    
+    def checkColorTableMonitor(self, index_list=None, name_list=None):
+        """
+        checkColorTableMonitor checks if the color entries for the monitor are
+        still consistent. It measures the color of the monitor and compares the
+        measurements with the saved values.
+
+        returns a list of transformed differences ((d_x, d_y, d_Y), ...).
+        The differences are defined as d_x = (x-x')/x_sd where x
+        is the old, stored value and x' is the new, measured value.
+        """
+        if index_list:
+            diff_list = []
+            # write txt, which can be used for further analysis in R
+            f = open("data/checkColorTableMonitor_%Y%m%d_%H%M.txt", "w")
+            f.write("name, d_x, d_y, d_Y\n")
+            for idx in index_list:
+                ce = self.color_list[idx] #ce = ColorEntry(-object)
+                # extract xyY values
+                xyY = ce.monitor_xyY
+                xyY_sd = ce.monitor_xyY_sd
+                new_xyY, new_xyY_sd = ce.measureTubes(return_only=True) # measureTubes with return_only=True can be used to measure the monitor and immediatly return the values
+                # calculate (x - x') / sd(x) and store in diff_list
+                diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
+                   range(3)] )
                 # write results in file
                 f.write(ce.name)
                 for x in diff_list[-1]:
                     f.write(", " + str(x))
                 f.write("\n")
-                    
-	        f.close()
+            f.close()
             return diff_list
         else:
-            print("""WARNING ColorTable.checkColorTableTubes not
+            print("""WARNING ColorTable.checkColorTableMonitor not
                     implemented for this way of usage.""")
-	        pass
-    
+            pass
+
     def createColorList(self, name_list=None, patch_stim_value_list=None,
             voltages_list=None):
         """
