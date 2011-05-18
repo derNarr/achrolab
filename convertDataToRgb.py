@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./test_colormath.py
+# ./convertDataToRgb.py
 #
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)

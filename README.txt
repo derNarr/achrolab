@@ -15,9 +15,9 @@ Variables:
 	* e.g. example_variable
 Functions: 
 	* Begin with small letter
-	* New word starts with big letter (no other separator)
+	* New word starts with capital letter (no other separator)
 	* e.g. exampleFunction
 Classes:
 	* Begin with big letter
-	* New word starts with big letter (no other separator)
+	* New word starts with capital letter (no other separator)
 	* e.g. ExampleClass

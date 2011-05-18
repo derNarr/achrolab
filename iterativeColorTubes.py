@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./visionlab-utils/iterativColorTubes.py
+# ./achrolabutils/iterativColorTubes.py
 #
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
@@ -85,7 +85,7 @@ def iterativeColormatch(targetColor, eyeone, tubes, epsilon=0.01,
     targetColor.
     * targetColor -- colormath color object
     * eyeone -- calibrated EyeOne object
-    * tubes -- visionlab.devtubes.Tubes object
+    * tubes -- achrolab.devtubes.Tubes object
     * epsilon
     * streckung
     * imi -- intermeasurement intervall
@@ -252,7 +252,7 @@ def iterativeColormatch2(targetColor, eyeone, tubes, start_voltages=None,
     targetColor (with a different method than iterativeColormatch).
     * targetColor -- colormath color object or tuple of (x, y, Y)
     * eyeone -- calibrated EyeOne object
-    * tubes -- visionlab.tubes.Tubes object
+    * tubes -- achrolab.tubes.Tubes object
     * iterations
     """
     # TODO: extra iterations for the measurement points
@@ -350,7 +350,7 @@ def iterativeColormatchRGB(targetColor, eyeone, tubes, epsilon=5.0,
     targetColor.
     * targetColor -- colormath color object
     * eyeone -- calibrated EyeOne object
-    * tubes -- visionlab.tubes.Tubes object
+    * tubes -- achrolab.tubes.Tubes object
     * epsilon
     * streckung
     * imi -- intermeasurement intervall

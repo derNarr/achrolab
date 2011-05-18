@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./monitor2.py
+# ./monitor.py
 #
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
