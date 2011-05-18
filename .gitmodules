@@ -1,6 +1,6 @@
-[submodule "EyeOne"]
-	path = EyeOne
-	url = git://github.com/derNarr/EyeOne.git
+[submodule "eyeone"]
+	path = eyeone
+	url = git://github.com/derNarr/eyeone.git
 [submodule "wasco"]
 	path = wasco
 	url = git://github.com/derNarr/wasco.git

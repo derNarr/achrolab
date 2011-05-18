@@ -7,7 +7,7 @@
 #
 # last mod 2011-05-01, DW
 
-from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
@@ -158,7 +158,7 @@ class Monitor(object):
 
 if __name__ == "__main__":
     print("1")
-    from EyeOne import EyeOne
+    from eyeone import EyeOne
     eye_one = EyeOne.EyeOne(dummy=True)
     mon = Monitor(eye_one)
     print("2")

@@ -312,7 +312,7 @@ class ColorTable(object):
 
 
 if __name__ == "__main__":
-    from EyeOne import EyeOne
+    from eyeone import EyeOne
     from psychopy import visual
     from monitor import Monitor
     from tubes import Tubes

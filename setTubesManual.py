@@ -9,7 +9,7 @@
 # last mod 2011-05-01, DW
 
 import pyglet
-from EyeOne import EyeOne
+from eyeone import EyeOne
 from psychopy import visual
 from monitor import Monitor
 from tubes import Tubes

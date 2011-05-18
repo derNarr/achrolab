@@ -136,7 +136,7 @@ class ColorEntry(object):
         
 if __name__ == "__main__":
     from monitor import Monitor
-    from EyeOne import EyeOne
+    from eyeone import EyeOne
     from tubes import Tubes
     eye_one = EyeOne.EyeOne(dummy=True)
     tub = Tubes(eye_one)

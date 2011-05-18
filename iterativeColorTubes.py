@@ -10,8 +10,8 @@
 
 from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from devtubes import Tubes
-from EyeOne.EyeOne import EyeOne
-from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from eyeone.EyeOne import EyeOne
+from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 

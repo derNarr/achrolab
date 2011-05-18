@@ -11,8 +11,8 @@
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
 
-from EyeOne.EyeOne import EyeOne
-from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from eyeone.EyeOne import EyeOne
+from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 

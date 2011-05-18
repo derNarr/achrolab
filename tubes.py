@@ -7,7 +7,7 @@
 #
 # last mod 2011-05-01, DW
 from colormath.color_objects import xyYColor
-from EyeOne.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
