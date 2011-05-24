@@ -33,14 +33,17 @@ from ctypes import c_float
 
 # want to run R-commands with R("command")
 R = robjects.r
-EyeOne = EyeOne()
 
 
 class Tubes(object):
     """The class Tubes encapsulates all functions controlling the light
     tubes in the box. It provides all the low level functionality."""
-    def __init__(self):
-        """Setting some "global" variables."""
+    def __init__(self, eyeone, dummy=False):
+        """Setting some "global" variables and store eyeone object.
+        
+        If dummy=True no wasco runtimelibraries will be loaded."""
+        self.dummy = dummy
+
         self.wascocard = wasco
         self.wasco_boardId = boardId 
 
@@ -53,7 +56,7 @@ class Tubes(object):
         self.IsCalibrated = False
 
         # EyeOne Pro
-        self.EyeOne = EyeOne
+        self.eyeone = eyeone
 
         # set default values for the sRGBtoU transformation function
         self.red_p1 =   278.03951766
@@ -92,13 +95,13 @@ class Tubes(object):
         # TODO generate logfile for every calibration
 
         # set EyeOne Pro variables
-        if(EyeOne.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
+        if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
                 eNoError):
             print("Measurement mode set to single emission.")
         else:
             print("Failed to set measurement mode.")
             return
-        if(EyeOne.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
+        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
             print("Color space set to CIExyY.")
         else:
@@ -107,9 +110,9 @@ class Tubes(object):
         # calibrate EyeOne Pro
         print("\nPlease put EyeOne Pro on calibration plate and "
         + "press key to start calibration.")
-        while(EyeOne.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        if (EyeOne.I1_Calibrate() == eNoError):
+        if (self.eyeone.I1_Calibrate() == eNoError):
             print("Calibration of EyeOne Pro done.")
         else:
             print("Calibration of EyeOne Pro failed. Please RESTART"
@@ -119,7 +122,7 @@ class Tubes(object):
         ## Measurement
         print("\nPlease put EyeOne Pro in measurement position and "
         + "press key to start measurement.")
-        while(EyeOne.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
 
@@ -141,9 +144,9 @@ class Tubes(object):
             self.setVoltage(voltage)
             time.sleep(imi) # to give the EyeOne Pro time to adapt and to
                             # reduce carry-over effects
-            if(self.EyeOne.I1_TriggerMeasurement() != eNoError):
+            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed for voltage %s ." %str(voltage))
-            if(self.EyeOne.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get spectrum for voltage %s ."
                         %str(voltage))
             xyY_list.append(list(tri_stim))

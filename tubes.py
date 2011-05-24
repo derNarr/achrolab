@@ -2,10 +2,10 @@
 # -*- encoding: utf-8 -*-
 # ./tubes.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-01, DW
+# last mod 2011-05-24, KS
 from colormath.color_objects import xyYColor
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -19,8 +19,6 @@ import time
 
 # only need _tub.setVoltage
 import devtubes as tubes_old
-_tub = tubes_old.Tubes()
-_tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
 
 import iterativeColorTubes
 
@@ -30,9 +28,18 @@ class Tubes(object):
     Pro and to find for a given color the corresponding voltages.
     """
 
-    def __init__(self, eye_one):
-        self.eye_one = eye_one
-        self.eye_one_calibrated = False
+    def __init__(self, eyeone, dummy=False):
+        """Initializes tubes object and stores eyeone object.
+
+        If dummy=True no runtimelibraries will be loaded for wasco and
+        EyeOne."""
+        self.dummy = dummy
+
+        self.eyeone = eyeone
+        self.eyeone_calibrated = False
+
+        self._tub = tubes_old.Tubes(self.eyeone, dummy=self.dummy)
+        self._tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
 
     def calibrateEyeOne(self):
         """
@@ -123,7 +130,7 @@ class Tubes(object):
             color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
         print("tubes2.findVoltages color: " + str(color))
         (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
-                color, self.eye_one, _tub,
+                color, self.eye_one, self._tub,
                 epsilon=3.0, streckung=0.9, imi=0.5, max_iterations=50)
         if rgb:
             xyY = rgb.convert_to('xyY')
@@ -146,7 +153,7 @@ class Tubes(object):
         #           clip=False)
         print("tubes2.findVoltagesTuning color: " + str(target_color))
         return iterativeColorTubes.iterativeColormatch2(
-                target_color, self.eye_one, _tub,
+                target_color, self.eye_one, self._tub,
                 start_voltages=start_voltages,
                 iterations=50, stepsize=10, imi=0.5)
         
@@ -155,7 +162,7 @@ class Tubes(object):
         sets the tubes to the given voltages.
         """
         # TODO set voltages with wasco
-        _tub.setVoltage(voltages) # old version
+        self._tub.setVoltage(voltages) # old version
 
 
 

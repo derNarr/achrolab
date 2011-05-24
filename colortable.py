@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # ./colortable.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # last mod 2011-05-11, KS
