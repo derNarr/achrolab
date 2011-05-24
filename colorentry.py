@@ -2,10 +2,10 @@
 # -*- encoding: utf-8 -*-
 # ./colorentry.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-10, DW
+# last mod 2011-05-24, KS
 
 class ColorEntry(object):
     """
@@ -138,9 +138,9 @@ if __name__ == "__main__":
     from monitor import Monitor
     from eyeone import EyeOne
     from tubes import Tubes
-    eye_one = EyeOne.EyeOne(dummy=True)
-    tub = Tubes(eye_one)
-    mon = Monitor(eye_one)
+    eyeone = EyeOne.EyeOne(dummy=True)
+    tub = Tubes(eyeone)
+    mon = Monitor(eyeone)
     testentry = ColorEntry("grey1", patch_stim_value=0.2)
     testentry.measureMonitor(mon, n=1)
     testentry.measureTubes(tub, n=1)

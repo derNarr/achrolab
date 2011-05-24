@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-11, KS
+# last mod 2011-05-24, KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -324,11 +324,11 @@ if __name__ == "__main__":
     from psychopy import visual
     from monitor import Monitor
     from tubes import Tubes
-    eye_one = EyeOne.EyeOne()#dummy=True)
+    eyeone = EyeOne.EyeOne()#dummy=True)
     mywin = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
-    mon = Monitor(eye_one, mywin)
-    tub = Tubes(eye_one)
+    mon = Monitor(eyeone, mywin)
+    tub = Tubes(eyeone)
     tub.calibrateEyeOne()
 
     #interessting colors

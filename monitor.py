@@ -2,10 +2,10 @@
 # -*- encoding: utf-8 -*-
 # ./monitor.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-01, DW
+# last mod 2011-05-24, KS
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -25,9 +25,9 @@ class Monitor(object):
     colors with an Eye One Pro.
     """
     
-    def __init__(self, eye_one, psychopy_win=None):
-        self.eye_one = eye_one
-        self.eye_one_calibrated = False
+    def __init__(self, eyeone, psychopy_win=None):
+        self.eyeone = eyeone
+        self.eyeone_calibrated = False
         self.psychopy_win = psychopy_win
         self.patch_stim = None
 
@@ -37,13 +37,13 @@ class Monitor(object):
         calibrates the Eye One Pro for the use on the monitor.
         """
         # set EyeOne Pro variables
-        if(self.eye_one.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
+        if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
                 eNoError):
             print("measurement mode set to single emission.")
         else:
             print("failed to set measurement mode.")
             return
-        if(self.eye_one.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
+        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
             print("color space set to CIExyY.")
         else:
@@ -52,16 +52,16 @@ class Monitor(object):
         # calibrate EyeOne Pro
         print("\nPlease put the EyeOne-Pro on the calibration plate and "
         + "press the key to start calibration.")
-        while(self.eye_one.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        if (self.eye_one.I1_Calibrate() == eNoError):
+        if (self.eyeone.I1_Calibrate() == eNoError):
             print("Calibration of the EyeOne Pro done.")
         else:
             print("Calibration of the EyeOne Pro failed. Please RESTART "
             + "the calibration of the monitor.")
             return
 
-        self.eye_one_calibrated = True
+        self.eyeone_calibrated = True
     
 
     def startMeasurement(self):
@@ -71,7 +71,7 @@ class Monitor(object):
         """
         print("\nPlease put Eye One Pro in measurement position for"
                 + "MONITOR and hit the button to start measurement.")
-        while(self.eye_one.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Start measurement...")
         
@@ -89,7 +89,7 @@ class Monitor(object):
         returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eye_one_calibrated:
+        if not self.eyeone_calibrated:
             self.calibrateEyeOne()
             self.startMeasurement()
         
@@ -111,9 +111,9 @@ class Monitor(object):
             self.psychopy_win.flip()
             core.wait(.5)
 
-            if(self.eye_one.I1_TriggerMeasurement() != eNoError):
+            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
-            if(self.eye_one.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get tri stimulus.")
             xyY_list.append( tuple(tri_stim) )
 
@@ -132,7 +132,7 @@ class Monitor(object):
         returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eye_one_calibrated:
+        if not self.eyeone_calibrated:
             self.calibrateEyeOne()
             self.startMeasurement()
         print("measureColor is not implemented yet")
@@ -159,7 +159,7 @@ class Monitor(object):
 if __name__ == "__main__":
     print("1")
     from eyeone import EyeOne
-    eye_one = EyeOne.EyeOne(dummy=True)
-    mon = Monitor(eye_one)
+    eyeone = EyeOne.EyeOne(dummy=True)
+    mon = Monitor(eyeone)
     print("2")
 
