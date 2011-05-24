@@ -10,6 +10,7 @@
 from psychopy import event, core
 from colorentry import ColorEntry
 import pickle,time
+from exceptions import ValueError
 
 # TODO save measurements of each EyeOne Pro measurement in a folder
 # ./measurements/ with date (as R-Datafile)
@@ -135,10 +136,30 @@ class ColorTable(object):
                     implemented for this way of usage.""")
             pass
 
+    def getColorByName(self,name):
+        """
+        returns the first object in color_list with the given name
+        * name -- name of the colorentry object
+        """
+        for ce in self.color_list:
+            if ce.name == name:
+                return ce
+        raise ValueError("No color for this name")
+
+    def getColorsByName(self,name_list):
+        """
+        returns colorentry objects in a list, ordered after name_list
+        * name_list -- list with names of colorentry objects
+        """
+        color_list = []
+        for name in name_list:
+           color_list.append(getColorByName(name)) 
+        return color_list
+
     def createColorList(self, name_list=None, patch_stim_value_list=None,
             voltages_list=None):
         """
-        createColorList creates a list of ColorEntry objects.
+        createColorList creates a list  of ColorEntry objects.
         """
         if patch_stim_value_list and voltages_list:
             if not len(patch_stim_value_list) == len(voltages_list):
