@@ -41,10 +41,18 @@ class ColorTable(object):
         measurements with the saved values.
 	* index_list (List) -- List with the color indexes: [100,101,...]
         """
-        print("""WARNING ColorTable.checkColorTable not implemented yet.
-                Use ColorTable.checkColorTableTubes at the moment.""")
+        print("""WARNING ColorTable.checkColorTable is in an untested
+                experimental state!.""")
         if index_list:
+            print("\nPrepare the tubes to be measured. "
+            + "press the key to start measurement.")
+            while(self.tubes.eyeone.I1_KeyPressed() != eNoError):
+                time.sleep(0.01)
             diff_list_tubes = checkColorTableTubes(index_list=index_list)
+            print("\nPrepare the monitor to be measured. "
+            + "press the key to start measurement.")
+            while(self.tubes.eyeone.I1_KeyPressed() != eNoError):
+                time.sleep(0.01)
             diff_list_monitor = checkColorTableMonitor(index_list=index_list)
             diff_list = []
             for i in len(index_list):
