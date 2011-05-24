@@ -30,9 +30,9 @@ class Tubes(object):
     Pro and to find for a given color the corresponding voltages.
     """
 
-    def __init__(self, eye_one):
-        self.eye_one = eye_one
-        self.eye_one_calibrated = False
+    def __init__(self, eyeone):
+        self.eyeone = eyeone
+        self.eyeone_calibrated = False
 
     def calibrateEyeOne(self):
         """
@@ -40,13 +40,13 @@ class Tubes(object):
         calibrates the Eye One Pro for the use with the tubes.
         """
         # set EyeOne Pro variables
-        if(self.eye_one.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
+        if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
                 eNoError):
             print("measurement mode set to single emission.")
         else:
             print("failed to set measurement mode.")
             return
-        if(self.eye_one.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
+        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
             print("color space set to CIExyY.")
         else:
@@ -55,16 +55,16 @@ class Tubes(object):
         # calibrate EyeOne Pro
         print("\nPlease put the EyeOne-Pro on the calibration plate and "
         + "press the key to start calibration.")
-        while(self.eye_one.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        if (self.eye_one.I1_Calibrate() == eNoError):
+        if (self.eyeone.I1_Calibrate() == eNoError):
             print("Calibration of the EyeOne Pro done.")
         else:
             print("Calibration of the EyeOne Pro failed. Please RESTART "
             + "the calibration of the monitor.")
             return
 
-        self.eye_one_calibrated = True
+        self.eyeone_calibrated = True
 
     def startMeasurement(self):
         """
@@ -73,7 +73,7 @@ class Tubes(object):
         """
         print("\nPlease put Eye One Pro in measurement position for TUBES"
                 + " and hit the button to start measurement.")
-        while(self.eye_one.I1_KeyPressed() != eNoError):
+        while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Start measurement...")
 
@@ -88,7 +88,7 @@ class Tubes(object):
         returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eye_one_calibrated:
+        if not self.eyeone_calibrated:
             self.calibrateEyeOne()
 
         xyY_list = []
@@ -99,9 +99,9 @@ class Tubes(object):
             self.setVoltages(voltages)
             time.sleep(.5)
 
-            if(self.eye_one.I1_TriggerMeasurement() != eNoError):
+            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
-            if(self.eye_one.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get tri stimulus.")
             xyY_list.append( tuple(tri_stim) )
 
@@ -112,18 +112,18 @@ class Tubes(object):
         findVoltages tries to find the voltages for a given color in xyY
         space.
         """
-        if not self.eye_one_calibrated:
+        if not self.eyeone_calibrated:
             self.calibrateEyeOne()
 
         #(voltages, xyY) = iterativeColorTubes.iterativeColormatch(
-        #        color, self.eye_one, _tub,
+        #        color, self.eyeone, _tub,
         #        epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
         if isinstance(color, tuple):
             color = xyYColor(color[0], color[1], color[2])
             color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
         print("tubes2.findVoltages color: " + str(color))
         (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
-                color, self.eye_one, _tub,
+                color, self.eyeone, _tub,
                 epsilon=3.0, streckung=0.9, imi=0.5, max_iterations=50)
         if rgb:
             xyY = rgb.convert_to('xyY')
@@ -137,7 +137,7 @@ class Tubes(object):
         findVoltagesTuning tries to aproach the voltages for a given color
         in xyY space.
         """
-        if not self.eye_one_calibrated:
+        if not self.eyeone_calibrated:
             self.calibrateEyeOne()
 
         #if isinstance(target_color, tuple):
@@ -146,7 +146,7 @@ class Tubes(object):
         #           clip=False)
         print("tubes2.findVoltagesTuning color: " + str(target_color))
         return iterativeColorTubes.iterativeColormatch2(
-                target_color, self.eye_one, _tub,
+                target_color, self.eyeone, _tub,
                 start_voltages=start_voltages,
                 iterations=50, stepsize=10, imi=0.5)
         
