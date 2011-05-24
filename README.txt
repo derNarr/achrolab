@@ -21,3 +21,6 @@ Classes:
 	* Begin with big letter
 	* New word starts with capital letter (no other separator)
 	* e.g. ExampleClass
+
+See also github.com/noum/documentation-achrolab/python_conventions.txt
+

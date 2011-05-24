@@ -2,11 +2,11 @@
 # -*- encoding: utf-8 -*-
 # ./achrolabutils/iterativColorTubes.py
 #
-# (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-01, DW
+# last mod 2011-05-24, KS
 
 import pyglet
 from eyeone import EyeOne
@@ -14,11 +14,11 @@ from psychopy import visual
 from monitor import Monitor
 from tubes import Tubes
 from colortable import ColorTable
-eye_one = EyeOne.EyeOne(dummy=True)
+eyeone = EyeOne.EyeOne(dummy=True)
 mywin = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
-mon = Monitor(eye_one, mywin)
-tub = Tubes(eye_one)
+mon = Monitor(eyeone, mywin)
+tub = Tubes(eyeone)
 
 win = pyglet.window.Window()
 color_table = ColorTable(mon, tub)
