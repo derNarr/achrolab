@@ -6,7 +6,7 @@
 # Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-03, KS
+# last mod 2011-05-31, KS
 
 from wasco.wasco import wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -22,7 +22,7 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
 
 from math import exp,log
 
-from colormath.color_objects import SpectralColor, xyYColor,RGBColor
+from colormath.color_objects import xyYColor
 
 import rpy2.robjects as robjects
 
@@ -77,9 +77,12 @@ class Tubes(object):
 
     def setColor(self, color):
         """setColor sets the color of the tubes to the given color.
-        * color should be a colormath color object"""
+        * color should be a colormath color object or tuple containing the
+          xyY values as floats"""
 
         #transform to sRGB
+        if isinstance(color, tuple):
+            color = xyYColor(color[0], color[1], color[2])
         rgb = color.convert_to('rgb', target_rgb='sRGB', clip=False)
 
         #set the wasco-card to the right voltage
@@ -283,6 +286,19 @@ class Tubes(object):
     #def _sRGBtoU_b(self, blue_sRGB):
     #    x = float(blue_sRGB)
     #    return ((x - self.blue_p1)/self.blue_p2)
+
+    # returns tuple
+
+    def xyYtoU(self, xyY):
+        """
+        Calculates a smart guess for the corresponding voltages for a
+        given xyY color (as tuple).
+        """
+        xyY = xyYColor(xyY[0], xyY[1], xyY[2])
+        rgb = xyY.convert_to("rgb", target_rgb="sRGB", clip=False)
+        return(self._sRGBtoU_r(rgb.rgb_r), 
+               self._sRGBtoU_g(rgb.rgb_g),
+               self._sRGBtoU_b(rgb.rgb_b))
 
     def _sRGBtoU_r(self, red_sRGB):
         x = float(red_sRGB)

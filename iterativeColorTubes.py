@@ -6,9 +6,8 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-03, KS
+# last mod 2011-05-31, KS
 
-from colormath.color_objects import xyYColor,RGBColor,SpectralColor
 from devtubes import Tubes
 from eyeone.EyeOne import EyeOne
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
@@ -55,103 +54,103 @@ class IterativeColorTubes(object):
 
     # returns tuple
     def xyYdiff(self, color1, color2):
-        if isinstance(color1, xyYColor):
-            (x1, y1, z1) = (color1.xyy_x, color1.xyy_y, color1.xyy_Y)
-        else:
-            (x1, y1, z1) = (color1[0], color1[1], color1[2])
-        if isinstance(color2, xyYColor):
-            (x2, y2, z2) = (color2.xyy_x, color2.xyy_y, color2.xyy_Y)
-        else:
-            (x2, y2, z2) = (color2[0], color2[1], color2[2])
-        return (x2 - x1, y2 - y1, z2 - z1)
+        """
+        Simply calculates the difference between every element of the two
+        colors. There are many different ways to do it and this is not the
+        fanciest one.
+        """
+        return (color2[0] - color1[0],
+                color2[1] - color1[1],
+                color2[2] - color1[2])
 
     # returns float
-    def xyYnorm(self, color):
-        if isinstance(color, tuple):
-            xyY = xyYColor(color[0], color[1], color[2])
-        else:
-            xyY = color
-        x = 1 * xyY.xyy_x
-        y = 1 * xyY.xyy_y
-        z = 10**-2 * xyY.xyy_Y
+    def xyYnorm(self, xyY):
+        """
+        Calculates an abitrary norm for a given xyY color (as a tuple).
+
+        Here is the right place to tweak a bit. This norm will be used to
+        minimize the distance between two matching colors.
+        """
+        x = 1 * xyY[0] #x
+        y = 1 * xyY[1] #y
+        z = 10**-2 * xyY[2] #Y
         return (x**2 + y**2 + z**2)**0.5
 
     # returns float
     def norm(self, vec):
+        """
+        Calculates the euclidean norm of a given vector (as a tuple).
+        """
         return (vec[0]**2 + vec[1]**2 + vec[2]**2)**0.5
 
-    # returns xyYColor
-    def xyYnew_color(self, old_color, vec):
-        return xyYColor(old_color.xyy_x + vec[0],
-                        old_color.xyy_y + vec[1],
-                        old_color.xyy_Y + vec[2])
+    # returns tuple
+    def xyYNewColor(self, old_color, vec):
+        """
+        Adds the components of the vector (as a tuple) to the components of
+        the xyY color (as a tuple).
+        """
+        return (old_color[0] + vec[0],
+                old_color[1] + vec[1],
+                old_color[2] + vec[2])
 
 
-    # returns tuple (voltages, tri_stim)  (last inputColor)
-    def iterativeColormatch(self, targetColor, epsilon=0.01,
+    # returns tuple (voltages, tri_stim)  (last input_color)
+    def iterativeColormatch(self, target_color, epsilon=0.01,
         streckung=1.0, imi=0.5, max_iterations=50):
         """
         iterativeColormatch tries to match the measurement of the tubes to the
-        targetColor.
-        * targetColor -- colormath color object
+        target_color.
+        * target_color -- tuple containing the xyY values as floats
         * epsilon
         * streckung
         * imi -- intermeasurement intervall
         * max_iterations
         """
         # set colors
-        if isinstance(targetColor, tuple):
-            targetColor = xyYColor(targetColor[0], targetColor[1],
-                    targetColor[2])
-        else:
-            targetColor = targetColor.convert_to('xyY')
-        inputColor = targetColor
-        measuredColor = xyYColor(0,0,0)
-        diffColor = (1.0, 1.0, 1.0)
+        input_color = target_color
+        measured_color = (0,0,0)
+        diff_color = (1.0, 1.0, 1.0)
         
-        self.tubes.setColor(inputColor)
+        self.tubes.setColor(input_color)
         
         print("Start measurement...")
         
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
         i=0
-        print("\n\nTarget: " + str(targetColor) + "\n")
+        print("\n\nTarget: " + str(target_color) + "\n")
         
-        while ((norm(diffColor) > epsilon)):
+        while ((norm(diff_color) > epsilon)):
             if i == max_iterations:
-                inputColor = None
+                input_color = None
                 print("not converged")
                 return (None, None)
-            self.tubes.setColor(inputColor)
+            self.tubes.setColor(input_color)
             i = i + 1 # new round
             time.sleep(imi)
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
-                print("Measurement failed for color %s ." %str(inputColor))
+                print("Measurement failed for color %s ." %str(input_color))
             if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get tri stimulus for color %s ."
-                        %str(inputColor))
-            measuredColor = xyYColor(tri_stim[0], tri_stim[1], tri_stim[2])
-            print(str(measuredColor))
+                        %str(input_color))
+            measured_color = (tri_stim[0], tri_stim[1], tri_stim[2])
+            print(str(measured_color))
             # correct the new color to a probably reduced (streckung < 1)
             # negative difference to the measured color.
-            diffColor = [x*streckung for x in xyYdiff(measuredColor, targetColor)]
-            print("diff: " + str(diffColor))
-            inputColor = xyYnew_color(inputColor, diffColor)
+            diff_color = [x*streckung for x in xyYdiff(measured_color, target_color)]
+            print("diff: " + str(diff_color))
+            input_color = xyYNewColor(input_color, diff_color)
                 
         
-        print("\nFinal inputColor: " + str(inputColor) + "\n\n")
-        rgb = inputColor.convert_to('rgb', target_rgb='sRGB', clip=False)
-        voltages = (self.tubes._sRGBtoU_r(rgb.rgb_r), 
-                    self.tubes._sRGBtoU_g(rgb.rgb_g),
-                    self.tubes._sRGBtoU_b(rgb.rgb_b))
-        return (voltages, measuredColor)
+        print("\nFinal input_color: " + str(input_color) + "\n\n")
+        voltages = self.tubes.xyYtoU(input_color)
+        return (voltages, measured_color)
 
 
     ###########################################################################
     ### TUNING ################################################################
     ###########################################################################
 
-    # returns xyYColor
+    # returns (x, y, Y)
     def newVoltages(self, old_voltages, vec):
         return [int(x) for x in (old_voltages[0] + vec[0],
                                  old_voltages[1] + vec[1],
@@ -159,31 +158,33 @@ class IterativeColorTubes(object):
 
 
 
-    # return tuple of (voltages, color)
+    # return tuple of (voltages, (x, y, Y) )
     def measureColor(self, voltages, imi=0.5):
         """
-        measureColor measures inputColor and sleeps imi-time. Returns measured Color.
-        * inputColor
-        * imi-- intermeasurement intervall
+        measureColor measures color for given voltages and sleeps imi-time.
+        Returns measured Color.
+
+        * voltages -- tuple
+        * imi -- intermeasurement intervall
         """
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
         self.tubes.setVoltage(voltages)
         time.sleep(imi)
         # TODO average multiple measurement
         if(self.eyeone.I1_TriggerMeasurement() != eNoError):
-            print("Measurement failed for color %s ." %str(inputColor))
+            print("Measurement failed for color %s ." %str(input_color))
         if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
             print("Failed to get tri stimulus for color %s ."
-                    %str(inputColor))
-        measuredColor = xyYColor(tri_stim[0], tri_stim[1], tri_stim[2])
-        return (voltages, measuredColor)
+                    %str(input_color))
+        measured_color = (tri_stim[0], tri_stim[1], tri_stim[2])
+        return (voltages, measured_color)
 
 
     def createMeasurementSeries(self, starting_voltages, step_R=0,
             step_G=0, step_B=0, series_quantity=10, imi=0.5):
         """
         createMeasurementSeries creates and returns a list of measured Points
-        (voltages, xyYColor).
+        (voltages, (x,y,Y) ).
         * starting_voltages
         * step_R -- red value step between two points
         * step_G -- green value step between two points
@@ -212,7 +213,7 @@ class IterativeColorTubes(object):
     def findBestColor(self, measured_color_red, measured_color_green,
             measured_color_blue, target_color):
         """
-        findBestColor returns a color, which is nearest targetColor.
+        findBestColor returns a color, which is nearest target_color.
         * measured_color -- contains the measured colors for each channel
         * target_color
         """
@@ -254,164 +255,64 @@ class IterativeColorTubes(object):
         return measured_series
 
 
-    # returns tuple (voltages, tri_stim)  (last inputColor)
-    def iterativeColormatch2(self, targetColor, start_voltages=None,
+    # returns tuple (voltages, tri_stim)  (last input_color)
+    def iterativeColormatch2(self, target_color, start_voltages=None,
             iterations=50, stepsize=10, imi=0.5):
         """
         iterativeColormatch2 tries to match the measurement of the tubes to the
-        targetColor (with a different method than iterativeColormatch).
-        * targetColor -- colormath color object or tuple of (x, y, Y)
+        target_color (with a different method than iterativeColormatch).
+        * target_color -- tuple of (x, y, Y)
         * iterations
         """
         # TODO: extra iterations for the measurement points
         # set colors
         # TODO: imi
-        if isinstance(targetColor, tuple):
-            targetColor = xyYColor(targetColor[0], targetColor[1],
-                    targetColor[2])
-
-        rgb = targetColor.convert_to('rgb', target_rgb='sRGB', clip=False)
         if start_voltages:
             input_voltages = start_voltages
         else:
-            input_voltages = (self.tubes._sRGBtoU_r(rgb.rgb_r), 
-                         self.tubes._sRGBtoU_g(rgb.rgb_g),
-                         self.tubes._sRGBtoU_b(rgb.rgb_b))
-        measuredColor = xyYColor(0,0,0)
-        diffColor = (1.0, 1.0, 1.0)
-        
+            input_voltages = self.tubes.xyYtoU(target_color)
         print("Start measurement...")
-        
         i=0
-        print("\n\nTarget: " + str(targetColor) + "\n")
+        print("\n\nTarget (x,y,Y): " + str(target_color) + "\n")
 
         while (i < iterations):
             i = i + 1
 
             # create (voltages, color) list
-            measuredColorList_R = createMeasurementSeries(input_voltages,
+            measured_color_list_R = createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_R=stepsize, series_quantity=20)
-            measuredColorList_G = createMeasurementSeries(input_voltages,
+            measured_color_list_G = createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_G=stepsize, series_quantity=20)
-            measuredColorList_B = createMeasurementSeries(input_voltages,
+            measured_color_list_B = createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_B=stepsize, series_quantity=20)
 
             # save data for debugging
-            filename = ("tune_r" + str(int(rgb.rgb_r)) + "g" +
-                    str(int(rgb.rgb_g)) + "b" +
-                    str(int(rgb.rgb_b)) + "_iteration" + str(i))
-            write_data(measuredColorList_R, filename + "_chR.csv")
-            write_data(measuredColorList_G, filename + "_chG.csv")
-            write_data(measuredColorList_B, filename + "_chB.csv")
+            filename = ("tune_x" + str(target_color[0]) + "y" +
+                    str(target_color[1]) + "Y" +
+                    str(target_color[2]) + "_iteration" + str(i))
+            write_data(measured_color_list_R, filename + "_chR.csv")
+            write_data(measured_color_list_G, filename + "_chG.csv")
+            write_data(measured_color_list_B, filename + "_chB.csv")
 
             # measure in the surrounding of the nearest points 
-            measuredColor_R = measureAtColor(
-                    findBestColor(measuredColorList_R), self.tubes,
+            measured_color_R = measureAtColor(
+                    findBestColor(measured_color_list_R), self.tubes,
                     self.eyeone, channel="red", span=stepsize)
-            measuredColor_G = measureAtColor(
-                    findBestColor(measuredColorList_G), self.tubes,
+            measured_color_G = measureAtColor(
+                    findBestColor(measured_color_list_G), self.tubes,
                     self.eyeone, channel="green", span=stepsize)
-            measuredColor_B = measureAtColor(
-                    findBestColor(measuredColorList_B), self.tubes,
+            measured_color_B = measureAtColor(
+                    findBestColor(measured_color_list_B), self.tubes,
                     self.eyeone, channel="blue", span=stepsize)
 
-            # now serch for point with the smallest distance to targetColor
-            # should return inputColor or inputVoltages
-            best_voltage_color = findBestColor(measuredColor_R,
-                    measuredColor_G, measuredColor_B, targetColor)
+            # now serch for point with the smallest distance to target_color
+            # should return input_color or input_voltages
+            best_voltage_color = findBestColor(measured_color_R,
+                    measured_color_G, measured_color_B, target_color)
             input_voltages = best_voltage_color[0]
         
         print("\nFinal voltages:" + str(best_voltage_color[0]) + "\n\n")
         return best_voltage_color
 
 
-    ##########################################################################
-    ###  Use RGB colors  #####################################################
-    ##########################################################################
-
-    # returns tuble
-    def RGBdiff(self, color1, color2):
-        return (color2.rgb_r - color1.rgb_r,
-                color2.rgb_g - color1.rgb_g,
-                color2.rgb_b - color1.rgb_b)
-
-    # returns float 
-    def RGBnorm(self, color):
-        return (color.rgb_r**2 + color.rgb_g**2 + color.rgb_b**2)**0.5
-
-    # returns float
-    def norm(self, vec):
-        return (vec[0]**2 + vec[1]**2 + vec[2]**2)**0.5
-
-    # returns Color
-    def RGBnew_color(self, old_color, vec):
-        return RGBColor(old_color.rgb_r + vec[0],
-                        old_color.rgb_g + vec[1],
-                        old_color.rgb_b + vec[2])
-
-
-    # returns tuple (voltages, tri_stim)  (last inputColor)
-    def iterativeColormatchRGB(self, targetColor, epsilon=5.0,
-        streckung=1.0, imi=0.5, max_iterations=50):
-        """
-        iterativeColormatch tries to match the measurement of the tubes to the
-        targetColor.
-        * targetColor -- colormath color object
-        * epsilon
-        * streckung
-        * imi -- intermeasurement intervall
-        * max_iterations
-        """
-        # set colors
-        if isinstance(targetColor, tuple):
-            targetColor = RGBColor(targetColor[0], targetColor[1],
-                    targetColor[2])
-        else:
-            targetColor = targetColor.convert_to('rgb', target_rgb='sRGB',
-                    clip=False)
-        inputColor = targetColor
-        measuredColor = RGBColor(0,0,0)
-        diffColor = (100.0, 100.0, 100.0)
-        
-        self.tubes.setColor(inputColor)
-        
-        print("Start measurement...")
-        
-        tri_stim = (c_float * TRISTIMULUS_SIZE)()
-        i=0
-        print("\n\nTarget: " + str(targetColor) + "\n")
-        
-        while ((norm(diffColor) > epsilon)):
-            if i == max_iterations:
-                inputColor = None
-                print("not converged")
-                return (None, None)
-            i = i + 1 # new round
-            self.tubes.setColor(inputColor)
-            print("set tubes to: " + str( (self.tubes._sRGBtoU_r(inputColor.rgb_r), 
-                    self.tubes._sRGBtoU_g(inputColor.rgb_g),
-                    self.tubes._sRGBtoU_b(inputColor.rgb_b)) ) )
-            time.sleep(imi)
-            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
-                print("Measurement failed for color %s ." %str(inputColor))
-            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
-                print("Failed to get tri stimulus for color %s ."
-                        %str(inputColor))
-            xyY = xyYColor(tri_stim[0], tri_stim[1], tri_stim[2])
-            measuredColor = xyY.convert_to('rgb', target_rgb='sRGB', clip=False)
-            print("target color: " + str(targetColor))
-            print("measured color: " + str(measuredColor))
-            # correct the new color to a probably reduced (streckung < 1)
-            # negative difference to the measured color.
-            diffColor = [x*streckung for x in RGBdiff(measuredColor, targetColor)]
-            print("diff: " + str(diffColor) + "\n")
-            inputColor = RGBnew_color(inputColor, diffColor)
-                
-        
-        print("\nFinal inputColor: " + str(inputColor) + "\n\n")
-        #rgb = inputColor.convert_to('rgb', target_rgb='sRGB', clip=False)
-        voltages = (self.tubes._sRGBtoU_r(inputColor.rgb_r), 
-                    self.tubes._sRGBtoU_g(inputColor.rgb_g),
-                    self.tubes._sRGBtoU_b(inputColor.rgb_b))
-        return (voltages, measuredColor)
 
