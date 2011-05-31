@@ -16,7 +16,6 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
-                                    COLOR_SPACE_CIExyY,
                                     COLOR_SPACE_RGB,
                                     TRISTIMULUS_SIZE)
 
@@ -75,20 +74,11 @@ class Tubes(object):
         self.U_g = self.high_threshold
 
 
-    def setColor(self, color):
-        """setColor sets the color of the tubes to the given color.
-        * color should be a colormath color object or tuple containing the
-          xyY values as floats"""
-
-        #transform to sRGB
-        if isinstance(color, tuple):
-            color = xyYColor(color[0], color[1], color[2])
-        rgb = color.convert_to('rgb', target_rgb='sRGB', clip=False)
-
+    def setColor(self, xyY):
+        """setColor sets the color of the tubes to the given xyY values.
+        * xyY is a tuple of floats (x,y,Y)"""
         #set the wasco-card to the right voltage
-        self.setVoltage( (self._sRGBtoU_r(rgb.rgb_r), 
-                          self._sRGBtoU_g(rgb.rgb_g), 
-                          self._sRGBtoU_b(rgb.rgb_b)) )
+        self.setVoltage( self.xyYtoU(xyY) )
 
     def calibrate(self, imi=0.5):
         """calibrate calibrates the tubes with the EyeOne Pro. The EyeOne
@@ -104,9 +94,9 @@ class Tubes(object):
         else:
             print("Failed to set measurement mode.")
             return
-        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
+        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_RGB) ==
                 eNoError):
-            print("Color space set to CIExyY.")
+            print("Color space set to RGB.")
         else:
             print("Failed to set color space.")
             return
@@ -141,7 +131,7 @@ class Tubes(object):
 
         tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where the EyeOne
                                             # Pro saves the tristim.
-        xyY_list = list()
+        rgb_list = list()
         
         for voltage in voltages:
             self.setVoltage(voltage)
@@ -152,18 +142,11 @@ class Tubes(object):
             if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                 print("Failed to get spectrum for voltage %s ."
                         %str(voltage))
-            xyY_list.append(list(tri_stim))
+            rgb_list.append(list(tri_stim))
         
         print("Measurement finished.")
         self.setVoltage( (0x0, 0x0, 0x0) ) # to signal that the
                                            # measurement is over
-        rgb_list = list()
-        for xyY in xyY_list:
-            tmp_xyY = xyYColor(xyY[0], xyY[1], xyY[2])
-            tmp_rgb = tmp_xyY.convert_to('rgb', target_rgb='sRGB',
-                    clip=False)
-            rgb_list.append( (tmp_rgb.rgb_r, tmp_rgb.rgb_g, tmp_rgb.rgb_b))
-
         
         # get python objects into R -- maybe there is a better way TODO
         voltage_r = robjects.IntVector([x[0] for x in voltages])
@@ -180,14 +163,6 @@ class Tubes(object):
         R("rgb_g <- " + rgb_g.r_repr())
         R("rgb_b <- " + rgb_b.r_repr())
         
-        # put xyY into R for the plotCalibration method
-        xyY_x = robjects.FloatVector([x[0] for x in xyY_list])
-        xyY_y = robjects.FloatVector([x[1] for x in xyY_list])
-        xyY_Y = robjects.FloatVector([x[2] for x in xyY_list])
-        R("xyY_x <- " + xyY_x.r_repr())
-        R("xyY_y <- " + xyY_y.r_repr())
-        R("xyY_Y <- " + xyY_Y.r_repr())
-
         print("Data read into R")
 
         ## fit a gamma function (using nls() in R) -- formula based on
@@ -293,12 +268,16 @@ class Tubes(object):
         """
         Calculates a smart guess for the corresponding voltages for a
         given xyY color (as tuple).
+        ATTENTION at the moment this function maybe gives wrong values!!!
         """
+        # TODO remove xyYColor from code, by calibrating tubes with a
+        # coordinate transformation voltages <-> xyY
+        # ATTENTION at the moment this function maybe gives wrong values!!!
         xyY = xyYColor(xyY[0], xyY[1], xyY[2])
         rgb = xyY.convert_to("rgb", target_rgb="sRGB", clip=False)
-        return(self._sRGBtoU_r(rgb.rgb_r), 
-               self._sRGBtoU_g(rgb.rgb_g),
-               self._sRGBtoU_b(rgb.rgb_b))
+        return( (self._sRGBtoU_r(rgb.rgb_r), 
+                 self._sRGBtoU_g(rgb.rgb_g),
+                 self._sRGBtoU_b(rgb.rgb_b)) )
 
     def _sRGBtoU_r(self, red_sRGB):
         x = float(red_sRGB)
@@ -442,38 +421,12 @@ class Tubes(object):
 
 
     def plotCalibration(self):
-        """plotCalibration plots the in the calibration measured colors in
-        an xyY-Space"""
+        """plotCalibration plots the in the calibration"""
         if(not self.IsCalibrated):
             return
         # the in this R code used variables are created in calibrate()
-        # xyY_x, xyY_y, xyY_Y, idr, idg, idb, voltage_r, voltage_g,
+        # idr, idg, idb, voltage_r, voltage_g,
         # voltage_b, rgb_r, rgb_g, rgb_b, p_r, p_g, p_b
-
-        # plot used datapoints for calibration
-        R(' pdf("data_points_xyY_tubes'+time.strftime("%Y%m%d_%H%M")
-            +'.pdf")')
-        R('''
-        layout(matrix(c(1,1,1,2,3,4), 3, 2), respect=matrix(c(0,0,0,1,1,1),3,2))
-        
-        par(mai=c(1.3, .5, 1, .1), mgp=c(2.2,1,0))
-        plot(xyY_x[idr], xyY_y[idr], type="b", pch=16, col="red",
-            ylim=c(0,.8), xlim=c(0,.8), xlab="x", ylab="y", main="xyY Space for
-            Tubes", sub="Measured data points, which were used for
-            calibration")
-        points(xyY_x[idg], xyY_y[idg], type="b", pch=16, col="green")
-        points(xyY_x[idb], xyY_y[idb], type="b", pch=16, col="blue")
-        
-        par(mai=c(.5, .5, 0.1, 0.1), mgp=c(2.2,1,0))
-        plot(voltage_r[idr], xyY_Y[idr], type="l", pch=16, col="red",
-            xlab="voltage red channel", ylab="Y", ylim=c(0,30))
-        plot(voltage_g[idg], xyY_Y[idg], type="l", pch=16, col="green",
-            xlab="voltage green channel", ylab="Y", ylim=c(0,30))
-        plot(voltage_b[idb], xyY_Y[idb], type="l", pch=16, col="blue",
-            xlab="voltage blue channel", ylab="Y", ylim=c(0,30))
-
-        dev.off()
-        ''')
 
         # plot calibration curves and data points for each channel
         R('pdf("calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
@@ -576,31 +529,17 @@ if(__name__=="__main__"):
     
     tubes.plotCalibration()
 
-    #from colormath.color_objects import xyYColor,RGBColor
 
-    #farbe = xyYColor(0.5, 0.5, 1.0)
+    #farbe = (0.5, 0.5, 1.0)
     #tubes.setColor(farbe)
     #time.sleep(1)
-    #tubes.setColor(xyYColor(0.5, 0.5, 0.))
+    #tubes.setColor( (0.5, 0.5, 0.) )
     #time.sleep(1)
-    #tubes.setColor(xyYColor(0.5, 0.5, 0.8))
+    #tubes.setColor( (0.5, 0.5, 0.8) )
     #time.sleep(1)
-    #tubes.setColor(xyYColor(0.5, 0.5, 0.5))
+    #tubes.setColor( (0.5, 0.5, 0.5) )
     #time.sleep(1)
-    #tubes.setColor(xyYColor(0.5, 0.5, 0.3))
+    #tubes.setColor( (0.5, 0.5, 0.3) )
     #time.sleep(1)
-    #tubes.setColor(xyYColor(0.5, 0.5, 0.1))
-    #for i in range(50,255):
-    #    tubes.setColor(RGBColor(i, i, i))
-    #    time.sleep(0.1)
-
-    #for i in range(50,255):
-    #    tubes.setColor(RGBColor(i, 0, 0))
-    #    time.sleep(0.1)
-
-    #for i in range(50,255):
-    #    tubes.setColor(RGBColor(0, i, 0))
-    #    time.sleep(0.1)
-
-    #monitor.Color2RGB(farbe)
+    #tubes.setColor( (0.5, 0.5, 0.1) )
 
