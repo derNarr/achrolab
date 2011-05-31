@@ -5,8 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-24, KS
-from colormath.color_objects import xyYColor
+# last mod 2011-05-31, KS
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
@@ -114,29 +113,19 @@ class Tubes(object):
 
         return xyY_list
 
+    # returns (voltages, (x,y,Y))
     def findVoltages(self, color):
         """
-        findVoltages tries to find the voltages for a given color in xyY
-        space.
+        findVoltages tries to find the voltages for a given color (as
+        tuple) in xyY space.
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
 
-        #(voltages, xyY) = iterativeColorTubes.iterativeColormatch(
-        #        color, self.eyeone, _tub,
-        #        epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
-        if isinstance(color, tuple):
-            color = xyYColor(color[0], color[1], color[2])
-            color = color.convert_to('rgb', target_rgb='sRGB', clip=False)
         print("tubes2.findVoltages color: " + str(color))
-        (voltages, rgb) = iterativeColorTubes.iterativeColormatchRGB(
-                color, self.eyeone, self._tub,
-                epsilon=3.0, streckung=0.9, imi=0.5, max_iterations=50)
-        if rgb:
-            xyY = rgb.convert_to('xyY')
-        else:
-            xyY = None
-
+        (voltages, xyY) = iterativeColorTubes.iterativeColormatch(
+                color, self.eyeone, _tub,
+                epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
         return (voltages, xyY)
 
     def findVoltagesTuning(self, target_color, start_voltages=None):
@@ -147,10 +136,6 @@ class Tubes(object):
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
 
-        #if isinstance(target_color, tuple):
-        #    target_color = xyYColor(color[0], color[1], color[2])
-        #    target_color = target_color.convert_to('rgb', target_rgb='sRGB',
-        #           clip=False)
         print("tubes2.findVoltagesTuning color: " + str(target_color))
         return iterativeColorTubes.iterativeColormatch2(
                 target_color, self.eyeone, self._tub,
@@ -161,7 +146,9 @@ class Tubes(object):
         """
         sets the tubes to the given voltages.
         """
-        # TODO set voltages with wasco
+        # TODO set voltages with wasco DONT use wasco, because we need to
+        # smoothly change the voltages (with devtubes) -- improve devtubes
+        # instead!
         self._tub.setVoltage(voltages) # old version
 
 
