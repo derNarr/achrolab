@@ -95,14 +95,14 @@ class IterativeColorTubes(object):
 
 
     # returns tuple (voltages, tri_stim)  (last input_color)
-    def iterativeColormatch(self, target_color, epsilon=0.01,
-        streckung=1.0, imi=0.5, max_iterations=50):
+    def iterativeColorMatch(self, target_color, epsilon=0.01,
+        dilation=1.0, imi=0.5, max_iterations=50):
         """
-        iterativeColormatch tries to match the measurement of the tubes to the
+        iterativeColorMatch tries to match the measurement of the tubes to the
         target_color.
         * target_color -- tuple containing the xyY values as floats
         * epsilon
-        * streckung
+        * dilation
         * imi -- intermeasurement intervall
         * max_iterations
         """
@@ -111,7 +111,7 @@ class IterativeColorTubes(object):
         measured_color = (0,0,0)
         diff_color = (1.0, 1.0, 1.0)
         
-        self.tubes.setColor(input_color)
+        self.tubes._tub.setColor(input_color)
         
         print("Start measurement...")
         
@@ -119,12 +119,12 @@ class IterativeColorTubes(object):
         i=0
         print("\n\nTarget: " + str(target_color) + "\n")
         
-        while ((norm(diff_color) > epsilon)):
+        while ((self.norm(diff_color) > epsilon)):
             if i == max_iterations:
                 input_color = None
                 print("not converged")
                 return (None, None)
-            self.tubes.setColor(input_color)
+            self.tubes._tub.setColor(input_color)
             i = i + 1 # new round
             time.sleep(imi)
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
@@ -134,11 +134,11 @@ class IterativeColorTubes(object):
                         %str(input_color))
             measured_color = (tri_stim[0], tri_stim[1], tri_stim[2])
             print(str(measured_color))
-            # correct the new color to a probably reduced (streckung < 1)
+            # correct the new color to a probably reduced (dilation < 1)
             # negative difference to the measured color.
-            diff_color = [x*streckung for x in xyYdiff(measured_color, target_color)]
+            diff_color = [x*dilation for x in self.xyYdiff(measured_color, target_color)]
             print("diff: " + str(diff_color))
-            input_color = xyYNewColor(input_color, diff_color)
+            input_color = self.xyYNewColor(input_color, diff_color)
                 
         
         print("\nFinal input_color: " + str(input_color) + "\n\n")
@@ -195,18 +195,18 @@ class IterativeColorTubes(object):
         diff_voltages = (-0.5*series_quantity*step_R,
                      -0.5*series_quantity*step_G,
                      -0.5*series_quantity*step_B)
-        input_voltages = newVoltages(starting_voltages, diff_voltages)
+        input_voltages = self.newVoltages(starting_voltages, diff_voltages)
         i = 0
         diff_voltages = (step_R,step_G,step_B)
         measured_series = []
         while (i < series_quantity):
             i = i + 1 # new round
-            measured_voltage_color = measureColor(input_voltages,
+            measured_voltage_color = self.measureColor(input_voltages,
                     self.tubes, self.eyeone, imi=imi)
             measured_series.append( measured_voltage_color )
             print(str(measured_voltage_color[1]))
             print("diff: " + str(diff_voltages))
-            input_voltages = newVoltages(input_voltages, diff_voltages)
+            input_voltages = self.newVoltages(input_voltages, diff_voltages)
         return measured_series
 
 
@@ -221,7 +221,7 @@ class IterativeColorTubes(object):
         voltage_color_list.extend( measured_color_red )
         voltage_color_list.extend( measured_color_green )
         voltage_color_list.extend( measured_color_blue )
-        return min(voltage_color_list, key=(lambda a: xyYnorm(xyYdiff(a[1],
+        return min(voltage_color_list, key=(lambda a: self.xyYnorm(self.xyYdiff(a[1],
             target_color))))
 
     def measureAtColor(self, voltages_color, channel, span, stepsize=1):
@@ -249,18 +249,18 @@ class IterativeColorTubes(object):
         for i in range(span+1):
             voltages[index] = int(voltages[index] + i * stepsize)
             print("between points voltages: " + str(voltages))
-            measured_series.append( measureColor(voltages, self.tubes,
+            measured_series.append( self.measureColor(voltages, self.tubes,
                 self.eyeone) )
 
         return measured_series
 
 
     # returns tuple (voltages, tri_stim)  (last input_color)
-    def iterativeColormatch2(self, target_color, start_voltages=None,
+    def iterativeColorMatch2(self, target_color, start_voltages=None,
             iterations=50, stepsize=10, imi=0.5):
         """
-        iterativeColormatch2 tries to match the measurement of the tubes to the
-        target_color (with a different method than iterativeColormatch).
+        iterativeColorMatch2 tries to match the measurement of the tubes to the
+        target_color (with a different method than iterativeColorMatch).
         * target_color -- tuple of (x, y, Y)
         * iterations
         """
@@ -279,11 +279,11 @@ class IterativeColorTubes(object):
             i = i + 1
 
             # create (voltages, color) list
-            measured_color_list_R = createMeasurementSeries(input_voltages,
+            measured_color_list_R = self.createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_R=stepsize, series_quantity=20)
-            measured_color_list_G = createMeasurementSeries(input_voltages,
+            measured_color_list_G = self.createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_G=stepsize, series_quantity=20)
-            measured_color_list_B = createMeasurementSeries(input_voltages,
+            measured_color_list_B = self.createMeasurementSeries(input_voltages,
                     self.tubes, self.eyeone, step_B=stepsize, series_quantity=20)
 
             # save data for debugging
@@ -295,19 +295,19 @@ class IterativeColorTubes(object):
             write_data(measured_color_list_B, filename + "_chB.csv")
 
             # measure in the surrounding of the nearest points 
-            measured_color_R = measureAtColor(
-                    findBestColor(measured_color_list_R), self.tubes,
+            measured_color_R = self.measureAtColor(
+                    self.findBestColor(measured_color_list_R), self.tubes,
                     self.eyeone, channel="red", span=stepsize)
-            measured_color_G = measureAtColor(
-                    findBestColor(measured_color_list_G), self.tubes,
+            measured_color_G = self.measureAtColor(
+                    self.findBestColor(measured_color_list_G), self.tubes,
                     self.eyeone, channel="green", span=stepsize)
-            measured_color_B = measureAtColor(
-                    findBestColor(measured_color_list_B), self.tubes,
+            measured_color_B = self.measureAtColor(
+                    self.findBestColor(measured_color_list_B), self.tubes,
                     self.eyeone, channel="blue", span=stepsize)
 
             # now serch for point with the smallest distance to target_color
             # should return input_color or input_voltages
-            best_voltage_color = findBestColor(measured_color_R,
+            best_voltage_color = self.findBestColor(measured_color_R,
                     measured_color_G, measured_color_B, target_color)
             input_voltages = best_voltage_color[0]
         

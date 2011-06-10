@@ -19,7 +19,7 @@ import time
 # only need _tub.setVoltage
 import devtubes as tubes_old
 
-import iterativeColorTubes
+from iterativeColorTubes import IterativeColorTubes
 
 class Tubes(object):
     """
@@ -38,7 +38,10 @@ class Tubes(object):
         self.eyeone_calibrated = False
 
         self._tub = tubes_old.Tubes(self.eyeone, dummy=self.dummy)
-        self._tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
+        #self._tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
+        self._tub.loadParameter("./lastParameterTubes.pkl")
+
+        self.ict = IterativeColorTubes(self, self.eyeone)
 
     def calibrateEyeOne(self):
         """
@@ -123,9 +126,8 @@ class Tubes(object):
             self.calibrateEyeOne()
 
         print("tubes2.findVoltages color: " + str(color))
-        (voltages, xyY) = iterativeColorTubes.iterativeColormatch(
-                color, self.eyeone, _tub,
-                epsilon=0.01, streckung=1.0, imi=0.5, max_iterations=50)
+        (voltages, xyY) = self.ict.iterativeColorMatch(
+                color, epsilon=0.01, dilation=1.0, imi=0.5, max_iterations=50)
         return (voltages, xyY)
 
     def findVoltagesTuning(self, target_color, start_voltages=None):
@@ -137,9 +139,8 @@ class Tubes(object):
             self.calibrateEyeOne()
 
         print("tubes2.findVoltagesTuning color: " + str(target_color))
-        return iterativeColorTubes.iterativeColormatch2(
-                target_color, self.eyeone, self._tub,
-                start_voltages=start_voltages,
+        return self.ict.iterativeColorMatch2(
+                target_color, start_voltages=start_voltages,
                 iterations=50, stepsize=10, imi=0.5)
         
     def setVoltages(self, voltages):

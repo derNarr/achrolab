@@ -345,6 +345,7 @@ if __name__ == "__main__":
     from psychopy import visual
     from monitor import Monitor
     from tubes import Tubes
+
     eyeone = EyeOne.EyeOne()#dummy=True)
     mywin = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
@@ -358,7 +359,8 @@ if __name__ == "__main__":
         color_list.append( "color" + str(160 + i) )
  
     color_table = ColorTable(mon, tub)
-    color_table.loadFromPickle("./data/color_table_20101209_1220.pkl")
+    #color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
+    color_table.loadFromPickle("./data/color_table_20110204_1108.pkl")
     #color_table.loadFromPickle("./data/color_table_20101209_2042.pkl")
     #color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
     #color_table.createColorList(patch_stim_value_list=[0.3,0.2])

@@ -78,7 +78,7 @@ class Tubes(object):
         """setColor sets the color of the tubes to the given xyY values.
         * xyY is a tuple of floats (x,y,Y)"""
         #set the wasco-card to the right voltage
-        self.setVoltage( self.xyYtoU(xyY) )
+        self.setVoltages( self.xyYtoU(xyY) )
 
     def calibrate(self, imi=0.5):
         """calibrate calibrates the tubes with the EyeOne Pro. The EyeOne
@@ -134,7 +134,7 @@ class Tubes(object):
         rgb_list = list()
         
         for voltage in voltages:
-            self.setVoltage(voltage)
+            self.setVoltages(voltage)
             time.sleep(imi) # to give the EyeOne Pro time to adapt and to
                             # reduce carry-over effects
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
@@ -145,7 +145,7 @@ class Tubes(object):
             rgb_list.append(list(tri_stim))
         
         print("Measurement finished.")
-        self.setVoltage( (0x0, 0x0, 0x0) ) # to signal that the
+        self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
                                            # measurement is over
         
         # get python objects into R -- maybe there is a better way TODO
@@ -209,7 +209,7 @@ class Tubes(object):
         except:
             print("Failed to estimate parameters, saved data anyway.")
             # save all created R objects to the file calibration_tubes.RData
-            R('save(list=ls(), file="calibration_tubes' + 
+            R('save(list=ls(), file="data/calibration/calibration_tubes' + 
                     time.strftime("%Y%m%d_%H%M") + '.RData")')
             return
 
@@ -222,7 +222,7 @@ class Tubes(object):
         ''')
         
         # save all created R objects to the file calibration_tubes.RData
-        R('save(list=ls(), file="calibration_tubes' + 
+        R('save(list=ls(), file="data/calibration/calibration_tubes' + 
                 time.strftime("%Y%m%d_%H%M") + '.RData")')
 
         # save the estimated parameters to the tube object
@@ -429,14 +429,14 @@ class Tubes(object):
         # voltage_b, rgb_r, rgb_g, rgb_b, p_r, p_g, p_b
 
         # plot calibration curves and data points for each channel
-        R('pdf("calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
+        R('pdf("data/calibration/calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
             +'.pdf", width=9, height=8)')
 
         R('''
         par(mfrow=c(3,3))
         len3 <- floor(length(voltage_r)/3)
         # only red voltage
-        plot(voltage_r[1:len3], rgb_r[1:len3], col="red", ylim=c(0,1500),
+        plot(voltage_r[1:len3], rgb_r[1:len3], col="red", ylim=c(0,256),
             pch=19,
             main="red channel vs. voltage\ndata points and
             calibration curve",
@@ -449,7 +449,7 @@ class Tubes(object):
         
         # only green voltage
         plot(voltage_g[(len3+1):(2*len3)], rgb_g[(len3+1):(2*len3)], 
-            col="green", ylim=c(0,1500), pch=19,
+            col="green", ylim=c(0,256), pch=19,
             main="green channel vs. voltage\ndata points and
             calibration curve",
             xlab="voltage", ylab="green rgb-value")
@@ -463,7 +463,7 @@ class Tubes(object):
         
         # only blue voltage
         plot(voltage_b[(2*len3+1):(3*len3)], rgb_b[(2*len3+1):(3*len3)],
-            col="blue", ylim=c(0,1500), pch=19,
+            col="blue", ylim=c(0,256), pch=19,
             main="blue channel vs. voltage\ndata points and
             calibration curve",
             xlab="voltage", ylab="blue rgb-value")
@@ -503,15 +503,15 @@ class Tubes(object):
         
         # residual plots fixed y-scale
         plot(voltage_r[1:len3], resid_r[1:len3], pch=19, col="red",
-            ylim=c(-20,20), type="h",
+            ylim=c(-10,10), type="h",
             main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
         abline(h=0)
         plot(voltage_g[(len3+1):(2*len3)], resid_g[(len3+1):(2*len3)], 
-            pch=19, col="green", ylim=c(-20,20), type="h",
+            pch=19, col="green", ylim=c(-10,10), type="h",
             main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
         abline(h=0)
         plot(voltage_b[(2*len3+1):(3*len3)], resid_b[(2*len3+1):(3*len3)], 
-            pch=19, col="blue", ylim=c(-20,20), type="h",
+            pch=19, col="blue", ylim=c(-10,10), type="h",
             main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
         abline(h=0)
 
@@ -520,11 +520,12 @@ class Tubes(object):
 
 
 if(__name__=="__main__"):
-    tubes = Tubes()
+    eyeone = EyeOne()
+    tubes = Tubes(eyeone)
     tubes.calibrate(imi=1.0)
 
     tubes.saveParameter()
-    filename="./parameterTubes"+time.strftime("%Y%m%d_%H%M")+".pkl"
+    filename="./data/calibration/parameterTubes"+time.strftime("%Y%m%d_%H%M")+".pkl"
     tubes.saveParameter(filename)
     
     tubes.plotCalibration()
