@@ -6,7 +6,7 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-31, KS
+# last mod 2011-06-28, KS
 
 from devtubes import Tubes
 from eyeone.EyeOne import EyeOne
@@ -42,8 +42,8 @@ class IterativeColorTubes(object):
             for voltage in vc[0]:
                 f.write(str(voltage) + ", ")
             xyY = vc[1]
-            f.write(str(xyY.xyy_x) + ", " + str(xyY.xyy_y) + ", " +
-                    str(xyY.xyy_Y) + "\n")
+            f.write(str(xyY[0]) + ", " + str(xyY[1]) + ", " +
+                    str(xyY[2]) + "\n")
         f.close()
      
 
@@ -168,7 +168,7 @@ class IterativeColorTubes(object):
         * imi -- intermeasurement intervall
         """
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
-        self.tubes.setVoltage(voltages)
+        self.tubes.setVoltages(voltages)
         time.sleep(imi)
         # TODO average multiple measurement
         if(self.eyeone.I1_TriggerMeasurement() != eNoError):
@@ -202,7 +202,7 @@ class IterativeColorTubes(object):
         while (i < series_quantity):
             i = i + 1 # new round
             measured_voltage_color = self.measureColor(input_voltages,
-                    self.tubes, self.eyeone, imi=imi)
+                    imi=imi)
             measured_series.append( measured_voltage_color )
             print(str(measured_voltage_color[1]))
             print("diff: " + str(diff_voltages))
@@ -210,17 +210,13 @@ class IterativeColorTubes(object):
         return measured_series
 
 
-    def findBestColor(self, measured_color_red, measured_color_green,
-            measured_color_blue, target_color):
+    def findBestColor(self, voltage_color_list, target_color):
         """
         findBestColor returns a color, which is nearest target_color.
-        * measured_color -- contains the measured colors for each channel
+        * voltage_color_list -- list containing the measured colors
+            voltages tuple 
         * target_color
         """
-        voltage_color_list = []
-        voltage_color_list.extend( measured_color_red )
-        voltage_color_list.extend( measured_color_green )
-        voltage_color_list.extend( measured_color_blue )
         return min(voltage_color_list, key=(lambda a: self.xyYnorm(self.xyYdiff(a[1],
             target_color))))
 
@@ -249,8 +245,7 @@ class IterativeColorTubes(object):
         for i in range(span+1):
             voltages[index] = int(voltages[index] + i * stepsize)
             print("between points voltages: " + str(voltages))
-            measured_series.append( self.measureColor(voltages, self.tubes,
-                self.eyeone) )
+            measured_series.append( self.measureColor(voltages) )
 
         return measured_series
 
@@ -280,35 +275,39 @@ class IterativeColorTubes(object):
 
             # create (voltages, color) list
             measured_color_list_R = self.createMeasurementSeries(input_voltages,
-                    self.tubes, self.eyeone, step_R=stepsize, series_quantity=20)
+                    step_R=stepsize, series_quantity=20)
             measured_color_list_G = self.createMeasurementSeries(input_voltages,
-                    self.tubes, self.eyeone, step_G=stepsize, series_quantity=20)
+                    step_G=stepsize, series_quantity=20)
             measured_color_list_B = self.createMeasurementSeries(input_voltages,
-                    self.tubes, self.eyeone, step_B=stepsize, series_quantity=20)
+                    step_B=stepsize, series_quantity=20)
 
             # save data for debugging
             filename = ("tune_x" + str(target_color[0]) + "y" +
                     str(target_color[1]) + "Y" +
                     str(target_color[2]) + "_iteration" + str(i))
-            write_data(measured_color_list_R, filename + "_chR.csv")
-            write_data(measured_color_list_G, filename + "_chG.csv")
-            write_data(measured_color_list_B, filename + "_chB.csv")
+            self.write_data(measured_color_list_R, filename + "_chR.csv")
+            self.write_data(measured_color_list_G, filename + "_chG.csv")
+            self.write_data(measured_color_list_B, filename + "_chB.csv")
 
             # measure in the surrounding of the nearest points 
             measured_color_R = self.measureAtColor(
-                    self.findBestColor(measured_color_list_R), self.tubes,
-                    self.eyeone, channel="red", span=stepsize)
+                    self.findBestColor(measured_color_list_R, target_color), 
+                    channel="red", span=stepsize)
             measured_color_G = self.measureAtColor(
-                    self.findBestColor(measured_color_list_G), self.tubes,
-                    self.eyeone, channel="green", span=stepsize)
+                    self.findBestColor(measured_color_list_G, target_color), 
+                    channel="green", span=stepsize)
             measured_color_B = self.measureAtColor(
-                    self.findBestColor(measured_color_list_B), self.tubes,
-                    self.eyeone, channel="blue", span=stepsize)
+                    self.findBestColor(measured_color_list_B, target_color), 
+                    channel="blue", span=stepsize)
 
             # now serch for point with the smallest distance to target_color
             # should return input_color or input_voltages
-            best_voltage_color = self.findBestColor(measured_color_R,
-                    measured_color_G, measured_color_B, target_color)
+            measured_voltage_color_list = []
+            measured_voltage_color_list.extend( measured_color_R )
+            measured_voltage_color_list.extend( measured_color_G )
+            measured_voltage_color_list.extend( measured_color_B )
+            best_voltage_color = self.findBestColor(
+                    measured_voltage_color_list, target_color)
             input_voltages = best_voltage_color[0]
         
         print("\nFinal voltages:" + str(best_voltage_color[0]) + "\n\n")

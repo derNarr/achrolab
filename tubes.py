@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-31, KS
+# last mod 2011-06-28, KS
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
@@ -38,8 +38,8 @@ class Tubes(object):
         self.eyeone_calibrated = False
 
         self._tub = tubes_old.Tubes(self.eyeone, dummy=self.dummy)
-        #self._tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
-        self._tub.loadParameter("./lastParameterTubes.pkl")
+        self._tub.loadParameter("./data/parameterTubes20110114_1506.pkl")
+        #self._tub.loadParameter("./lastParameterTubes.pkl")
 
         self.ict = IterativeColorTubes(self, self.eyeone)
 
@@ -150,7 +150,7 @@ class Tubes(object):
         # TODO set voltages with wasco DONT use wasco, because we need to
         # smoothly change the voltages (with devtubes) -- improve devtubes
         # instead!
-        self._tub.setVoltage(voltages) # old version
+        self._tub.setVoltages(voltages) # old version
 
 
 
