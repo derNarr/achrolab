@@ -209,7 +209,7 @@ class Tubes(object):
         except:
             print("Failed to estimate parameters, saved data anyway.")
             # save all created R objects to the file calibration_tubes.RData
-            R('save(list=ls(), file="data/calibration/calibration_tubes' + 
+            R('save(list=ls(), file="calibdata/calibration/calibration_tubes' + 
                     time.strftime("%Y%m%d_%H%M") + '.RData")')
             return
 
@@ -222,7 +222,7 @@ class Tubes(object):
         ''')
         
         # save all created R objects to the file calibration_tubes.RData
-        R('save(list=ls(), file="data/calibration/calibration_tubes' + 
+        R('save(list=ls(), file="calibdata/calibration/calibration_tubes' + 
                 time.strftime("%Y%m%d_%H%M") + '.RData")')
 
         # save the estimated parameters to the tube object
@@ -429,7 +429,7 @@ class Tubes(object):
         # voltage_b, rgb_r, rgb_g, rgb_b, p_r, p_g, p_b
 
         # plot calibration curves and data points for each channel
-        R('pdf("data/calibration/calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
+        R('pdf("calibdata/calibration/calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
             +'.pdf", width=9, height=8)')
 
         R('''
@@ -525,7 +525,7 @@ if(__name__=="__main__"):
     tubes.calibrate(imi=1.0)
 
     tubes.saveParameter()
-    filename="./data/calibration/parameterTubes"+time.strftime("%Y%m%d_%H%M")+".pkl"
+    filename="./calibdata/calibration/parameterTubes"+time.strftime("%Y%m%d_%H%M")+".pkl"
     tubes.saveParameter(filename)
     
     tubes.plotCalibration()
