@@ -20,7 +20,7 @@ from exceptions import ValueError
 
 class ColorTable(object):
     """
-    ColorTable store colors in xyY and the data needed for
+    ColorTable stores colors in xyY-coordinates and data needed for
     psychopy.visual.PatchStim, the monitor and the tubes.
 
     The colors in ColorTable are indexed. So there is a first and a last
@@ -37,21 +37,21 @@ class ColorTable(object):
 
     def checkColorTable(self, index_list=None, name_list=None):
         """
-        checkColorTable checks if the color entries are still consistent. It
+        checkColorTable checks if color entries are still consistent. It
         measures the color of the monitor and the tubes and compares the
-        measurements with the saved values.
-	* index_list (List) -- List with the color indexes: [100,101,...]
+        measurements with saved values.
+	* index_list (List) -- List with color indexes: [100,101,...]
         """
         print("""WARNING ColorTable.checkColorTable is in an untested
                 experimental state!.""")
         if index_list:
-            print("\nPrepare the tubes to be measured. "
-            + "press the key to start measurement.")
+            print("\nPrepare tubes to be measured. "
+            + "Press key to start measurement.")
             while(self.tubes.eyeone.I1_KeyPressed() != eNoError):
                 time.sleep(0.01)
             diff_list_tubes = checkColorTableTubes(index_list=index_list)
-            print("\nPrepare the monitor to be measured. "
-            + "press the key to start measurement.")
+            print("\nPrepare monitor to be measured. "
+            + "Press key to start measurement.")
             while(self.tubes.eyeone.I1_KeyPressed() != eNoError):
                 time.sleep(0.01)
             diff_list_monitor = checkColorTableMonitor(index_list=index_list)
@@ -61,16 +61,16 @@ class ColorTable(object):
             return diff_list
         else:
             print("""WARNING ColorTable.checkColorTable not
-                    implemented for this way of usage.""")
+                    implemented for this way of use.""")
             pass
 
     def checkColorTableTubes(self, index_list=None, name_list=None):
         """
-        checkColorTableTubes checks if the color entries for the tubes are
-        still consistent. It measures the color of the tubes and compares the
-        measurements with the saved values.
+        checkColorTableTubes checks if color entries for tubes are still
+        consistent. It measures the color of the tubes and compares the
+        measurements with saved values.
 
-        returns a list of transformed differences ((d_x, d_y, d_Y), ...).
+        Returns a list of transformed differences ((d_x, d_y, d_Y), ...).
         The differences are defined as d_x = (x-x')/x_sd where x
         is the old, stored value and x' is the new, measured value.
         """
@@ -97,16 +97,16 @@ class ColorTable(object):
             return diff_list
 	else:
             print("""WARNING ColorTable.checkColorTableTubes not
-                    implemented for this way of usage.""")
+                    implemented for this way of use.""")
             pass
     
     def checkColorTableMonitor(self, index_list=None, name_list=None):
         """
-        checkColorTableMonitor checks if the color entries for the monitor are
-        still consistent. It measures the color of the monitor and compares the
-        measurements with the saved values.
+        checkColorTableMonitor checks if color entries for the monitor are
+        still consistent. It measures the color of the monitor and compares
+        the measurements with saved values.
 
-        returns a list of transformed differences ((d_x, d_y, d_Y), ...).
+        Returns a list of transformed differences ((d_x, d_y, d_Y), ...).
         The differences are defined as d_x = (x-x')/x_sd where x
         is the old, stored value and x' is the new, measured value.
         """
@@ -133,13 +133,13 @@ class ColorTable(object):
             return diff_list
         else:
             print("""WARNING ColorTable.checkColorTableMonitor not
-                    implemented for this way of usage.""")
+                    implemented for this way of use.""")
             pass
 
     def getColorByName(self,name):
         """
-        returns the first object in color_list with the given name
-        * name -- name of the colorentry object
+        Returns the first object in color_list with the given name
+        * name -- name of colorentry object
         """
         for ce in self.color_list:
             if ce.name == name:
@@ -148,7 +148,7 @@ class ColorTable(object):
 
     def getColorsByName(self,name_list):
         """
-        returns colorentry objects in a list, ordered after name_list
+        Returns colorentry objects in a list, ordered after name_list
         * name_list -- list with names of colorentry objects
         """
         color_list = []
@@ -180,8 +180,8 @@ class ColorTable(object):
 
     def measureColorListMonitor(self):
         """
-        measures the monitor for every colorentry in colorlist and
-        overwrites the monitor entries in the colorentry
+        Measures monitor for every colorentry in colorlist and overwrites
+        monitor entries in the colorentry
         """
         self.monitor.calibrateEyeOne()
         self.monitor.startMeasurement()
@@ -217,8 +217,8 @@ class ColorTable(object):
 
     def measureColorListTubes(self):
         """
-        measures the tubes for every colorentry in colorlist and
-        overwrites the tubes' entries in the colorentry
+        Measures tubes for every colorentry in colorlist and overwrites
+        tubes' entries in the colorentry
         """
         #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
@@ -230,13 +230,13 @@ class ColorTable(object):
 
     def showColorList(self, index_list=None, name_list=None):
         """
-        draws every color on the screen and changes the illumination of the
-        tubes to the corresponding voltage. Left mouse click changes to the
+        Draws every color on the screen and changes the illumination of the
+        tubes to the corresponding voltage. Left mouse click changes to
         next color in color list.
         """
         # TODO implement index_list 
-        print('''Click the left mouse button to move to the next
-        corresponding colors of the tubes and monitor.''')
+        print('''Click left mouse button to move to the next
+        corresponding colors of tubes and monitor.''')
         color_list = []
         if name_list:
             color_dict = {}
@@ -260,18 +260,18 @@ class ColorTable(object):
                 if left: 
                     core.wait(0.2)
                     show=False
-        print("finished showing all colors")
+        print("Finished showing all colors")
 
 
     def saveToR(self, filename):
         """
-        saves object to R.
+        Saves object to R.
         """
         pass
 
     def saveToCsv(self, filename):
         """
-        saves object to comma sperated textfile.
+        Saves object to comma separated text file (.csv).
         """
         f = open(filename, "w")
         f.write("name, patch_stim_value, "
@@ -313,7 +313,7 @@ class ColorTable(object):
 
     def saveToPickle(self, filename):
         """
-        saves object to pickle-file.
+        Saves object to pickle file (.pkl).
         """
         f = open(filename, "wb")
         pickle.dump(self.color_list, f)
@@ -321,19 +321,19 @@ class ColorTable(object):
 
     def loadFromR(self, filename):
         """
-        loads object to R.
+        Loads object from R.
         """
         pass
 
     def loadFromCsv(self, filename):
         """
-        loads object to comma sperated textfile.
+        Loads object to comma separated text file (.csv).
         """
         pass
 
     def loadFromPickle(self, filename):
         """
-        loads object to pickle-file.
+        Loads object to pickle file (.pkl).
         """
         f = open(filename, "rb")
         self.color_list = pickle.load(f)
