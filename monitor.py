@@ -4,8 +4,6 @@
 #
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
-#
-# last mod 2011-05-24, KS
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -22,7 +20,7 @@ from psychopy import visual, core
 class Monitor(object):
     """
     Monitor provides an easy interface to measure psychopy.visual.PatchStim
-    colors with an Eye One Pro.
+    colors with an EyeOne Pro.
     """
     
     def __init__(self, eyeone, psychopy_win=None):
@@ -33,32 +31,32 @@ class Monitor(object):
 
     def calibrateEyeOne(self):
         """
-        Sets the Eye One Pro to the right measurement mode and 
-        calibrates the Eye One Pro for the use on the monitor.
+        Sets EyeOne Pro to correct measurement mode and calibrates EyeOne
+        Pro so it is ready for use on the monitor.
         """
         # set EyeOne Pro variables
         if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
                 eNoError):
-            print("measurement mode set to single emission.")
+            print("Measurement mode set to single emission.")
         else:
-            print("failed to set measurement mode.")
+            print("Failed to set measurement mode.")
             return
         if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
                 eNoError):
-            print("color space set to CIExyY.")
+            print("Color space set to CIExyY.")
         else:
-            print("failed to set color space.")
+            print("Failed to set color space.")
             return
         # calibrate EyeOne Pro
-        print("\nPlease put the EyeOne-Pro on the calibration plate and "
-        + "press the key to start calibration.")
+        print("\nPlease put EyeOne Pro on calibration plate and "
+        + "press key to start calibration.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         if (self.eyeone.I1_Calibrate() == eNoError):
-            print("Calibration of the EyeOne Pro done.")
+            print("Calibration of EyeOne Pro done.")
         else:
-            print("Calibration of the EyeOne Pro failed. Please RESTART "
-            + "the calibration of the monitor.")
+            print("Calibration of EyeOne Pro failed. Please RESTART "
+            + "calibration of monitor.")
             return
 
         self.eyeone_calibrated = True
@@ -66,11 +64,11 @@ class Monitor(object):
 
     def startMeasurement(self):
         """
-        Simply prompt to move the Eye One Pro to measurement position and
+        Simply prompts to move the EyeOne Pro to measurement position and
         wait for button response.
         """
-        print("\nPlease put Eye One Pro in measurement position for"
-                + "MONITOR and hit the button to start measurement.")
+        print("\nPlease put EyeOne Pro in measurement position for"
+                + "MONITOR and press key to start measurement.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Start measurement...")
@@ -79,14 +77,14 @@ class Monitor(object):
 
     def measurePatchStimColor(self, patch_stim_value, n=1):
         """
-        Measures the patch_stim_value on the monitor.
+        Measures patch_stim_value on monitor.
 
-        input:
+        Input:
             patch_stim_value -- psychopy.visual.PatchStim color value
-            n -- number of measures (positive integer)
+            n -- number of measurements (positive integer)
 
         
-        returns list of tuples of xyY values
+        Returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
@@ -123,13 +121,13 @@ class Monitor(object):
     def measureColor(self, color, n=1):
         """
         Converts colormath color to psychopy.visual.PatchStim color and
-        measures the color on the monitor.
+        measures color on monitor.
 
-        input: 
+        Input: 
             color -- colormath color
             n -- number of measures (positive integer)
 
-        returns list of tuples of xyY values
+        Returns list of tuples of xyY values
             [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
@@ -141,7 +139,7 @@ class Monitor(object):
     
     def setPatchStimColor(self, patch_stim_value):
         """
-        sets the monitor to patch_stim_color.
+        Sets monitor to patch_stim_color.
         """
         if not self.psychopy_win:
             self.psychopy_win = visual.Window(size=(2048,1536), monitor='mymon',
