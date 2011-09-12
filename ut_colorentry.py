@@ -4,8 +4,6 @@
 #
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
-#
-# last mod 2011-06-28, KS
 
 import colorentry
 
@@ -26,8 +24,10 @@ tub.calibrateEyeOne()
 
 
 class UTColorEntry(unittest.TestCase):
-    """all tests which ends on DRY can be run and should pass in dummy
-    mode."""
+    """
+    All tests which end on DRY can be run and should pass in dummy
+    mode.
+    """
 
     def testCreateCE(self):
         test_color_entry1 = colorentry.ColorEntry("test1")
