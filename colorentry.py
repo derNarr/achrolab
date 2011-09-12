@@ -15,11 +15,11 @@ class ColorEntry(object):
     It contains:
       * a name
       * the corresponding value for psychopy.PatchStim
-      * measured xyY values for the monitor
-      * standard deviation for the xyY values
-      * the corresponding voltages for the color tubes
-      * measured xyY values for the tubes
-      * standard deviation for the xyY values
+      * measured xyY values for monitor
+      * standard deviation for xyY values
+      * corresponding voltages for color tubes
+      * measured xyY values for tubes
+      * standard deviation for xyY values
     """
 
     def __init__(self, name, patch_stim_value=None, voltages=None):
@@ -47,9 +47,9 @@ class ColorEntry(object):
  
     def measureMonitor(self, monitor, n=10):
         """
-        Measures the patch_stim_value color n times and overwrites
-        slef.monitor_xyY with the mean and self.monitor_xyY_sd with the
-        standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
+        Measures patch_stim_value for color n times and overwrites
+        self.monitor_xyY with the mean and self.monitor_xyY_sd with the
+        standard deviation (1/n*sum((x-mean(x))**2)) of measured values.
         """
         xyY_list = monitor.measurePatchStimColor(self.patch_stim_value, n=n)
         x_list = [xyY[0] for xyY in xyY_list]
@@ -69,14 +69,13 @@ class ColorEntry(object):
 
     def measureTubes(self, tubes, n=10, return_only=False):
         """
-        Measures the voltages color n times and overwrites
-        self.tubes_xyY with the mean and self.tubes_xyY_sd with the
-        standard deviation (1/n*sum((x-mean(x))**2)) of the measured values.
-          * return_only (boolean) -- if return_only is True, the function
+        Measures voltages for color n times and overwrites self.tubes_xyY
+        with the mean and self.tubes_xyY_sd with the standard deviation
+        (1/n*sum((x-mean(x))**2)) of measured values.
+          * return_only (boolean) -- if return_only is True, function
               does NOT change self.tubes_xyY and self.tubes_xyY_sd. Instead
-              it returns a Tuple, which contains the xyY Values and the sd
-              values, both stored in a Tuple of 3 -
-              ((x,y,Y),(x_sd,y_sd,Y_sd)).
+              it returns a tuple, which contains xyY Values and sd values,
+              both stored in a tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).
         """
         if not self.voltages:
             print("No voltages available. Please run findVoltages or set voltages manually.")
@@ -109,7 +108,7 @@ class ColorEntry(object):
    
     def findVoltages(self, tubes):
         """
-        Try to find the right voltages for given monitor_xyY coordinates
+        Tries to find the right voltages for given monitor_xyY coordinates
         and overwrites self.voltages and self.tubes_xyY.
         """
         if not self.monitor_xyY:
@@ -122,7 +121,7 @@ class ColorEntry(object):
 
     def findVoltagesTuning(self, tubes):
         """
-        tunes the voltages towards the target monitor color.
+        Fine-Tunes voltages towards the target monitor color.
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
