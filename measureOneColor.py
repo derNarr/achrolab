@@ -4,8 +4,6 @@
 #
 # (c) 2010 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
-#
-# last mod 2011-05-01, DW
 
 from psychopy import visual,event,core
 from ctypes import c_float
@@ -33,7 +31,7 @@ voltages = (1607, 2310, 2182)
 mon.setPatchStimColor(bg)
 
 tri_stim = (c_float * TRISTIMULUS_SIZE)()
-print("Tubes are set to right voltages. That can take a few seconds...")
+print("Tubes are set to correct voltages. This may take a few seconds...")
 tubes.setVoltages(voltages)
 print("Done.")
 
@@ -60,3 +58,4 @@ while show:
     if left: 
         core.wait(0.2)
         show=False
+
