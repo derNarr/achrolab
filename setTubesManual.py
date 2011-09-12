@@ -5,15 +5,15 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
-#
-# last mod 2011-05-24, KS
 
 import pyglet
+
 from eyeone import EyeOne
 from psychopy import visual
 from monitor import Monitor
 from tubes import Tubes
 from colortable import ColorTable
+
 eyeone = EyeOne.EyeOne(dummy=True)
 mywin = visual.Window(size=(2048,1536), monitor='mymon',
                     color=(0,0,0), screen=1)
@@ -35,7 +35,7 @@ step = 10
 
 def getKey(symbol):
     """
-    returns the key for certain symbol-codes
+    Returns key for certain symbol-codes.
     """
     if symbol == 114:
         key = 'r'
@@ -63,7 +63,7 @@ def getKey(symbol):
 
 def setColorTube(key):
     """
-    Defines which colortube should be changed.
+    Defines which color tube should be changed.
     """
     if key == 'r':
         return ('red', 0)
@@ -76,7 +76,7 @@ def setColorTube(key):
 
 def setStepSize(key):
     """
-    Defines the stepsize of the change.
+    Defines step size of change.
     """
     if key == '1':
         return 1
@@ -93,7 +93,7 @@ def setStepSize(key):
     
 def adjustTube(key, tubes, voltages, colortube, step):
     """
-    Enables up and down arrow to adjust the colortubes by step (lower if down and higher if up).
+    Enables up and down arrow to adjust tubes' color step by step (lower if down and higher if up).
     """
     if key == 'arrowup':
         voltages[colortube[1]] = voltages[colortube[1]] + step
@@ -108,12 +108,12 @@ def adjustTube(key, tubes, voltages, colortube, step):
 
 def setTubesManual(startvoltages):
     """
-    Start the Program to set Tubes by hand.
+    Start program to set tubes by hand.
     """
-    print('Manual adjustment of the colortubes\n\n' +
+    print('Manual adjustment of tubes` color\n\n' +
           'Press [arrowup] for higher intensity ' +
           'or press [arrowdown] for lower intensity.\n' +
-          'To set the colortube and the stepsize press following buttons:\n' +
+          'To set tube color and step size press the following buttons:\n' +
           'Stepsize:\n [1] - 1\n [2] - 10\n [3] - 50\n [4] - 200\n [5] - 500' +
           'Colortube:\n [R] - Red\n [G] - Green\n [B] - Blue')
     tub.setVoltages(startvoltages)
@@ -132,7 +132,7 @@ def on_key_press(symbol, modifiers):
         print('Colortube ' + colortube[0] + ' ready for adjustment.')
     elif key == '1' or key == '2' or key == '3' or key == '4' or key == '5':
         step = setStepSize(key)
-        print('Stepsize set to ' + str(step))
+        print('Step size set to ' + str(step))
     else:
         adjustTube(key, tub, voltages, colortube, step)
             
