@@ -10,9 +10,9 @@ following commits. If you want to use this package before this dependency
 is removed, send me a short email. --KS
 
 achrolab and R:
-We use R to analyze our data. This includes calibration data. Therefore,
-all measurements are saved as .Rdata files. If you want to use the module,
-R has to be installed on your machine.
+We use R (see http://www.r-project.org/) to analyze our data. This includes
+calibration data. Therefore, all measurements are saved as .Rdata files. If
+you want to use the module, R has to be installed on your machine.
 We use the module rpy2 (see http://rpy.sourceforge.net/rpy2.html) to import
 our measurements directly into R.
 All plots are produced in R.
