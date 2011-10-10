@@ -13,6 +13,7 @@ class ColorEntry(object):
     lab.
 
     It contains:
+
       * a name
       * the corresponding value for psychopy.PatchStim
       * measured xyY values for monitor
@@ -72,10 +73,11 @@ class ColorEntry(object):
         Measures voltages for color n times and overwrites self.tubes_xyY
         with the mean and self.tubes_xyY_sd with the standard deviation
         (1/n*sum((x-mean(x))**2)) of measured values.
+
           * return_only (boolean) -- if return_only is True, function
-              does NOT change self.tubes_xyY and self.tubes_xyY_sd. Instead
-              it returns a tuple, which contains xyY Values and sd values,
-              both stored in a tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).
+            does NOT change self.tubes_xyY and self.tubes_xyY_sd. Instead
+            it returns a tuple, which contains xyY Values and sd values,
+            both stored in a tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).
         """
         if not self.voltages:
             print("No voltages available. Please run findVoltages or set voltages manually.")
