@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # ./tubes.py
