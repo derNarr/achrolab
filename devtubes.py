@@ -21,7 +21,7 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
 
 from math import exp,log
 
-from colormath.color_objects import xyYColor
+from conversion import xyY2rgb
 
 import rpy2.robjects as robjects
 
@@ -272,13 +272,9 @@ class Tubes(object):
         """
         Calculates a smart guess for corresponding voltages for a given xyY
         color (as tuple).
-        ATTENTION: at the moment this function may give wrong values!!!
         """
-        # TODO remove xyYColor from code, by calibrating tubes with a
-        # coordinate transformation voltages <-> xyY
-        # ATTENTION at the moment this function maybe gives wrong values!!!
-        xyY = xyYColor(xyY[0], xyY[1], xyY[2])
-        rgb = xyY.convert_to("rgb", target_rgb="sRGB", clip=False)
+        xyY = (xyY[0], xyY[1], xyY[2])
+        rgb = xyY2rgb(xyY)
         return( (self._sRGBtoU_r(rgb.rgb_r), 
                  self._sRGBtoU_g(rgb.rgb_g),
                  self._sRGBtoU_b(rgb.rgb_b)) )
