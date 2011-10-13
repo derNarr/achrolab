@@ -56,8 +56,9 @@ class Conversion(object):
         self.xyz_x = xyz[0]
         self.xyz_y = xyz[1]
         self.xyz_z = xyz[2]
-        # Conversion Matrix. 
+        # Conversion Matrix. http://brucelindbloom.com/index.html?Eqn_XYZ_to_RGB.html
         # RGB Working Space: CIE RGB, Reference White: E
+        print("Conversion: Using CIE RGB Working Space with Reference White E.")
         m = np.array([[2.3706743, -0.9000405, -0.4706338],
                         [-0.5138850, 1.4253036, 0.0885814],
                         [0.0052982, -0.0146949, 1.0093968]])
