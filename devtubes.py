@@ -8,7 +8,7 @@
 #
 # last mod 2011-05-31, KS
 
-from wasco.wasco import wasco, boardId
+from wasco.wasco import Wasco, boardId
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
 
 from eyeone.EyeOne import EyeOne
@@ -29,7 +29,6 @@ import time,pickle
 
 from ctypes import c_float
 
-
 # want to run R-commands with R("command")
 R = robjects.r
 
@@ -45,8 +44,8 @@ class Tubes(object):
         If dummy=True no wasco runtimelibraries will be loaded."""
         self.dummy = dummy
 
-        self.wascocard = wasco
-        self.wasco_boardId = boardId 
+        self.wascocard = Wasco()    # create wasco object
+        self.wasco_boardId = self.wascocard.boardId 
 
         self.red_out = DAOUT3_16
         self.green_out = DAOUT1_16
