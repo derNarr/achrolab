@@ -402,34 +402,32 @@ class Tubes(object):
         Saves parameters used for interpolation function.
         """
         # TODO what to do, if file don't exists? Throw exception?
-        f = open(filename, 'wb')
-        pickle.dump(self.red_p1, f)
-        pickle.dump(self.red_p2, f)
-        pickle.dump(self.red_p3, f)
-        pickle.dump(self.green_p1, f)
-        pickle.dump(self.green_p2, f)
-        pickle.dump(self.green_p3, f)
-        pickle.dump(self.blue_p1, f)
-        pickle.dump(self.blue_p2, f)
-        pickle.dump(self.blue_p3, f)
-        f.close()
+        with open(filename, 'wb') as f:
+            pickle.dump(self.red_p1, f)
+            pickle.dump(self.red_p2, f)
+            pickle.dump(self.red_p3, f)
+            pickle.dump(self.green_p1, f)
+            pickle.dump(self.green_p2, f)
+            pickle.dump(self.green_p3, f)
+            pickle.dump(self.blue_p1, f)
+            pickle.dump(self.blue_p2, f)
+            pickle.dump(self.blue_p3, f)
 
     def loadParameter(self, filename="./lastParamterTubes.pkl"):
         """
         Loads parameters used for interpolation function.
         """
         # TODO warn if a file get replaced?
-        f = open(filename, 'rb')
-        self.red_p1   = pickle.load(f)
-        self.red_p2   = pickle.load(f)
-        self.red_p3   = pickle.load(f)
-        self.green_p1 = pickle.load(f)
-        self.green_p2 = pickle.load(f)
-        self.green_p3 = pickle.load(f)
-        self.blue_p1  = pickle.load(f)
-        self.blue_p2  = pickle.load(f)
-        self.blue_p3  = pickle.load(f)
-        f.close()
+        with open(filename, 'rb') as f: 
+            self.red_p1   = pickle.load(f)
+            self.red_p2   = pickle.load(f)
+            self.red_p3   = pickle.load(f)
+            self.green_p1 = pickle.load(f)
+            self.green_p2 = pickle.load(f)
+            self.green_p3 = pickle.load(f)
+            self.blue_p1  = pickle.load(f)
+            self.blue_p2  = pickle.load(f)
+            self.blue_p3  = pickle.load(f)
 
 
     def plotCalibration(self):

@@ -77,23 +77,22 @@ class ColorTable(object):
         if index_list:
             diff_list = []
             # write txt, which can be used for further analysis in R
-            f = open("data/checkColorTableTubes_%Y%m%d_%H%M.txt", "w")
-            f.write("name, d_x, d_y, d_Y\n")
-            for idx in index_list:
-                ce = self.color_list[idx] #ce = ColorEntry(-object)
-                # extract xyY values
-                xyY = ce.tubes_xyY
-                xyY_sd = ce.tubes_xyY_sd
-                new_xyY, new_xyY_sd = ce.measureTubes(return_only=True)
-                # calculate (x - x') / sd(x) and store in diff_list
-                diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
-                   range(3)] )
-                # write results in file
-                f.write(ce.name)
-                for x in diff_list[-1]:
-                    f.write(", " + str(x))
-		f.write("\n")
-            f.close()
+            with open("data/checkColorTableTubes_%Y%m%d_%H%M.txt", "w") as f:
+                f.write("name, d_x, d_y, d_Y\n")
+                for idx in index_list:
+                    ce = self.color_list[idx] #ce = ColorEntry(-object)
+                    # extract xyY values
+                    xyY = ce.tubes_xyY
+                    xyY_sd = ce.tubes_xyY_sd
+                    new_xyY, new_xyY_sd = ce.measureTubes(return_only=True)
+                    # calculate (x - x') / sd(x) and store in diff_list
+                    diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
+                       range(3)] )
+                    # write results in file
+                    f.write(ce.name)
+                    for x in diff_list[-1]:
+                        f.write(", " + str(x))
+                f.write("\n")
             return diff_list
 	else:
             print("""WARNING ColorTable.checkColorTableTubes not
@@ -113,23 +112,22 @@ class ColorTable(object):
         if index_list:
             diff_list = []
             # write txt, which can be used for further analysis in R
-            f = open("data/checkColorTableMonitor_%Y%m%d_%H%M.txt", "w")
-            f.write("name, d_x, d_y, d_Y\n")
-            for idx in index_list:
-                ce = self.color_list[idx] #ce = ColorEntry(-object)
-                # extract xyY values
-                xyY = ce.monitor_xyY
-                xyY_sd = ce.monitor_xyY_sd
-                new_xyY, new_xyY_sd = ce.measureTubes(return_only=True) # measureTubes with return_only=True can be used to measure the monitor and immediatly return the values
-                # calculate (x - x') / sd(x) and store in diff_list
-                diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
-                   range(3)] )
-                # write results in file
-                f.write(ce.name)
-                for x in diff_list[-1]:
-                    f.write(", " + str(x))
-                f.write("\n")
-            f.close()
+            with open("data/checkColorTableMonitor_%Y%m%d_%H%M.txt", "w") as f:
+                f.write("name, d_x, d_y, d_Y\n")
+                for idx in index_list:
+                    ce = self.color_list[idx] #ce = ColorEntry(-object)
+                    # extract xyY values
+                    xyY = ce.monitor_xyY
+                    xyY_sd = ce.monitor_xyY_sd
+                    new_xyY, new_xyY_sd = ce.measureTubes(return_only=True) # measureTubes with return_only=True can be used to measure the monitor and immediatly return the values
+                    # calculate (x - x') / sd(x) and store in diff_list
+                    diff_list.append( [(xyY[j] - new_xyY[j])/xyY_sd[j] for j in
+                       range(3)] )
+                    # write results in file
+                    f.write(ce.name)
+                    for x in diff_list[-1]:
+                        f.write(", " + str(x))
+                    f.write("\n")
             return diff_list
         else:
             print("""WARNING ColorTable.checkColorTableMonitor not
@@ -273,51 +271,49 @@ class ColorTable(object):
         """
         Saves object to comma separated text file (.csv).
         """
-        f = open(filename, "w")
-        f.write("name, patch_stim_value, "
-                +"monitor_xyY_x, monitor_xyY_y, monitor_xyY_Y, "
-                +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, " 
-                +"voltages_r, voltages_g, voltages_b, "
-                +"tubes_xyY_x, tubes_xyY_y, tubes_xyY_Y, "
-                +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n") 
-        for ce in self.color_list: 
-            f.write(ce.name+", "+str(ce.patch_stim_value))
-            if not ce.monitor_xyY:
-                f.write(", NA, NA, NA")
-            else: 
-                for x in ce.monitor_xyY:
-                    f.write(", "+str(x))
-            if not ce.monitor_xyY_sd:
-                f.write(", NA, NA, NA")
-            else:
-                for x in ce.monitor_xyY_sd:
-                    f.write(", "+str(x))
-            if not ce.voltages:
-                f.write(", NA, NA, NA")
-            else:
-                for x in ce.voltages:
-                    f.write(", "+str(x))
-            if not ce.tubes_xyY:
-                f.write(", NA, NA, NA")
-            else:
-                for x in ce.tubes_xyY:
-                    f.write(", "+str(x))
-            if not ce.tubes_xyY_sd:
-                f.write(", NA, NA, NA")
-            else:
-                for x in ce.tubes_xyY_sd:
-                    f.write(", "+str(x))
-            f.write("\n")
-	f.close()
+        with open(filename, "w") as f:
+            f.write("name, patch_stim_value, "
+                    +"monitor_xyY_x, monitor_xyY_y, monitor_xyY_Y, "
+                    +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, " 
+                    +"voltages_r, voltages_g, voltages_b, "
+                    +"tubes_xyY_x, tubes_xyY_y, tubes_xyY_Y, "
+                    +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n") 
+            for ce in self.color_list: 
+                f.write(ce.name+", "+str(ce.patch_stim_value))
+                if not ce.monitor_xyY:
+                    f.write(", NA, NA, NA")
+                else: 
+                    for x in ce.monitor_xyY:
+                        f.write(", "+str(x))
+                if not ce.monitor_xyY_sd:
+                    f.write(", NA, NA, NA")
+                else:
+                    for x in ce.monitor_xyY_sd:
+                        f.write(", "+str(x))
+                if not ce.voltages:
+                    f.write(", NA, NA, NA")
+                else:
+                    for x in ce.voltages:
+                        f.write(", "+str(x))
+                if not ce.tubes_xyY:
+                    f.write(", NA, NA, NA")
+                else:
+                    for x in ce.tubes_xyY:
+                        f.write(", "+str(x))
+                if not ce.tubes_xyY_sd:
+                    f.write(", NA, NA, NA")
+                else:
+                    for x in ce.tubes_xyY_sd:
+                        f.write(", "+str(x))
+                f.write("\n")
 
 
     def saveToPickle(self, filename):
         """
         Saves object to pickle file (.pkl).
         """
-        f = open(filename, "wb")
-        pickle.dump(self.color_list, f)
-        f.close()
+        with open(filename, "wb") as f:
+            pickle.dump(self.color_list, f)
 
     def loadFromR(self, filename):
         """
@@ -335,9 +331,8 @@ class ColorTable(object):
         """
         Loads object to pickle file (.pkl).
         """
-        f = open(filename, "rb")
-        self.color_list = pickle.load(f)
-        f.close()
+        with open(filename, "rb") as f:
+            self.color_list = pickle.load(f)
 
 
 if __name__ == "__main__":

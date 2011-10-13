@@ -36,15 +36,14 @@ class IterativeColorTubes(object):
        self.eyeone = eyeone
 
     def write_data(self, voltage_color_list, filename):
-        f = open("./calibdata/measurements/" + filename, "w")
-        f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
-        for vc in voltage_color_list:
-            for voltage in vc[0]:
-                f.write(str(voltage) + ", ")
-            xyY = vc[1]
-            f.write(str(xyY[0]) + ", " + str(xyY[1]) + ", " +
-                    str(xyY[2]) + "\n")
-        f.close()
+        with open("./calibdata/measurements/" + filename, "w") as f:
+            f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
+            for vc in voltage_color_list:
+                for voltage in vc[0]:
+                    f.write(str(voltage) + ", ")
+                xyY = vc[1]
+                f.write(str(xyY[0]) + ", " + str(xyY[1]) + ", " +
+                        str(xyY[2]) + "\n")
      
 
 
