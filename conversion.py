@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./wasco/wasco.py
+# ./conversion.py
 #
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com> and Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 
 import numpy as np
 
-class Conversion(Object):
+class Conversion(object):
     """
     Conversion Object.
     """

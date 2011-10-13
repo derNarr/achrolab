@@ -8,7 +8,7 @@
 #
 # last mod 2011-05-31, KS
 
-from wasco.wasco import Wasco, boardId
+from wasco.wasco import Wasco
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
 
 from eyeone.EyeOne import EyeOne
