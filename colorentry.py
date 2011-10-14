@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-06-28, KS
+# last mod 2011-10-14 DW
 
 class ColorEntry(object):
     """
@@ -134,18 +134,4 @@ class ColorEntry(object):
         self.tubes_xyY_sd = None
 
         self.measureTubes(tubes)
-
         
-if __name__ == "__main__":
-    from monitor import Monitor
-    from eyeone import EyeOne
-    from tubes import Tubes
-    eyeone = EyeOne.EyeOne(dummy=True)
-    tub = Tubes(eyeone)
-    mon = Monitor(eyeone)
-    testentry = ColorEntry("grey1", patch_stim_value=0.2)
-    testentry.measureMonitor(mon, n=1)
-    testentry.measureTubes(tub, n=1)
-    testentry.findVoltages(tub)
-
-
