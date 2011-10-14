@@ -10,7 +10,6 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
                                     COLOR_SPACE_CIExyY,
-                                    SPECTRUM_SIZE,
                                     TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time

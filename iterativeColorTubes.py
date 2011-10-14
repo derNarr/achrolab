@@ -10,16 +10,10 @@
 
 from devtubes import Tubes
 from eyeone.EyeOne import EyeOne
-from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
-                                    I1_SINGLE_EMISSION,
-                                    eNoError,
-                                    COLOR_SPACE_KEY, 
-                                    COLOR_SPACE_CIExyY,
-                                    TRISTIMULUS_SIZE)
+from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from exceptions import ValueError
-from psychopy import visual
 import rpy2.robjects as robjects
 # want to run R-commands with R("command")
 R = robjects.r
