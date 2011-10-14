@@ -301,7 +301,7 @@ class IterativeColorTubes(object):
                     self.findBestColor(measured_color_list_B, target_color), 
                     channel="blue", span=stepsize)
 
-            # now serch for point with the smallest distance to target_color
+            # now search for point with the smallest distance to target_color
             # should return input_color or input_voltages
             measured_voltage_color_list = []
             measured_voltage_color_list.extend( measured_color_R )

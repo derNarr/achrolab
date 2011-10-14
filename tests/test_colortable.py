@@ -27,7 +27,7 @@ class TestColorTable(object):
     """
 
     def testInitColorTable(self):
-        pass
+        test_table = ColorTable(mon, tub)
 
     def testCheckColorTable(self):
         pass

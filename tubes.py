@@ -40,8 +40,8 @@ class Tubes(object):
 
         self._tub = tubes_old.Tubes(self.eyeone, dummy=self.dummy)
         #self._tub.loadParameter("./calibdata/parameterTubes20110114_1506_50abs.pkl")
-        self._tub.loadParameter("./calibdata/parameterTubes20110705_1533_75abs.pkl")
-        #self._tub.loadParameter("./lastParameterTubes.pkl")
+        #self._tub.loadParameter("./calibdata/parameterTubes20110705_1533_75abs.pkl")
+        self._tub.loadParameter("./calibdata/lastParameterTubes.pkl")
 
         self.ict = IterativeColorTubes(self, self.eyeone)
 
