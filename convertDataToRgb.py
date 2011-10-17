@@ -5,7 +5,7 @@
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-14 KS
+# last mod 2011-10-17 KS
 
 from convert import xyY2rgb
 from colortable import ColorTable

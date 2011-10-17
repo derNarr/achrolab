@@ -5,6 +5,8 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# last mod 2011-10-17 KS
 
 import pyglet
 

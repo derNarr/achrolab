@@ -6,9 +6,9 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-06-28, KS
+# last mod 2011-10-17 KS
 
-from devtubes import Tubes
+from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne
 from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
@@ -20,10 +20,10 @@ R = robjects.r
 
 class IterativeColorTubes(object):
 
-    def __init__(self, tubes=Tubes, eyeone=EyeOne):
+    def __init__(self, tubes=DevTubes(), eyeone=EyeOne()):
        """
        * self -- IterativeColorTubes object
-       * tubes -- achrolab.devtubes.Tubes object
+       * tubes -- achrolab.devtubes.DevTubes object
        * eyeone -- calibrated EyeOne object
        """
        self.tubes = tubes

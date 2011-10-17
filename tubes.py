@@ -6,7 +6,7 @@
 # Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-14 DW
+# last mod 2011-10-17 KS
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -27,31 +27,51 @@ import rpy2.robjects as robjects
 # want to run R-commands with R("command")
 R = robjects.r
 
-# only need _tub.setVoltage
 import devtubes
+
+from colorentry import ColorEntry
 
 from iterativeColorTubes import IterativeColorTubes
 
 class Tubes(object):
+    """
+    gives high level access to the tubes.
+
+    This class hides all the hardware specifications and has no
+    dependencies on the eyeone module.
+    """
     def __init__(self):
         """
         Initializes tubes object.
 
+        devtub contains an object with a method setVoltages. This method
+        gets a triple of integers and sets the voltages of the tubes. The
+        devtubes object takes care of all the hardware stuff.
         """
-        self._tub = devtubes.DevTubes()
+        self.devtub = devtubes.DevTubes()
 
     def setVoltages(self, voltages):
         """
         Sets tubes to given voltages.
+
+        If setVoltages gets an ColorEntry object, it extracts the voltages
+        from this object and sets the tubes accordingly.
+
+        WARNING: Don't set the tubes directly (e. g. via wasco), because
+        the change in voltage has to be smoothly. This prevents the
+        lighting tubes to switch off accidentally.
         """
-        # TODO set voltages with wasco DONT use wasco, because we need to
-        # smoothly change the voltages (with devtubes) -- improve devtubes
-        # instead!
-        self._tub.setVoltages(voltages) # old version
+        if isinstance(voltages, ColorEntry):
+            # if setVoltages gets an ColorEntry object, extract the voltages
+            # from this object and set the tubes accordingly
+            self.devtub.setVoltages(voltages.voltages)
+        else:
+            self.devtub.setVoltages(voltages) 
+
 
 class CalibTubes(Tubes):
     """
-    Tubes provides an easy interface to measure a color with EyeOne
+    CalibTubes provides an easy interface to measure a color with EyeOne
     Pro and to find corresponding voltages for a given color.
     """
 

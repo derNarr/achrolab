@@ -119,11 +119,11 @@ class Monitor(object):
 
     def measureColor(self, color, n=1):
         """
-        Converts colormath color to psychopy.visual.PatchStim color and
-        measures color on monitor.
+        Converts xyY color (triple of floats) to psychopy.visual.PatchStim
+        color and measures color on monitor.
 
         Input: 
-            color -- colormath color
+            color -- yxY color list or tuple of three floats
             n -- number of measures (positive integer)
 
         Returns list of tuples of xyY values
@@ -133,7 +133,7 @@ class Monitor(object):
             self.calibrateEyeOne()
             self.startMeasurement()
         print("measureColor is not implemented yet")
-        # TODO
+        # TODO measureColor
         pass
     
     def setPatchStimColor(self, patch_stim_value):

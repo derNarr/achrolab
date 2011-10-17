@@ -16,9 +16,7 @@ from ..tubes import Tubes
 eyeone = EyeOne.EyeOne(dummy=True)
 mywin = visual.Window(size=(800,600), color=(0,0,0))
 mon = Monitor(eyeone, mywin)
-tub = Tubes(eyeone, dummy=True)
-
-tub.calibrateEyeOne()
+tub = Tubes()
 
 
 class TestColorEntry(object):
