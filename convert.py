@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./conversion.py
+# ./convert.py
 #
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com> and Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# last mod 2011-10-14 KS
 
 import numpy as np
 
-class Conversion(object):
+class Convert(object):
     """
-    Conversion Object.
+    Convert Object.
     """
     
-    def __init__(self, xyY):
+    def __init__(self):
         """
-        Conversion Object init function.
+        Convert Object init function.
         """
 
     def convert_xyY_to_rgb(self, xyY):
@@ -24,7 +26,7 @@ class Conversion(object):
         self.xyY_x = xyY[0]
         self.xyY_y = xyY[1]
         self.xyY_Y = xyY[2]
-        xyY = (self.xyY_x, self.xyY.y, self.xyY.Y)
+        xyY = (self.xyY_x, self.xyY_y, self.xyY_Y)
         xyz = self.convert_xyY_to_xyz(xyY)
         rgb = self.convert_xyz_to_rgb(xyz)
         return (rgb)
@@ -57,19 +59,30 @@ class Conversion(object):
         self.xyz_y = xyz[1]
         self.xyz_z = xyz[2]
         # Conversion Matrix. http://brucelindbloom.com/index.html?Eqn_XYZ_to_RGB.html
-        # RGB Working Space: CIE RGB, Reference White: E
-        print("Conversion: Using CIE RGB Working Space with Reference White E.")
-        m = np.array([[2.3706743, -0.9000405, -0.4706338],
-                        [-0.5138850, 1.4253036, 0.0885814],
-                        [0.0052982, -0.0146949, 1.0093968]])
-        xyz = np.array([[self.xyz_x], [self.xyz_y], [self.xyz_z]])
+        # sRGB, Reference White: D50, Bradford-adapted
+        print("Convert: Using sRGB, reference white D50 and Bradford-adapted.")
+        m = np.array([[ 3.1338561, -1.6168667, -0.4906146],
+                     [-0.9787684,  1.9161415,  0.0334540], 
+                     [ 0.0719453, -0.2289914,  1.4052427]])
+        ## RGB Working Space: CIE RGB, Reference White: E
+        #print("Convert: Using CIE RGB Working Space with Reference White E.")
+        #m = np.array([[2.3706743, -0.9000405, -0.4706338],
+        #                [-0.5138850, 1.4253036, 0.0885814],
+        #                [0.0052982, -0.0146949, 1.0093968]])
+        xyz = np.array([self.xyz_x, self.xyz_y, self.xyz_z])
         rgb = m.dot(xyz)
-        self.rgb_r = rgb[0][0]
-        self.rgb_g = rgb[1][0]
-        self.rgb_b = rgb[2][0]
+        #RGB = rgb
+        #for i in range(3):
+        #    if rgb[i] <= 0.0031308:
+        #        RGB[i] = 12.92 * rgb[i]
+        #    else:
+        #        RGB[i] = 1.055 * rgb[i]**1/2.4 - 0.055
+        self.rgb_r = rgb[0] #RGB[0]
+        self.rgb_g = rgb[1] #RGB[1]
+        self.rgb_b = rgb[2] #RGB[2]
         return (self.rgb_r, self.rgb_g, self.rgb_b)
 
 def xyY2rgb(xyY):
-    convert = Conversion()
+    convert = Convert()
     return convert.convert_xyY_to_rgb(xyY)
 

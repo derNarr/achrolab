@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-05-24, KS
+# last mod 2011-10-14 DW
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -218,7 +218,6 @@ class ColorTable(object):
         Measures tubes for every colorentry in colorlist and overwrites
         tubes' entries in the colorentry
         """
-        #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         for colorentry in self.color_list:
             colorentry.tubes_xyY = None
@@ -333,52 +332,4 @@ class ColorTable(object):
         """
         with open(filename, "rb") as f:
             self.color_list = pickle.load(f)
-
-
-if __name__ == "__main__":
-    from eyeone import EyeOne
-    from psychopy import visual
-    from monitor import Monitor
-    from tubes import Tubes
-
-    eyeone = EyeOne.EyeOne()#dummy=True)
-    mywin = visual.Window(size=(2048,1536), monitor='mymon',
-                    color=(0,0,0), screen=1)
-    mon = Monitor(eyeone, mywin)
-    tub = Tubes(eyeone)
-    tub.calibrateEyeOne()
-
-    #interessting colors
-    color_list = []
-    for i in range(20):
-        color_list.append( "color" + str(160 + i) )
- 
-    color_table = ColorTable(mon, tub)
-    #color_table.loadFromPickle("./data/color_table_20101122_1408.pkl")
-    color_table.loadFromPickle("./data/color_table_20110204_1108.pkl")
-    #color_table.loadFromPickle("./data/color_table_20101209_2042.pkl")
-    #color_table.loadFromPickle("./data/color_table_20101123_2024.pkl")
-    #color_table.createColorList(patch_stim_value_list=[0.3,0.2])
-    #color_table.createColorList(
-    #        patch_stim_value_list=[x/127.5 - 1 for x in range(0,256)])
-
-    #color_table.measureColorListMonitor()
-    color_table.findVoltages(name_list=color_list)
-    color_table.saveToPickle("./data/color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".pkl")
-    color_table.saveToCsv("./data/color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".csv")
-
-    color_table.findVoltagesTuning(name_list=color_list)
-    #color_table.measureColorListTubes()
-    color_table.saveToPickle("./data/color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".pkl")
-    color_table.saveToCsv("./data/color_table_" + 
-            time.strftime("%Y%m%d_%H%M") +".csv")
-    #color_table.showColorList(name_list=color_list)
-
-    #color_table.showColorList()
-    
-
-
 
