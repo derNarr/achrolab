@@ -8,13 +8,13 @@
 from psychopy import visual,event,core
 from ctypes import c_float
 
-from tubes import Tubes
+from tubes import DevTubes
 from monitor import Monitor
 from eyeone import EyeOne
 from eyeone.EyeOneConstants import TRISTIMULUS_SIZE, eNoError
 
 eyeone = EyeOne.EyeOne()#dummy=True)
-tubes = Tubes(eyeone)
+tubes = DevTubes(eyeone)
 mywin = visual.Window(size=(2048,1536), monitor='mymon',
                 color=(0,0,0), screen=1)
 mon = Monitor(eyeone, mywin)
