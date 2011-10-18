@@ -16,12 +16,13 @@ import time
 class DevTubes(object):
     """
     DevTubes encapsulates all functions controlling fluorescent tubes in the
-    box. It provides all low level functionality.
+    booth. It provides all low level functionality.
     """
     def __init__(self):
         """Setting some "global" variables.
         
-        If dummy=True no wasco runtimelibraries will be loaded."""
+        If dummy=True no wasco runtimelibraries will be loaded.
+        """
 
         self.wascocard = Wasco()    # create wasco object
         self.wasco_boardId = self.wascocard.boardId 

@@ -15,6 +15,7 @@ from ctypes import c_float
 import time
 from exceptions import ValueError
 import rpy2.robjects as robjects
+
 # want to run R-commands with R("command")
 R = robjects.r
 
@@ -93,6 +94,7 @@ class IterativeColorTubes(object):
         """
         iterativeColorMatch tries to match the "color" of the tubes to the
         target_color.
+
         * target_color -- tuple containing the xyY values as floats
         * epsilon
         * dilation
@@ -115,7 +117,7 @@ class IterativeColorTubes(object):
         while ((self.norm(diff_color) > epsilon)):
             if i == max_iterations:
                 input_color = None
-                print("not converged")
+                print("Not converged.")
                 return (None, None)
             self.tubes._tub.setColor(input_color)
             i = i + 1 # new round
@@ -176,15 +178,15 @@ class IterativeColorTubes(object):
     def createMeasurementSeries(self, starting_voltages, step_R=0,
             step_G=0, step_B=0, series_quantity=10, imi=0.5):
         """
-        createMeasurementSeries creates and returns a list of measured Points
+        createMeasurementSeries creates and returns a list of measured points
         (voltages, (x,y,Y) ).
+
         * starting_voltages
         * step_R -- red value step between two points
         * step_G -- green value step between two points
         * step_B -- blue value step between two points
         * series_quantity -- number of measurements
-        * imi -- sleep time between two measurements (inter measurement
-            interval)
+        * imi -- sleep time between two measurements (inter measurement interval)
         """
         diff_voltages = (-0.5*series_quantity*step_R,
                      -0.5*series_quantity*step_G,
@@ -206,7 +208,8 @@ class IterativeColorTubes(object):
 
     def findBestColor(self, voltage_color_list, target_color):
         """
-        findBestColor returns a color, which is nearest target_color.
+        findBestColor returns a color which is closest to target_color.
+        
         * voltage_color_list -- list containing the tuple for voltages of
             measured colors
         * target_color
@@ -217,7 +220,8 @@ class IterativeColorTubes(object):
     def measureAtColor(self, voltages_color, channel, span, stepsize=1):
         """
         measureAtColor returns a list of measured colors wich are half of
-        range size up and down the channel.
+        the range up and down the channel.
+
         * voltages_color
         * span -- number of points
         * stepsize -- integer
@@ -251,6 +255,7 @@ class IterativeColorTubes(object):
         iterativeColorMatch2 tries to match the measurement of the tubes to
         the target_color (with a different method than
         iterativeColorMatch).
+
         * target_color -- tuple of (x, y, Y)
         * iterations
         """
