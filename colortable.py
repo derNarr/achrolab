@@ -15,13 +15,13 @@ from exceptions import ValueError
 # TODO save measurements of each EyeOne Pro measurement in a folder
 # ./measurements/ with date (as R-Datafile)
 # TODO rewrite tubes.py to a slim version based on TriStim and voltages
-# TODO write class to generate and measure all possible greys of the
+# TODO write class to generate and measure all possible grays of the
 # monitor with nice plotting, which generates a list of patch_stim_colors
 
 class ColorTable(object):
     """
-    ColorTable stores colors in xyY-coordinates and data needed for
-    psychopy.visual.PatchStim, the monitor and the tubes.
+    ColorTable stores colors in xyY coordinates and all data needed for
+    psychopy.visual.PatchStim, the monitor, and the tubes.
 
     The colors in ColorTable are indexed. So there is a first and a last
     color. 
@@ -39,8 +39,9 @@ class ColorTable(object):
         """
         checkColorTable checks if color entries are still consistent. It
         measures the color of the monitor and the tubes and compares the
-        measurements with saved values.
-	* index_list (List) -- List with color indexes: [100,101,...]
+        measurements with the stored values.
+
+        	* index_list (List) -- List with color indexes: [100,101,...]
         """
         print("""WARNING ColorTable.checkColorTable is in an untested
                 experimental state!.""")
@@ -60,15 +61,15 @@ class ColorTable(object):
 	      diff_list.append((index_list[i], diff_list_tubes[i][1:4], diff_list_monitor[i][1:4]))
             return diff_list
         else:
-            print("""WARNING ColorTable.checkColorTable not
-                    implemented for this way of use.""")
+            print("""WARNING ColorTable.checkColorTable is not
+                    implemented for this sort of use.""")
             pass
 
     def checkColorTableTubes(self, index_list=None, name_list=None):
         """
         checkColorTableTubes checks if color entries for tubes are still
         consistent. It measures the color of the tubes and compares the
-        measurements with saved values.
+        measurements with the stored values.
 
         Returns a list of transformed differences ((d_x, d_y, d_Y), ...).
         The differences are defined as d_x = (x-x')/x_sd where x
@@ -95,15 +96,15 @@ class ColorTable(object):
                 f.write("\n")
             return diff_list
 	else:
-            print("""WARNING ColorTable.checkColorTableTubes not
-                    implemented for this way of use.""")
+            print("""WARNING ColorTable.checkColorTableTubes is not
+                    implemented for this sort of use.""")
             pass
     
     def checkColorTableMonitor(self, index_list=None, name_list=None):
         """
         checkColorTableMonitor checks if color entries for the monitor are
         still consistent. It measures the color of the monitor and compares
-        the measurements with saved values.
+        the measurements with the stored values.
 
         Returns a list of transformed differences ((d_x, d_y, d_Y), ...).
         The differences are defined as d_x = (x-x')/x_sd where x
@@ -130,14 +131,15 @@ class ColorTable(object):
                     f.write("\n")
             return diff_list
         else:
-            print("""WARNING ColorTable.checkColorTableMonitor not
-                    implemented for this way of use.""")
+            print("""WARNING ColorTable.checkColorTableMonitor is not
+                    implemented for this sort of use.""")
             pass
 
     def getColorByName(self,name):
         """
         Returns the first object in color_list with the given name
-        * name -- name of colorentry object
+
+            * name -- name of colorentry object
         """
         for ce in self.color_list:
             if ce.name == name:
@@ -147,7 +149,8 @@ class ColorTable(object):
     def getColorsByName(self,name_list):
         """
         Returns colorentry objects in a list, ordered after name_list
-        * name_list -- list with names of colorentry objects
+
+            * name_list -- list with names of colorentry objects
         """
         color_list = []
         for name in name_list:
@@ -157,7 +160,7 @@ class ColorTable(object):
     def createColorList(self, name_list=None, patch_stim_value_list=None,
             voltages_list=None):
         """
-        createColorList creates a list  of ColorEntry objects.
+        createColorList creates a list of ColorEntry objects.
         """
         if patch_stim_value_list and voltages_list:
             if not len(patch_stim_value_list) == len(voltages_list):
@@ -179,7 +182,7 @@ class ColorTable(object):
     def measureColorListMonitor(self):
         """
         Measures monitor for every colorentry in colorlist and overwrites
-        monitor entries in the colorentry
+        monitor entries in colorentry.
         """
         self.monitor.calibrateEyeOne()
         self.monitor.startMeasurement()
@@ -187,6 +190,9 @@ class ColorTable(object):
             colorentry.measureMonitor(self.monitor, n=10)
 
     def findVoltages(self, name_list=None):
+        """
+        findVoltages TODO
+        """
         #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         if name_list:
@@ -200,6 +206,9 @@ class ColorTable(object):
                 ce.findVoltages(self.tubes)
 
     def findVoltagesTuning(self, name_list=None):
+        """
+        findVoltagesTuning TODO
+        """
         #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
         if name_list:
@@ -216,7 +225,7 @@ class ColorTable(object):
     def measureColorListTubes(self):
         """
         Measures tubes for every colorentry in colorlist and overwrites
-        tubes' entries in the colorentry
+        tubes' entries in the colorentry.
         """
         self.tubes.startMeasurement()
         for colorentry in self.color_list:
@@ -257,7 +266,7 @@ class ColorTable(object):
                 if left: 
                     core.wait(0.2)
                     show=False
-        print("Finished showing all colors")
+        print("Finished showing all colors.")
 
 
     def saveToR(self, filename):
