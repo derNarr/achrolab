@@ -35,7 +35,7 @@ from iterativeColorTubes import IterativeColorTubes
 
 class Tubes(object):
     """
-    gives high level access to the tubes.
+    Gives high level access to the tubes.
 
     This class hides all the hardware specifications and has no
     dependencies on the eyeone module.
@@ -57,13 +57,11 @@ class Tubes(object):
         If setVoltages gets an ColorEntry object, it extracts the voltages
         from this object and sets the tubes accordingly.
 
-        WARNING: Don't set the tubes directly (e. g. via wasco), because
+        WARNING: Don't set the tubes directly (e.g. via wasco), because
         the change in voltage has to be smoothly. This prevents the
-        lighting tubes to switch off accidentally.
+        fluorescent tubes to accidentally give out.
         """
         if isinstance(voltages, ColorEntry):
-            # if setVoltages gets an ColorEntry object, extract the voltages
-            # from this object and set the tubes accordingly
             self.devtub.setVoltages(voltages.voltages)
         else:
             self.devtub.setVoltages(voltages) 
@@ -79,7 +77,7 @@ class CalibTubes(Tubes):
         """
         Initializes tubes object and stores eyeone object.
 
-        If dummy=True no runtime libraries will be loaded for wasco and
+        If dummy=True no runtime libraries will be loaded for Wasco and
         EyeOne.
         """
         self.dummy = dummy
@@ -144,8 +142,7 @@ class CalibTubes(Tubes):
             voltages -- triple of three integers (0x000, 0x000, 0x000) 
             n -- number of measurements (positive integer)
         
-        Returns list of tuples of xyY values
-            [(x1, y1, Y1), (x2, y2, Y2), ...]
+        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
@@ -170,7 +167,7 @@ class CalibTubes(Tubes):
     def findVoltages(self, color):
         """
         findVoltages tries to find voltages for a given color (as tuple) in
-        xyY color space.
+        xyY color space. TODO: how?
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
@@ -197,7 +194,8 @@ class CalibTubes(Tubes):
         """
         calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
         connected to the computer. The calibration takes around 2 minutes.
-        * imi -- inter measurement interval in seconds
+
+            * imi -- inter measurement interval in seconds
         """
         # TODO generate logfile for every calibration
 
@@ -277,11 +275,10 @@ class CalibTubes(Tubes):
         R("rgb_g <- " + rgb_g.r_repr())
         R("rgb_b <- " + rgb_b.r_repr())
         
-        print("Data read into R")
+        print("Data read into R.")
 
-        ## fit a gamma function (using nls() in R) -- formula based on
-        ## PXlab manual:
-        ## y(x) = (ax + s)^gamma (cf. Brainard et al. (2002), gamma.pdf)
+        # fit a luminance function (using nls() in R) -- non-linear
+        # regression model based on Pinheiro & Bates (2000)
         
         try:
             ## red channel
@@ -381,6 +378,7 @@ class CalibTubes(Tubes):
     def setColor(self, xyY):
         """
         setColor sets the color of the tubes to given xyY values.
+
         * xyY is a tuple of floats (x,y,Y)
         """
         #set the wasco-card to the right voltage
@@ -448,7 +446,7 @@ class CalibTubes(Tubes):
         """
         Saves parameters used for interpolation function.
         """
-        # TODO what to do, if file don't exists? Throw exception?
+        # TODO what to do, if file doesn't exist? Throw exception?
         with open(filename, 'wb') as f:
             pickle.dump(self.red_p1, f)
             pickle.dump(self.red_p2, f)
@@ -464,7 +462,7 @@ class CalibTubes(Tubes):
         """
         Loads parameters used for interpolation function.
         """
-        # TODO warn if a file get replaced?
+        # TODO warn if a file gets replaced?
         with open(filename, 'rb') as f: 
             self.red_p1   = pickle.load(f)
             self.red_p2   = pickle.load(f)
