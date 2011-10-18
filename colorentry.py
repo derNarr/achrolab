@@ -48,7 +48,7 @@ class ColorEntry(object):
  
     def measureMonitor(self, monitor, n=10):
         """
-        Measures patch_stim_value for color n times and overwrites
+        Measures patch_stim_value for certain color n times and overwrites
         self.monitor_xyY with the mean and self.monitor_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of measured values.
         """
@@ -70,14 +70,14 @@ class ColorEntry(object):
 
     def measureTubes(self, tubes, n=10, return_only=False):
         """
-        Measures voltages for color n times and overwrites self.tubes_xyY
-        with the mean and self.tubes_xyY_sd with the standard deviation
-        (1/n*sum((x-mean(x))**2)) of measured values.
+        Measures voltages for certain color n times and overwrites
+        self.tubes_xyY with the mean and self.tubes_xyY_sd with the
+        standard deviation (1/n*sum((x-mean(x))**2)) of measured values.
 
           * return_only (boolean) -- if return_only is True, function
             does NOT change self.tubes_xyY and self.tubes_xyY_sd. Instead
-            it returns a tuple, which contains xyY Values and sd values,
-            both stored in a tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).
+            it returns a tuple, which contains xyY values and sd values,
+            both stored in a tuple of three -- ((x,y,Y),(x_sd,y_sd,Y_sd)).
         """
         if not self.voltages:
             print("No voltages available. Please run findVoltages or set voltages manually.")
@@ -110,8 +110,8 @@ class ColorEntry(object):
    
     def findVoltages(self, tubes):
         """
-        Tries to find the right voltages for given monitor_xyY coordinates
-        and overwrites self.voltages and self.tubes_xyY.
+        Tries to find the right voltages (TODO: how?) for given monitor_xyY
+        coordinates and overwrites self.voltages and self.tubes_xyY.
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
@@ -123,7 +123,7 @@ class ColorEntry(object):
 
     def findVoltagesTuning(self, tubes):
         """
-        Fine-Tunes voltages towards the target monitor color.
+        Fine-tunes voltages towards the target monitor color. (TODO: how?)
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
