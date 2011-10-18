@@ -70,7 +70,7 @@ class Monitor(object):
                 + "MONITOR and press key to start measurement.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        print("Start measurement...")
+        print("Starting measurement...")
         
 
 
@@ -83,8 +83,7 @@ class Monitor(object):
             n -- number of measurements (positive integer)
 
         
-        Returns list of tuples of xyY values
-            [(x1, y1, Y1), (x2, y2, Y2), ...]
+        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
@@ -123,16 +122,15 @@ class Monitor(object):
         color and measures color on monitor.
 
         Input: 
-            color -- yxY color list or tuple of three floats
-            n -- number of measures (positive integer)
+            color -- xyY color list or tuple of three floats
+            n -- number of measurements (positive integer)
 
-        Returns list of tuples of xyY values
-            [(x1, y1, Y1), (x2, y2, Y2), ...]
+        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
             self.startMeasurement()
-        print("measureColor is not implemented yet")
+        print("measureColor is not implemented yet.")
         # TODO measureColor
         pass
     
