@@ -18,14 +18,12 @@ from ctypes import c_float
 import time
 
 from math import exp,log
+import numpy as np
+from scipy.optimize import curve_fit
 
 from convert import xyY2rgb
 
 import pickle
-
-import rpy2.robjects as robjects
-# want to run R-commands with R("command")
-R = robjects.r
 
 import devtubes
 
@@ -241,8 +239,8 @@ class CalibTubes(Tubes):
         for i in range(50):
             voltages.append( (0x0, 0x0, (0x400 + 61 * i)) )
 
-        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where the EyeOne
-                                            # Pro saves the tristim.
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
+                                                  # saves tristim.
         rgb_list = list()
         
         for voltage in voltages:
@@ -258,94 +256,82 @@ class CalibTubes(Tubes):
         
         print("Measurement finished.")
         self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
-                                           # measurement is over
-        
-        # get python objects into R -- maybe there is a better way TODO
-        voltage_r = robjects.IntVector([x[0] for x in voltages])
-        voltage_g = robjects.IntVector([x[1] for x in voltages])
-        voltage_b = robjects.IntVector([x[2] for x in voltages])
-        rgb_r = robjects.FloatVector([x[0] for x in rgb_list])
-        rgb_g = robjects.FloatVector([x[1] for x in rgb_list])
-        rgb_b = robjects.FloatVector([x[2] for x in rgb_list])
-        
-        R("voltage_r <- " + voltage_r.r_repr())
-        R("voltage_g <- " + voltage_g.r_repr())
-        R("voltage_b <- " + voltage_b.r_repr())
-        R("rgb_r <- " + rgb_r.r_repr())
-        R("rgb_g <- " + rgb_g.r_repr())
-        R("rgb_b <- " + rgb_b.r_repr())
-        
-        print("Data read into R.")
-
-        # fit a luminance function (using nls() in R) -- non-linear
-        # regression model based on Pinheiro & Bates (2000)
+                                            # measurement is over
+        voltage_r = voltages[0]
+        voltage_g = voltages[1]
+        voltage_b = voltages[2]
+        rgb_r = rgb_list[0]
+        rgb_g = rgb_list[1]
+        rgb_b = rgb_list[2]
         
         try:
-            ## red channel
-            R('''
-            len3 <- floor(length(voltage_r)/3)
-            idr <- rgb_r >= 10 #only use rgb values greater 10 
-            idr[-(2:len3)] = FALSE # area measured the red values
-            rgb_r_small <- rgb_r[idr]
-            voltage_r_small <- voltage_r[idr]
-            nls_r <- nls(rgb_r_small ~ p1 + (p2 - p1)*exp(-exp(p3)*voltage_r_small),
-                         start=c(p1=1000, p2=-100, p3=-7))
-            #nls_r <- nls(rgb_r_small ~ p1 + p2*voltage_r_small,
-            #             start=c(p1=0, p2=1))
-            ''')
-            ## green channel
-            R('''
-            idg <- rgb_g >= 10 #only use rgb values greater 10
-            idg[-((len3+1):(2*len3))] = FALSE # area measured the green values
-            rgb_g_small <- rgb_g[idg]
-            voltage_g_small <- voltage_g[idg]
-            nls_g <- nls(rgb_g_small ~ p1 + (p2 - p1)*exp(-exp(p3)*voltage_g_small),
-                         start=c(p1=1000, p2=-100, p3=-7))
-            #nls_g <- nls(rgb_g_small ~ p1 + p2*voltage_g_small,
-            #             start=c(p1=0, p2=1))
-            ''')
-            ## blue channel
-            R('''
-            idb <- rgb_b >= 10 #only use rgb values greater 10
-            idb[-((2*len3+1):(3*len3))] = FALSE # area measured the blue values
-            rgb_b_small <- rgb_b[idb]
-            voltage_b_small <- voltage_b[idb]
-            nls_b <- nls(rgb_b_small ~ p1 + (p2 - p1)*exp(-exp(p3)*voltage_b_small),
-                         start=c(p1=1000, p2=-100, p3=-7))
-            #nls_b <- nls(rgb_b_small ~ p1 + p2*voltage_b_small,
-            #             start=c(p1=0, p2=1))
-            ''')
+            # fit a luminance function -- non-linear regression model based
+            # on Pinheiro & Bates (2000)
+    
+            def func(x, a, b, c):
+                return a + (b - a)*np.exp(-np.exp(c)*x)
             
+            len3 = len(voltage_r)/3
+    
+            # red channel
+            idr = range(len3)
+            for i in idr:
+                rgb_r_small = rgb_r[i]
+                voltage_r_small = voltage_r[i]
+            popt_r, pcov_r = curve_fit(func, voltage_r_small, rgb_r_small,
+                    p0=[1000, -100, -7])
+            
+            # green channel
+            idg = range(len3, 2*len3)
+            for i in idg:
+                rgb_g_small = rgb_g[i]
+                voltage_g_small = voltage_g[i]
+            popt_g, pcov_g = curve_fit(func, voltage_g_small, rgb_g_small,
+                    p0=[1000, -100, -7])
+    
+            # blue channel
+            idg = range(2*len3, 3*len3)
+            for i in idg:
+                rgb_b_small = rgb_b[i]
+                voltage_b_small = voltage_b[i]
+            popt_b, pcov_b = curve_fit(func, voltage_b_small, rgb_b_small,
+                    p0=[1000, -100, -7])
+    
             print("Parameters estimated.")
         except:
             print("Failed to estimate parameters, saved data anyway.")
-            # save all created R objects to the file calibration_tubes.RData
-            R('save(list=ls(), file="calibdata/calibration/calibration_tubes' + 
-                    time.strftime("%Y%m%d_%H%M") + '.RData")')
-            return
+            calibFile = open('calibdata/measurements/calibration_tubes' +
+                    time.strftime("%Y%m%d_%H%M") +  '.txt', 'w')
+            calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
+            calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
+            calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
+            calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
+            calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
+            calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
 
-        # extract estimated parameters in R to make them easier available
-        # in python
-        R('''
-        p_r <- coef(nls_r)
-        p_g <- coef(nls_g)
-        p_b <- coef(nls_b)
-        ''')
+        # save all created objects to calibration_tubes.txt
+        calibFile = open('calibdata/measurements/calibration_tubes' +
+                time.strftime("%Y%m%d_%H%M") +  '.txt', 'w')
+        calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
+        calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
+        calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
+        calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
+        calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
+        calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
+        calibFile.write('parameters R:' + str(popt_r) + '\n')
+        calibFile.write('parameters G:' + str(popt_g) + '\n')
+        calibFile.write('parameters B:' + str(popt_b) + '\n')
         
-        # save all created R objects to the file calibration_tubes.RData
-        R('save(list=ls(), file="calibdata/calibration/calibration_tubes' + 
-                time.strftime("%Y%m%d_%H%M") + '.RData")')
-
         # save the estimated parameters to the tube object
-        self.red_p1 = R['p_r'][0]
-        self.red_p2 = R['p_r'][1]
-        self.red_p3 = R['p_r'][2]
-        self.green_p1 = R['p_g'][0]
-        self.green_p2 = R['p_g'][1]
-        self.green_p3 = R['p_g'][2]
-        self.blue_p1 = R['p_b'][0]
-        self.blue_p2 = R['p_b'][1]
-        self.blue_p3 = R['p_b'][2]
+        self.red_p1 = popt_r[0]
+        self.red_p2 = popt_r[1]
+        self.red_p3 = popt_r[2]
+        self.green_p1 = popt_g[0]
+        self.green_p2 = popt_g[1]
+        self.green_p3 = popt_g[2]
+        self.blue_p1 = popt_b[0]
+        self.blue_p2 = popt_b[1]
+        self.blue_p3 = popt_b[2]
 
         print("red_p1" + str(self.red_p1)) 
         print("red_p2" + str(self.red_p2)) 
@@ -361,29 +347,14 @@ class CalibTubes(Tubes):
         self.IsCalibrated = True
         print("Calibration of tubes finished.")
 
-    #def _sRGBtoU_r(self, red_sRGB):
-    #    x = float(red_sRGB)
-    #    return ((x - self.red_p1)/self.red_p2)
-
-    #def _sRGBtoU_g(self, green_sRGB):
-    #    x = float(green_sRGB)
-    #    return ((x - self.green_p1)/self.green_p2)
-
-    #def _sRGBtoU_b(self, blue_sRGB):
-    #    x = float(blue_sRGB)
-    #    return ((x - self.blue_p1)/self.blue_p2)
-
-    # returns tuple
-
     def setColor(self, xyY):
         """
         setColor sets the color of the tubes to given xyY values.
 
         * xyY is a tuple of floats (x,y,Y)
         """
-        #set the wasco-card to the right voltage
+        # set wasco card to correct voltage
         self.setVoltages( self.xyYtoU(xyY) )
-
 
     def xyYtoU(self, xyY):
         """
@@ -458,7 +429,7 @@ class CalibTubes(Tubes):
             pickle.dump(self.blue_p2, f)
             pickle.dump(self.blue_p3, f)
 
-    def loadParameter(self, filename="./lastParamterTubes.pkl"):
+    def loadParameter(self, filename="./lastParameterTubes.pkl"):
         """
         Loads parameters used for interpolation function.
         """
@@ -480,98 +451,7 @@ class CalibTubes(Tubes):
         plotCalibration plots luminance curves for each channel (data and
         fitted curve).
         """
-        if(not self.IsCalibrated):
-            return
-        # variables used in this R code are created in calibrate()
-        # idr, idg, idb, voltage_r, voltage_g,
-        # voltage_b, rgb_r, rgb_g, rgb_b, p_r, p_g, p_b
+        # TODO implement with matplotlib --> till then use
+        # plotCalibration.R in achrolabutils
+        pass
 
-        # plot calibration curves and data points for each channel
-        R('pdf("calibdata/calibration/calibration_curves_rgb_tubes'+time.strftime("%Y%m%d_%H%M")
-            +'.pdf", width=9, height=8)')
-
-        R('''
-        par(mfrow=c(3,3))
-        len3 <- floor(length(voltage_r)/3)
-        # only red voltage
-        plot(voltage_r[1:len3], rgb_r[1:len3], col="red", ylim=c(0,256),
-            pch=19,
-            main="red channel vs. voltage\ndata points and
-            calibration curve",
-            xlab="voltage", ylab="red rgb-value")
-        points(voltage_r[1:len3], rgb_g[1:len3], pch=21, col="green")
-        points(voltage_r[1:len3], rgb_b[1:len3], pch=21, col="blue")
-        #curve(p_r[1] + p_r[2]*x, col="red", add=T, xlab="", ylab="")
-        curve(p_r[1] + (p_r[2] - p_r[1])*exp(-exp(p_r[3])*x), col="red",
-            add=T, xlab="", ylab="")
-        
-        # only green voltage
-        plot(voltage_g[(len3+1):(2*len3)], rgb_g[(len3+1):(2*len3)], 
-            col="green", ylim=c(0,256), pch=19,
-            main="green channel vs. voltage\ndata points and
-            calibration curve",
-            xlab="voltage", ylab="green rgb-value")
-        points(voltage_g[(len3+1):(2*len3)], rgb_r[(len3+1):(2*len3)], pch=21,
-              col="red")
-        points(voltage_g[(len3+1):(2*len3)], rgb_b[(len3+1):(2*len3)], pch=21,
-              col="blue")
-        #curve(p_g[1] + p_g[2]*x, col="green", add=T, xlab="", ylab="")
-        curve(p_g[1] + (p_g[2] - p_g[1])*exp(-exp(p_g[3])*x), col="green",
-            add=T, xlab="", ylab="")
-        
-        # only blue voltage
-        plot(voltage_b[(2*len3+1):(3*len3)], rgb_b[(2*len3+1):(3*len3)],
-            col="blue", ylim=c(0,256), pch=19,
-            main="blue channel vs. voltage\ndata points and
-            calibration curve",
-            xlab="voltage", ylab="blue rgb-value")
-        points(voltage_b[(2*len3+1):(3*len3)], rgb_g[(2*len3+1):(3*len3)], 
-            pch=21, col="green")
-        points(voltage_b[(2*len3+1):(3*len3)], rgb_r[(2*len3+1):(3*len3)], 
-            pch=21, col="red")
-        #curve(p_b[1] + p_b[2]*x, col="blue", add=T, xlab="", ylab="")
-        curve(p_b[1] + (p_b[2] - p_b[1])*exp(-exp(p_b[3])*x), col="blue",
-            add=T, xlab="", ylab="")
-        
-        # residual plots free y-scale
-        #pred_r <- p_r[1] + p_r[2]*voltage_r
-        #pred_g <- p_g[1] + p_g[2]*voltage_g
-        #pred_b <- p_b[1] + p_b[2]*voltage_b
-
-        pred_r <- p_r[1] + (p_r[2] - p_r[1])*exp(-exp(p_r[3])*voltage_r)
-        pred_g <- p_g[1] + (p_g[2] - p_g[1])*exp(-exp(p_g[3])*voltage_g)
-        pred_b <- p_b[1] + (p_b[2] - p_b[1])*exp(-exp(p_b[3])*voltage_b)
-
-        resid_r <- rgb_r - pred_r
-        resid_g <- rgb_g - pred_g
-        resid_b <- rgb_b - pred_b
-
-        plot(voltage_r[1:len3], resid_r[1:len3], pch=19, col="red",
-            type="h",
-            main="residuals (free y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-        plot(voltage_g[(len3+1):(2*len3)], resid_g[(len3+1):(2*len3)], 
-            pch=19, col="green", type="h",
-            main="residuals (free y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-        plot(voltage_b[(2*len3+1):(3*len3)], resid_b[(2*len3+1):(3*len3)], 
-            pch=19, col="blue", type="h",
-            main="residuals (free y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-        
-        # residual plots fixed y-scale
-        plot(voltage_r[1:len3], resid_r[1:len3], pch=19, col="red",
-            ylim=c(-10,10), type="h",
-            main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-        plot(voltage_g[(len3+1):(2*len3)], resid_g[(len3+1):(2*len3)], 
-            pch=19, col="green", ylim=c(-10,10), type="h",
-            main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-        plot(voltage_b[(2*len3+1):(3*len3)], resid_b[(2*len3+1):(3*len3)], 
-            pch=19, col="blue", ylim=c(-10,10), type="h",
-            main="residuals (fixed y-axis)", xlab="voltage", ylab="resid")
-        abline(h=0)
-
-        dev.off()
-        ''')
