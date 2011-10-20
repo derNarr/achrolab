@@ -63,8 +63,8 @@ class Monitor(object):
 
     def startMeasurement(self):
         """
-        Simply prompts to move the EyeOne Pro to measurement position and
-        wait for button response.
+        Simply prompts to move EyeOne Pro to measurement position and
+        waits for button response.
         """
         print("\nPlease put EyeOne Pro in measurement position for"
                 + "MONITOR and press key to start measurement.")
