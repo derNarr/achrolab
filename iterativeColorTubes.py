@@ -14,10 +14,6 @@ from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from exceptions import ValueError
-import rpy2.robjects as robjects
-
-# want to run R-commands with R("command")
-R = robjects.r
 
 class IterativeColorTubes(object):
 
