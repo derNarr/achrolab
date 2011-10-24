@@ -10,13 +10,14 @@ from psychopy import visual
 from ..colorentry import ColorEntry
 from ..eyeone import EyeOne
 from ..monitor import Monitor
-from ..tubes import Tubes
+from ..tubes import Tubes, CalibTubes
 #from ..colortable import ColorTable
 
 eyeone = EyeOne.EyeOne(dummy=True)
 mywin = visual.Window(size=(800,600), color=(0,0,0))
 mon = Monitor(eyeone, mywin)
 tub = Tubes()
+calibtub = CalibTubes(eyeone)
 
 
 class TestColorEntry(object):
@@ -36,17 +37,19 @@ class TestColorEntry(object):
 
     def testMeasureTubesDRY(self):
         ce = ColorEntry("test1", voltages=(1000,1200,1500))
-        ce.findVoltagesTuning(tub)
+        ce.measureTubes(calibtub)
 
-    def testFindVoltagesDRY(self):
-        ce = ColorEntry("test1", voltages=(1000,1200,1500))
-        ce.monitor_xyY = (0.1,0.2, 20)
-        ce.findVoltages(tub)
+    # NEED TO MUCH TIME to run
+    #def testFindVoltagesDRY(self):
+    #    ce = ColorEntry("test1", voltages=(1000,1200,1500))
+    #    ce.monitor_xyY = (0.1,0.2, 20)
+    #    ce.findVoltages(calibtub)
 
-    def testFindVoltagesTuningDRY(self):
-        ce = ColorEntry("test1", voltages=(1000,1200,1500))
-        ce.monitor_xyY = (0.1,0.2, 20)
-        ce.findVoltagesTuning(tub)
+    # NEED TO MUCH TIME to run
+    #def testFindVoltagesTuningDRY(self):
+    #    ce = ColorEntry("test1", voltages=(1000,1200,1500))
+    #    ce.monitor_xyY = (0.1,0.2, 20)
+    #    ce.findVoltagesTuning(calibtub)
 
 
 

@@ -6,7 +6,7 @@
 # Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-17 KS
+# last mod 2011-10-24 KS
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -84,7 +84,7 @@ class CalibTubes(Tubes):
         self.eyeone_calibrated = False
         self.IsCalibrated = False           # TODO: Why do we have 2 variables for calibrated
 
-        self._tub = devtubes.DevTubes()
+        self.devtub = devtubes.DevTubes()
         self.loadParameter(calibfile)
 
         self.ict = IterativeColorTubes(self, self.eyeone)

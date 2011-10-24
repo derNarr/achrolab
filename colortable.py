@@ -35,9 +35,9 @@ class ColorTable(object):
             filetype = filename.split(".")[-1]
             if filetype == "pkl":
                 self.loadFromPickle(filename)
-            if filetype == "csv":
+            elif filetype == "csv":
                 self.loadFromCsv(filename)
-            if filetype in ("RData", "rdata", "Rdata", "R", "RDat", "rdat",
+            elif filetype in ("RData", "rdata", "Rdata", "R", "RDat", "rdat",
                     "Rdat"):
                 self.loadFromR(filename)
             else:

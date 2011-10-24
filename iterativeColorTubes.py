@@ -6,7 +6,7 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-17 KS
+# last mod 2011-10-24 KS
 
 from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne
@@ -102,7 +102,7 @@ class IterativeColorTubes(object):
         measured_color = (0,0,0)
         diff_color = (1.0, 1.0, 1.0)
         
-        self.tubes._tub.setColor(input_color)
+        self.tubes.devtub.setColor(input_color)
         
         print("Starting measurement...")
         
@@ -115,7 +115,7 @@ class IterativeColorTubes(object):
                 input_color = None
                 print("Not converged.")
                 return (None, None)
-            self.tubes._tub.setColor(input_color)
+            self.tubes.devtub.setColor(input_color)
             i = i + 1 # new round
             time.sleep(imi)
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
