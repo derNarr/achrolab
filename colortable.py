@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-24 KS
+# last mod 2011-10-31 DW
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -167,7 +167,22 @@ class ColorTable(object):
         """
         Loads object to comma separated text file (.csv).
         """
-        pass
+        with open(filename, "r") as f:
+            f.readline() 
+            currentline = f.readline()
+            while currentline:
+                currentline = currentline.split(',')
+                currentline = [x.split() for x in currentline]
+                ce = ColorEntry()
+                ce.name = currentline[0]
+                ce.patch_stim_value = currentline[1]
+                ce.monitor_xyY = currentline[2], currentline[3], currentline[4]
+                ce.monitor_xyY_sd = currentline[5], currentline[6], currentline[7]
+                ce.voltages = currentline[8], currentline[9], currentline[10]
+                ce.tubes_xyY = currentline[11], currentline[12], currentline[13]
+                ce.tubes_xyY_sd = currentline[14], currentline[15], currentline[16]
+                self.color_list.append(ce)
+                currentline = f.readline()
 
     def loadFromPickle(self, filename):
         """
