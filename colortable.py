@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-31 DW
+# last mod 2011-11-07 KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -67,7 +67,6 @@ class ColorTable(object):
            color_list.append(getColorByName(name)) 
         return color_list
 
-
     def showColorList(self, tubes, monitor, index_list=None, name_list=None):
         """
         Draws every color on the screen and changes the illumination of the
@@ -101,13 +100,6 @@ class ColorTable(object):
                     core.wait(0.2)
                     show=False
         print("Finished showing all colors.")
-
-
-    def saveToR(self, filename):
-        """
-        Saves object to R.
-        """
-        pass
 
     def saveToCsv(self, filename):
         """
@@ -149,19 +141,12 @@ class ColorTable(object):
                         f.write(", "+str(x))
                 f.write("\n")
 
-
     def saveToPickle(self, filename):
         """
         Saves object to pickle file (.pkl).
         """
         with open(filename, "wb") as f:
             pickle.dump(self.color_list, f)
-
-    def loadFromR(self, filename):
-        """
-        Loads object from R.
-        """
-        pass
 
     def loadFromCsv(self, filename):
         """
