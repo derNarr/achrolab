@@ -31,6 +31,7 @@ class ColorTable(object):
     """
 
     def __init__(self, filename=False):
+        self.color_list = []
         if filename:
             filetype = filename.split(".")[-1]
             if filetype == "pkl":
@@ -43,7 +44,6 @@ class ColorTable(object):
             else:
                 print("Warning: Cannot load ColorTable. Wrong filetype.")
 
-        self.color_list = []
 
     def getColorByName(self,name):
         """
@@ -64,7 +64,7 @@ class ColorTable(object):
         """
         color_list = []
         for name in name_list:
-           color_list.append(getColorByName(name)) 
+           color_list.append(self.getColorByName(name))
         return color_list
 
     def showColorList(self, tubes, monitor, index_list=None, name_list=None):
@@ -152,20 +152,34 @@ class ColorTable(object):
         """
         Loads object to comma separated text file (.csv).
         """
+        def float_None(x):
+            if x=="NA":
+                return None
+            else:
+                return float(x)
         with open(filename, "r") as f:
             f.readline() 
             currentline = f.readline()
             while currentline:
                 currentline = currentline.split(',')
-                currentline = [x.split() for x in currentline]
-                ce = ColorEntry()
-                ce.name = currentline[0]
-                ce.patch_stim_value = currentline[1]
-                ce.monitor_xyY = currentline[2], currentline[3], currentline[4]
-                ce.monitor_xyY_sd = currentline[5], currentline[6], currentline[7]
-                ce.voltages = currentline[8], currentline[9], currentline[10]
-                ce.tubes_xyY = currentline[11], currentline[12], currentline[13]
-                ce.tubes_xyY_sd = currentline[14], currentline[15], currentline[16]
+                currentline = [x.strip() for x in currentline]
+                ce = ColorEntry(currentline[0])
+                ce.patch_stim_value = float_None(currentline[1])
+                ce.monitor_xyY = (float_None(currentline[2]),
+                                  float_None(currentline[3]),
+                                  float_None(currentline[4]))
+                ce.monitor_xyY_sd = (float_None(currentline[5]),
+                                     float_None(currentline[6]),
+                                     float_None(currentline[7]))
+                ce.voltages = (float_None(currentline[8]),
+                               float_None(currentline[9]),
+                               float_None(currentline[10]))
+                ce.tubes_xyY = (float_None(currentline[11]),
+                                float_None(currentline[12]),
+                                float_None(currentline[13]))
+                ce.tubes_xyY_sd = (float_None(currentline[14]),
+                                   float_None(currentline[15]),
+                                   float_None(currentline[16]))
                 self.color_list.append(ce)
                 currentline = f.readline()
 

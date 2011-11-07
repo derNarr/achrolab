@@ -5,7 +5,7 @@
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-24 KS
+# last mod 2011-11-07 KS
 
 from psychopy import visual
 
@@ -28,20 +28,23 @@ class TestColorTable(object):
     """
 
     def testInitColorTable(self):
-        self.test_table = ColorTable("./tests/testdata/color_table.pkl")
+        test_table = ColorTable("./tests/testdata/color_table.csv")
 
     def testGetColorByName(self):
-        assert isinstance( self.test_table.getColorByName("color121"),
+        test_table = ColorTable("./tests/testdata/color_table.csv")
+        assert isinstance( test_table.getColorByName("color121"),
                 ColorEntry)
 
     def testGetColorsByName(self):
-        ce_list = self.test_table.getColorsByName( ["color1",
+        test_table = ColorTable("./tests/testdata/color_table.csv")
+        ce_list = test_table.getColorsByName( ["color1",
             "color2", "color3"] )
         assert isinstance( ce_list , list)
         assert isinstance( ce_list[0], ColorEntry)
 
     def testShowColorList(self):
-        self.test_table.showColorList(tub, mon,index_list=[3,4,5])
+        test_table = ColorTable("./tests/testdata/color_table.csv")
+        test_table.showColorList(tub, mon,index_list=[3,4,5])
 
     def testSaveToR(self):
         pass
