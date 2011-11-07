@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-14 KS
+# last mod 2011-11-07 KS
 
 class ColorEntry(object):
     """
@@ -57,9 +57,9 @@ class ColorEntry(object):
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
         # calculate mean
-        self.monitor_xyY = ( sum(x_list)/float(len(x_list)),
-                             sum(y_list)/float(len(y_list)),
-                             sum(Y_list)/float(len(Y_list)) )
+        self.monitor_xyY = (sum(x_list)/float(len(x_list)),
+                            sum(y_list)/float(len(y_list)),
+                            sum(Y_list)/float(len(Y_list)))
         # calculate standard deviaion 1/n * sum((x-mean(x))**2)
         # should we use 1/(n+1) ?? todo
         self.monitor_xyY_sd = (  
@@ -87,25 +87,24 @@ class ColorEntry(object):
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
         # calculate mean
-	if return_only:
-	    return ( 
-			(sum(x_list)/float(len(x_list)),
-			sum(y_list)/float(len(y_list)),
-			sum(Y_list)/float(len(Y_list)) ),
-			(sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
-		   	sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
-		    	sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) ) )
-	else :
-	    self.tubes_xyY = ( 
-		    sum(x_list)/float(len(x_list)),
-		    sum(y_list)/float(len(y_list)),
-		    sum(Y_list)/float(len(Y_list)) )
-	    # calculate standard deviaion 1/n * sum((x-mean(x))**2)
-	    # should we use 1/(n+1) ?? todo
-	    self.tubes_xyY_sd = ( 
-		    sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
-		    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
-		    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) )
+        if return_only:
+            # return tuple (xyY, voltages)
+            return((sum(x_list)/float(len(x_list)),
+                    sum(y_list)/float(len(y_list)),
+                    sum(Y_list)/float(len(Y_list))),
+                   (sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
+                    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) ) )
+        else :
+            self.tubes_xyY = ( sum(x_list)/float(len(x_list)),
+                               sum(y_list)/float(len(y_list)),
+                               sum(Y_list)/float(len(Y_list)) )
+            # calculate standard deviaion 1/n * sum((x-mean(x))**2)
+            # should we use 1/(n+1) ?? todo
+            self.tubes_xyY_sd = (
+                    sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
+                    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)))
 
    
     def findVoltages(self, tubes):
@@ -134,4 +133,4 @@ class ColorEntry(object):
         self.tubes_xyY_sd = None
 
         self.measureTubes(tubes)
-        
+
