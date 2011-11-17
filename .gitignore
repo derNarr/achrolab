@@ -3,4 +3,6 @@
 *.pkl
 *.csv
 *.RData
+*.swp
+calibdata/measurements/*
 

@@ -6,45 +6,35 @@
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-06-28, KS
+# last mod 2011-10-24 KS
 
-from devtubes import Tubes
+from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne
-from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
-                                    I1_SINGLE_EMISSION,
-                                    eNoError,
-                                    COLOR_SPACE_KEY, 
-                                    COLOR_SPACE_CIExyY,
-                                    TRISTIMULUS_SIZE)
+from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from exceptions import ValueError
-from psychopy import visual
-import rpy2.robjects as robjects
-# want to run R-commands with R("command")
-R = robjects.r
 
 class IterativeColorTubes(object):
 
-    def __init__(self, tubes=Tubes, eyeone=EyeOne):
+    def __init__(self, tubes=DevTubes(), eyeone=EyeOne()):
        """
        * self -- IterativeColorTubes object
-       * tubes -- achrolab.devtubes.Tubes object
+       * tubes -- achrolab.devtubes.DevTubes object
        * eyeone -- calibrated EyeOne object
        """
        self.tubes = tubes
        self.eyeone = eyeone
 
     def write_data(self, voltage_color_list, filename):
-        f = open("./tune/" + filename, "w")
-        f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
-        for vc in voltage_color_list:
-            for voltage in vc[0]:
-                f.write(str(voltage) + ", ")
-            xyY = vc[1]
-            f.write(str(xyY[0]) + ", " + str(xyY[1]) + ", " +
-                    str(xyY[2]) + "\n")
-        f.close()
+        with open("./calibdata/measurements/" + filename, "w") as f:
+            f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
+            for vc in voltage_color_list:
+                for voltage in vc[0]:
+                    f.write(str(voltage) + ", ")
+                xyY = vc[1]
+                f.write(str(xyY[0]) + ", " + str(xyY[1]) + ", " +
+                        str(xyY[2]) + "\n")
      
 
 
@@ -100,6 +90,7 @@ class IterativeColorTubes(object):
         """
         iterativeColorMatch tries to match the "color" of the tubes to the
         target_color.
+
         * target_color -- tuple containing the xyY values as floats
         * epsilon
         * dilation
@@ -111,7 +102,7 @@ class IterativeColorTubes(object):
         measured_color = (0,0,0)
         diff_color = (1.0, 1.0, 1.0)
         
-        self.tubes._tub.setColor(input_color)
+        self.tubes.devtub.setColor(input_color)
         
         print("Starting measurement...")
         
@@ -122,9 +113,9 @@ class IterativeColorTubes(object):
         while ((self.norm(diff_color) > epsilon)):
             if i == max_iterations:
                 input_color = None
-                print("not converged")
+                print("Not converged.")
                 return (None, None)
-            self.tubes._tub.setColor(input_color)
+            self.tubes.devtub.setColor(input_color)
             i = i + 1 # new round
             time.sleep(imi)
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
@@ -183,15 +174,15 @@ class IterativeColorTubes(object):
     def createMeasurementSeries(self, starting_voltages, step_R=0,
             step_G=0, step_B=0, series_quantity=10, imi=0.5):
         """
-        createMeasurementSeries creates and returns a list of measured Points
+        createMeasurementSeries creates and returns a list of measured points
         (voltages, (x,y,Y) ).
+
         * starting_voltages
         * step_R -- red value step between two points
         * step_G -- green value step between two points
         * step_B -- blue value step between two points
         * series_quantity -- number of measurements
-        * imi -- sleep time between two measurements (inter measurement
-            interval)
+        * imi -- sleep time between two measurements (inter measurement interval)
         """
         diff_voltages = (-0.5*series_quantity*step_R,
                      -0.5*series_quantity*step_G,
@@ -213,7 +204,8 @@ class IterativeColorTubes(object):
 
     def findBestColor(self, voltage_color_list, target_color):
         """
-        findBestColor returns a color, which is nearest target_color.
+        findBestColor returns a color which is closest to target_color.
+        
         * voltage_color_list -- list containing the tuple for voltages of
             measured colors
         * target_color
@@ -224,7 +216,8 @@ class IterativeColorTubes(object):
     def measureAtColor(self, voltages_color, channel, span, stepsize=1):
         """
         measureAtColor returns a list of measured colors wich are half of
-        range size up and down the channel.
+        the range up and down the channel.
+
         * voltages_color
         * span -- number of points
         * stepsize -- integer
@@ -258,6 +251,7 @@ class IterativeColorTubes(object):
         iterativeColorMatch2 tries to match the measurement of the tubes to
         the target_color (with a different method than
         iterativeColorMatch).
+
         * target_color -- tuple of (x, y, Y)
         * iterations
         """
@@ -302,7 +296,7 @@ class IterativeColorTubes(object):
                     self.findBestColor(measured_color_list_B, target_color), 
                     channel="blue", span=stepsize)
 
-            # now serch for point with the smallest distance to target_color
+            # now search for point with the smallest distance to target_color
             # should return input_color or input_voltages
             measured_voltage_color_list = []
             measured_voltage_color_list.extend( measured_color_R )

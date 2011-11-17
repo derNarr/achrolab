@@ -5,7 +5,7 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-06-28, KS
+# last mod 2011-11-07 KS
 
 class ColorEntry(object):
     """
@@ -48,7 +48,7 @@ class ColorEntry(object):
  
     def measureMonitor(self, monitor, n=10):
         """
-        Measures patch_stim_value for color n times and overwrites
+        Measures patch_stim_value for certain color n times and overwrites
         self.monitor_xyY with the mean and self.monitor_xyY_sd with the
         standard deviation (1/n*sum((x-mean(x))**2)) of measured values.
         """
@@ -57,9 +57,9 @@ class ColorEntry(object):
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
         # calculate mean
-        self.monitor_xyY = ( sum(x_list)/float(len(x_list)),
-                             sum(y_list)/float(len(y_list)),
-                             sum(Y_list)/float(len(Y_list)) )
+        self.monitor_xyY = (sum(x_list)/float(len(x_list)),
+                            sum(y_list)/float(len(y_list)),
+                            sum(Y_list)/float(len(Y_list)))
         # calculate standard deviaion 1/n * sum((x-mean(x))**2)
         # should we use 1/(n+1) ?? todo
         self.monitor_xyY_sd = (  
@@ -70,14 +70,14 @@ class ColorEntry(object):
 
     def measureTubes(self, tubes, n=10, return_only=False):
         """
-        Measures voltages for color n times and overwrites self.tubes_xyY
-        with the mean and self.tubes_xyY_sd with the standard deviation
-        (1/n*sum((x-mean(x))**2)) of measured values.
+        Measures voltages for certain color n times and overwrites
+        self.tubes_xyY with the mean and self.tubes_xyY_sd with the
+        standard deviation (1/n*sum((x-mean(x))**2)) of measured values.
 
           * return_only (boolean) -- if return_only is True, function
             does NOT change self.tubes_xyY and self.tubes_xyY_sd. Instead
-            it returns a tuple, which contains xyY Values and sd values,
-            both stored in a tuple of 3 - ((x,y,Y),(x_sd,y_sd,Y_sd)).
+            it returns a tuple, which contains xyY values and sd values,
+            both stored in a tuple of three -- ((x,y,Y),(x_sd,y_sd,Y_sd)).
         """
         if not self.voltages:
             print("No voltages available. Please run findVoltages or set voltages manually.")
@@ -87,31 +87,30 @@ class ColorEntry(object):
         y_list = [xyY[1] for xyY in xyY_list]
         Y_list = [xyY[2] for xyY in xyY_list]
         # calculate mean
-	if return_only:
-	    return ( 
-			(sum(x_list)/float(len(x_list)),
-			sum(y_list)/float(len(y_list)),
-			sum(Y_list)/float(len(Y_list)) ),
-			(sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
-		   	sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
-		    	sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) ) )
-	else :
-	    self.tubes_xyY = ( 
-		    sum(x_list)/float(len(x_list)),
-		    sum(y_list)/float(len(y_list)),
-		    sum(Y_list)/float(len(Y_list)) )
-	    # calculate standard deviaion 1/n * sum((x-mean(x))**2)
-	    # should we use 1/(n+1) ?? todo
-	    self.tubes_xyY_sd = ( 
-		    sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
-		    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
-		    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) )
+        if return_only:
+            # return tuple (xyY, voltages)
+            return((sum(x_list)/float(len(x_list)),
+                    sum(y_list)/float(len(y_list)),
+                    sum(Y_list)/float(len(Y_list))),
+                   (sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
+                    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)) ) )
+        else :
+            self.tubes_xyY = ( sum(x_list)/float(len(x_list)),
+                               sum(y_list)/float(len(y_list)),
+                               sum(Y_list)/float(len(Y_list)) )
+            # calculate standard deviaion 1/n * sum((x-mean(x))**2)
+            # should we use 1/(n+1) ?? todo
+            self.tubes_xyY_sd = (
+                    sum([(x-self.tubes_xyY[0])**2 for x in x_list])/float(len(x_list)),
+                    sum([(y-self.tubes_xyY[1])**2 for y in y_list])/float(len(y_list)),
+                    sum([(Y-self.tubes_xyY[2])**2 for Y in Y_list])/float(len(Y_list)))
 
    
     def findVoltages(self, tubes):
         """
-        Tries to find the right voltages for given monitor_xyY coordinates
-        and overwrites self.voltages and self.tubes_xyY.
+        Tries to find the right voltages (TODO: how?) for given monitor_xyY
+        coordinates and overwrites self.voltages and self.tubes_xyY.
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
@@ -123,7 +122,7 @@ class ColorEntry(object):
 
     def findVoltagesTuning(self, tubes):
         """
-        Fine-Tunes voltages towards the target monitor color.
+        Fine-tunes voltages towards the target monitor color. (TODO: how?)
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")
@@ -134,18 +133,4 @@ class ColorEntry(object):
         self.tubes_xyY_sd = None
 
         self.measureTubes(tubes)
-
-        
-if __name__ == "__main__":
-    from monitor import Monitor
-    from eyeone import EyeOne
-    from tubes import Tubes
-    eyeone = EyeOne.EyeOne(dummy=True)
-    tub = Tubes(eyeone)
-    mon = Monitor(eyeone)
-    testentry = ColorEntry("grey1", patch_stim_value=0.2)
-    testentry.measureMonitor(mon, n=1)
-    testentry.measureTubes(tub, n=1)
-    testentry.findVoltages(tub)
-
 

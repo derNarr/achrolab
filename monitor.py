@@ -10,7 +10,6 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     eNoError,
                                     COLOR_SPACE_KEY, 
                                     COLOR_SPACE_CIExyY,
-                                    SPECTRUM_SIZE,
                                     TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
@@ -64,14 +63,14 @@ class Monitor(object):
 
     def startMeasurement(self):
         """
-        Simply prompts to move the EyeOne Pro to measurement position and
-        wait for button response.
+        Simply prompts to move EyeOne Pro to measurement position and
+        waits for button response.
         """
         print("\nPlease put EyeOne Pro in measurement position for"
                 + "MONITOR and press key to start measurement.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
-        print("Start measurement...")
+        print("Starting measurement...")
         
 
 
@@ -84,8 +83,7 @@ class Monitor(object):
             n -- number of measurements (positive integer)
 
         
-        Returns list of tuples of xyY values
-            [(x1, y1, Y1), (x2, y2, Y2), ...]
+        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
@@ -120,21 +118,20 @@ class Monitor(object):
 
     def measureColor(self, color, n=1):
         """
-        Converts colormath color to psychopy.visual.PatchStim color and
-        measures color on monitor.
+        Converts xyY color (triple of floats) to psychopy.visual.PatchStim
+        color and measures color on monitor.
 
         Input: 
-            color -- colormath color
-            n -- number of measures (positive integer)
+            color -- xyY color list or tuple of three floats
+            n -- number of measurements (positive integer)
 
-        Returns list of tuples of xyY values
-            [(x1, y1, Y1), (x2, y2, Y2), ...]
+        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
         if not self.eyeone_calibrated:
             self.calibrateEyeOne()
             self.startMeasurement()
-        print("measureColor is not implemented yet")
-        # TODO
+        print("measureColor is not implemented yet.")
+        # TODO measureColor
         pass
     
     def setPatchStimColor(self, patch_stim_value):

@@ -5,6 +5,8 @@
 # (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 #     and Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# last mod 2011-10-17 KS
 
 import pyglet
 
@@ -24,8 +26,7 @@ win = pyglet.window.Window()
 color_table = ColorTable(mon, tub)
 color_table.loadFromPickle("./data/color_table_20101209_1220.pkl")
 
-color_entry = color_table.color_list[170] #TODO welchen Farbwert noch manuell einstellen
-# TODO erledigt - über startvoltages kann der Farbwert manuell eingestellt werden (siehe Funktion setTubesManual)
+color_entry = color_table.color_list[170] 
 
 voltages = list(color_entry.voltages)
 
@@ -35,7 +36,7 @@ step = 10
 
 def getKey(symbol):
     """
-    Returns key for certain symbol-codes.
+    Returns key for certain symbol codes.
     """
     if symbol == 114:
         key = 'r'
@@ -63,7 +64,7 @@ def getKey(symbol):
 
 def setColorTube(key):
     """
-    Defines which color tube should be changed.
+    Defines which color tubes should be changed.
     """
     if key == 'r':
         return ('red', 0)
@@ -93,7 +94,8 @@ def setStepSize(key):
     
 def adjustTube(key, tubes, voltages, colortube, step):
     """
-    Enables up and down arrow to adjust tubes' color step by step (lower if down and higher if up).
+    Enables up and down arrow to adjust tubes' color step by step (lower if
+    down and higher if up).
     """
     if key == 'arrowup':
         voltages[colortube[1]] = voltages[colortube[1]] + step
@@ -108,7 +110,7 @@ def adjustTube(key, tubes, voltages, colortube, step):
 
 def setTubesManual(startvoltages):
     """
-    Start program to set tubes by hand.
+    Starts program to set tubes by hand.
     """
     print('Manual adjustment of tubes` color\n\n' +
           'Press [arrowup] for higher intensity ' +
@@ -122,7 +124,7 @@ def setTubesManual(startvoltages):
 @win.event
 def on_key_press(symbol, modifiers):
     
-    #print(symbol)
+    # print(symbol)
     global step
     global colortube
     key = getKey(symbol)
