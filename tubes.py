@@ -6,7 +6,7 @@
 # Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-24 KS
+# last mod 2012-02-06 KS
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -14,9 +14,11 @@ from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE,
                                     COLOR_SPACE_KEY, 
                                     COLOR_SPACE_CIExyY,
                                     COLOR_SPACE_RGB,
-                                    TRISTIMULUS_SIZE)
+                                    TRISTIMULUS_SIZE,
+                                    SPECTRUM_SIZE)
 from ctypes import c_float
 import time
+from exceptions import ValueError
 
 from math import exp,log
 import numpy as np
@@ -198,82 +200,87 @@ class CalibTubes(Tubes):
         """
         # TODO generate logfile for every calibration
 
-        # set EyeOne Pro variables
-        if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
-                eNoError):
-            print("Measurement mode set to single emission.")
-        else:
-            print("Failed to set measurement mode.")
-            return
-        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_RGB) ==
-                eNoError):
-            print("Color space set to RGB.")
-        else:
-            print("Failed to set color space.")
-            return
-        # calibrate EyeOne Pro
-        print("\nPlease put EyeOne Pro on calibration plate and "
-        + "press key to start calibration.")
-        while(self.eyeone.I1_KeyPressed() != eNoError):
-            time.sleep(0.01)
-        if (self.eyeone.I1_Calibrate() == eNoError):
-            print("Calibration of EyeOne Pro done.")
-        else:
-            print("Calibration of EyeOne Pro failed. Please RESTART"
-            + " calibration of tubes.")
-            return
+        if not self.eyeone_calibrated:
+            self.calibrateEyeOne()
         
+        voltages = list()
+        rgb_list = list()
+        spectra = list()
+
         ## Measurement
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nPlease put EyeOne Pro in measurement position and "
         + "press key to start measurement.")
+        print("\nTurn off blue and green tubes!"
+        + "\nPress key to start measurement of RED tubes.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
+        measure_red = self.measureOneColorChannel(imi=imi, color="red")
+        voltages.extend(measure_red[0])
+        rgb_list.extend(measure_red[1])
+        spectra.extend(measure_red[2])
 
-        # define some variables
-        # generating the tested voltages (r, g, b)
-        voltages = list()
-        for i in range(50):
-            voltages.append( ((0x400 + 61 * i), 0x0, 0x0) )
-        for i in range(50):
-            voltages.append( (0x0, (0x400 + 61 * i), 0x0) )
-        for i in range(50):
-            voltages.append( (0x0, 0x0, (0x400 + 61 * i)) )
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        print("\nTurn off red and blue tubes!"
+        + "\nPress key to start measurement of GREEN tubes.")
+        while(self.eyeone.I1_KeyPressed() != eNoError):
+            time.sleep(0.01)
+        print("Starting measurement...")
+        measure_green = self.measureOneColorChannel(imi=imi, color="green")
+        voltages.extend(measure_green[0])
+        rgb_list.extend(measure_green[1])
+        spectra.extend(measure_green[2])
 
-        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
-                                                  # saves tristim.
-        rgb_list = list()
-        
-        for voltage in voltages:
-            self.setVoltages(voltage)
-            time.sleep(imi) # to give the EyeOne Pro time to adapt and to
-                            # reduce carry-over effects
-            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
-                print("Measurement failed for voltage %s ." %str(voltage))
-            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
-                print("Failed to get spectrum for voltage %s ."
-                        %str(voltage))
-            rgb_list.append(list(tri_stim))
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        print("\nTurn off red and green tubes!"
+        + "\nPress key to start measurement of BLUE tubes.")
+        while(self.eyeone.I1_KeyPressed() != eNoError):
+            time.sleep(0.01)
+        print("Starting measurement...")
+        measure_blue = self.measureOneColorChannel(imi=imi, color="blue")
+        voltages.extend(measure_blue[0])
+        rgb_list.extend(measure_blue[1])
+        spectra.extend(measure_blue[2])
         
         print("Measurement finished.")
         self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
                                             # measurement is over
-        voltage_r = voltages[0]
-        voltage_g = voltages[1]
-        voltage_b = voltages[2]
-        rgb_r = rgb_list[0]
-        rgb_g = rgb_list[1]
-        rgb_b = rgb_list[2]
-        
+
+        # write data to hard drive
+        with open('calibdata/measurements/calibration_tubes_raw_' +
+                time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
+            calibFile.write("voltage; rgb; spectra\n")
+            calibFile.writelines([str(voltages[i])+"; "
+                +str(rgb_list[i])+"; "+str(spectra[i])
+                for i in range(len(voltages))])
+
+        # from here on is something weired
+        voltage_r = measure_red[0]
+        voltage_g = measure_green[0]
+        voltage_b = measure_blue[0]
+        rgb_r = measure_red[1]
+        rgb_g = measure_green[1]
+        rgb_b = measure_blue[1]
+
+        with open('calibdata/measurements/calibration_tubes_raw_' +
+                time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
+            pickle.dump(voltage_r, f)
+            pickle.dump(voltage_g, f)
+            pickle.dump(voltage_b, f)
+            pickle.dump(rgb_r, f)
+            pickle.dump(rgb_g, f)
+            pickle.dump(rgb_b, f)
+
         try:
             # fit a luminance function -- non-linear regression model based
             # on Pinheiro & Bates (2000)
-    
+
             def func(x, a, b, c):
                 return a + (b - a)*np.exp(-np.exp(c)*x)
-            
+
             len3 = len(voltage_r)/3
-    
+
             # red channel
             idr = range(len3)
             for i in idr:
@@ -289,7 +296,7 @@ class CalibTubes(Tubes):
                 voltage_g_small = voltage_g[i]
             popt_g, pcov_g = curve_fit(func, voltage_g_small, rgb_g_small,
                     p0=[1000, -100, -7])
-    
+
             # blue channel
             idg = range(2*len3, 3*len3)
             for i in idg:
@@ -297,18 +304,12 @@ class CalibTubes(Tubes):
                 voltage_b_small = voltage_b[i]
             popt_b, pcov_b = curve_fit(func, voltage_b_small, rgb_b_small,
                     p0=[1000, -100, -7])
-    
+
             print("Parameters estimated.")
-        except:
-            print("Failed to estimate parameters, saved data anyway.")
-            calibFile = open('calibdata/measurements/calibration_tubes' +
-                    time.strftime("%Y%m%d_%H%M") +  '.txt', 'w')
-            calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
-            calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
-            calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
-            calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
-            calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
-            calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
+        #except:
+        #    print("FAILED to estimate parameters of tubes.\n" +
+        #          "Look at calibration_tubes_raw_XX.txt for the data.")
+        #    return
 
         # save all created objects to calibration_tubes.txt
         calibFile = open('calibdata/measurements/calibration_tubes' +
@@ -322,7 +323,7 @@ class CalibTubes(Tubes):
         calibFile.write('parameters R:' + str(popt_r) + '\n')
         calibFile.write('parameters G:' + str(popt_g) + '\n')
         calibFile.write('parameters B:' + str(popt_b) + '\n')
-        
+
         # save the estimated parameters to the tube object
         self.red_p1 = popt_r[0]
         self.red_p2 = popt_r[1]
@@ -343,10 +344,66 @@ class CalibTubes(Tubes):
         print("blue_p1" + str(self.blue_p1))
         print("blue_p2" + str(self.blue_p2))
         print("blue_p3" + str(self.blue_p3))
-        
+
         # finished calibration :)
         self.IsCalibrated = True
         print("Calibration of tubes finished.")
+
+    def measureOneColorChannel(self, color, imi=0.5):
+        """
+        measures one color tubes from low to high luminosity.
+
+            * color -- string one of "red", "green", "blue"
+            * imi -- inter measurement interval in seconds
+
+        returns triple of lists (voltages, rgb, spectra).
+        
+        This function immediately starts measuring. There is no prompt to
+        start measurement.
+        """
+        if not self.eyeone_calibrated:
+            self.calibrateEyeOne()
+        
+        # define some variables
+        # generating the tested voltages (r, g, b)
+        voltages = list()
+
+        if color == "red":
+            for i in range(50):
+                voltages.append( ((0x400 + 61 * i), 0xFFF, 0xFFF) )
+        elif color == "green":
+            for i in range(50):
+                voltages.append( (0xFFF, (0x400 + 61 * i), 0xFFF) )
+        elif color == "blue":
+            for i in range(50):
+                voltages.append( (0xFFF, 0xFFF, (0x400 + 61 * i)) )
+        else:
+            raise ValueError("color in measureOneColorChannel must be one"
+            + "of 'red', 'green', 'blue' and not %s" %str(color))
+
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
+                                                  # saves tristim.
+        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where EyeOne Pro
+                                                  # saves spectrum.
+        rgb_list = list()
+        spectra_list = list()
+
+        for voltage in voltages:
+            self.setVoltages(voltage)
+            time.sleep(imi) # to give the EyeOne Pro time to adapt and to
+                            # reduce carry-over effects
+            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
+                print("Measurement failed for voltage %s ." %str(voltage))
+            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+                print("Failed to get tristim for voltage %s ."
+                        %str(voltage))
+            rgb_list.append(list(tri_stim))
+            if(self.eyeone.I1_GetSpectrum(spectrum, 0) != eNoError):
+                print("Failed to get spectrum for voltage %s ."
+                        %str(voltage))
+            spectra_list.append(list(spectrum))
+
+        return (voltages, rgb_list, spectra_list)
 
     def setColor(self, xyY):
         """

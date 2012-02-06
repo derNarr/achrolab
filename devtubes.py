@@ -6,7 +6,7 @@
 # Dominik Wabersich <wabersich [aet] gmx.net>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-14 DW
+# last mod 2012-01-06 KS
 
 from wasco.wasco import Wasco
 from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
@@ -90,6 +90,7 @@ class DevTubes(object):
         diff_b = U_b_new - self.U_b
 
         steps = max( abs(diff_r), abs(diff_g), abs(diff_b))
+        steps = int(steps*0.2)
 
         if steps == 0:
             return
@@ -99,7 +100,7 @@ class DevTubes(object):
         slope_b = diff_b/float(steps)
 
         for i in range(steps):
-            time.sleep(0.001)
+            time.sleep(0.0001)
             self.wascocard.wasco_outportW(self.wasco_boardId, 
                     self.red_out, int(self.U_r + slope_r*i))
             self.wascocard.wasco_outportW(self.wasco_boardId, 
