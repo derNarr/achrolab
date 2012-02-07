@@ -34,6 +34,10 @@ from colorentry import ColorEntry
 
 from iterativeColorTubes import IterativeColorTubes
 
+# TODO: Paths
+#from os import chdir, path
+#        chdir(path.dirname(self.__file__))
+
 class Tubes(object):
     """
     Gives high level access to the tubes.
@@ -306,23 +310,23 @@ class CalibTubes(Tubes):
                     p0=[1000, -100, -7])
 
             print("Parameters estimated.")
-        #except:
-        #    print("FAILED to estimate parameters of tubes.\n" +
-        #          "Look at calibration_tubes_raw_XX.txt for the data.")
-        #    return
+        except:
+            print("FAILED to estimate parameters of tubes.\n" +
+                  "Look at calibration_tubes_raw_XX.txt for the data.")
+            return
 
         # save all created objects to calibration_tubes.txt
-        calibFile = open('calibdata/measurements/calibration_tubes' +
-                time.strftime("%Y%m%d_%H%M") +  '.txt', 'w')
-        calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
-        calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
-        calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
-        calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
-        calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
-        calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
-        calibFile.write('parameters R:' + str(popt_r) + '\n')
-        calibFile.write('parameters G:' + str(popt_g) + '\n')
-        calibFile.write('parameters B:' + str(popt_b) + '\n')
+        with open('calibdata/measurements/calibration_tubes_tubes' +
+                time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
+            calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
+            calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
+            calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
+            calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
+            calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
+            calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
+            calibFile.write('parameters R:' + str(popt_r) + '\n')
+            calibFile.write('parameters G:' + str(popt_g) + '\n')
+            calibFile.write('parameters B:' + str(popt_b) + '\n')
 
         # save the estimated parameters to the tube object
         self.red_p1 = popt_r[0]
