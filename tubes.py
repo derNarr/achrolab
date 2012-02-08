@@ -195,12 +195,15 @@ class CalibTubes(Tubes):
                 target_color, start_voltages=start_voltages,
                 iterations=50, stepsize=10, imi=0.5)
         
-    def calibrate(self, imi=0.5):
+    def calibrate(self, imi=0.5, n=50, each=1):
         """
         calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
         connected to the computer. The calibration takes around 2 minutes.
 
             * imi -- inter measurement interval in seconds
+            * n -- number of steps per tube to calibrate (must be greater 
+              equal 2)
+            * each -- number of measurements per color
         """
         # TODO generate logfile for every calibration
 
@@ -220,7 +223,8 @@ class CalibTubes(Tubes):
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
-        measure_red = self.measureOneColorChannel(imi=imi, color="red")
+        measure_red = self.measureOneColorChannel(imi=imi, color="red",
+                n=n, each=each)
         voltages.extend(measure_red[0])
         rgb_list.extend(measure_red[1])
         spectra.extend(measure_red[2])
@@ -231,7 +235,8 @@ class CalibTubes(Tubes):
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
-        measure_green = self.measureOneColorChannel(imi=imi, color="green")
+        measure_green = self.measureOneColorChannel(imi=imi, color="green",
+                n=n, each=each)
         voltages.extend(measure_green[0])
         rgb_list.extend(measure_green[1])
         spectra.extend(measure_green[2])
@@ -242,7 +247,8 @@ class CalibTubes(Tubes):
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
-        measure_blue = self.measureOneColorChannel(imi=imi, color="blue")
+        measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
+                n=n, each=each)
         voltages.extend(measure_blue[0])
         rgb_list.extend(measure_blue[1])
         spectra.extend(measure_blue[2])
@@ -254,10 +260,14 @@ class CalibTubes(Tubes):
         # write data to hard drive
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
-            calibFile.write("voltage; rgb; spectra\n")
-            calibFile.writelines([str(voltages[i])+"; "
-                +str(rgb_list[i])+"; "+str(spectra[i])
-                for i in range(len(voltages))])
+            calibFile.write("voltage, rgb, spectra\n")
+            for i in range(len(voltages)):
+                calibFile.write(", ".join([str(x) for x in voltages[i]]) +
+                                ", " + ", ".join([str(x) for x in
+                                    rgb_list[i]]) +
+                                ", " + ", ".join([str(x) for x in
+                                    spectra[i]]) + 
+                                "\n")
 
         # from here on is something weired
         voltage_r = measure_red[0]
@@ -353,12 +363,14 @@ class CalibTubes(Tubes):
         self.IsCalibrated = True
         print("Calibration of tubes finished.")
 
-    def measureOneColorChannel(self, color, imi=0.5):
+    def measureOneColorChannel(self, color, imi=0.5, n=50, each=1):
         """
         measures one color tubes from low to high luminosity.
 
             * color -- string one of "red", "green", "blue"
             * imi -- inter measurement interval in seconds
+            * n -- number of steps >= 2
+            * each -- number of measurements per color
 
         returns triple of lists (voltages, rgb, spectra).
         
@@ -372,15 +384,20 @@ class CalibTubes(Tubes):
         # generating the tested voltages (r, g, b)
         voltages = list()
 
+        step = int((0xFFF-0x400)/float(n-1))
+
         if color == "red":
-            for i in range(50):
-                voltages.append( ((0x400 + 61 * i), 0xFFF, 0xFFF) )
+            for i in range(n):
+                for j in range(each):
+                    voltages.append( ((0x400 + step * i), 0xFFF, 0xFFF) )
         elif color == "green":
-            for i in range(50):
-                voltages.append( (0xFFF, (0x400 + 61 * i), 0xFFF) )
+            for i in range(n):
+                for j in range(each):
+                    voltages.append( (0xFFF, (0x400 + step * i), 0xFFF) )
         elif color == "blue":
-            for i in range(50):
-                voltages.append( (0xFFF, 0xFFF, (0x400 + 61 * i)) )
+            for i in range(n):
+                for j in range(each):
+                    voltages.append( (0xFFF, 0xFFF, (0x400 + step * i)) )
         else:
             raise ValueError("color in measureOneColorChannel must be one"
             + "of 'red', 'green', 'blue' and not %s" %str(color))
@@ -394,6 +411,7 @@ class CalibTubes(Tubes):
 
         for voltage in voltages:
             self.setVoltages(voltage)
+            print(voltage)
             time.sleep(imi) # to give the EyeOne Pro time to adapt and to
                             # reduce carry-over effects
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
