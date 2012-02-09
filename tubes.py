@@ -301,7 +301,7 @@ class CalibTubes(Tubes):
                 rgb_r_small = rgb_r[i]
                 voltage_r_small = voltage_r[i]
             popt_r, pcov_r = curve_fit(func, voltage_r_small, rgb_r_small,
-                    p0=[1000, -100, -7])
+                    p0=[50, -10, -7])
             
             # green channel
             idg = range(len3, 2*len3)
@@ -309,7 +309,7 @@ class CalibTubes(Tubes):
                 rgb_g_small = rgb_g[i]
                 voltage_g_small = voltage_g[i]
             popt_g, pcov_g = curve_fit(func, voltage_g_small, rgb_g_small,
-                    p0=[1000, -100, -7])
+                    p0=[50, -10, -7])
 
             # blue channel
             idg = range(2*len3, 3*len3)
@@ -317,7 +317,7 @@ class CalibTubes(Tubes):
                 rgb_b_small = rgb_b[i]
                 voltage_b_small = voltage_b[i]
             popt_b, pcov_b = curve_fit(func, voltage_b_small, rgb_b_small,
-                    p0=[1000, -100, -7])
+                    p0=[50, -15, -10])
 
             print("Parameters estimated.")
         except:
