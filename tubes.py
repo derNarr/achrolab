@@ -211,47 +211,59 @@ class CalibTubes(Tubes):
             self.calibrateEyeOne()
         
         voltages = list()
-        rgb_list = list()
+        xyY_list = list()
         spectra = list()
 
         ## Measurement
-        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        print("\nPlease put EyeOne Pro in measurement position and "
-        + "press key to start measurement.")
-        print("\nTurn off blue and green tubes!"
-        + "\nPress key to start measurement of RED tubes.")
-        while(self.eyeone.I1_KeyPressed() != eNoError):
-            time.sleep(0.01)
-        print("Starting measurement...")
-        measure_red = self.measureOneColorChannel(imi=imi, color="red",
-                n=n, each=each)
-        voltages.extend(measure_red[0])
-        rgb_list.extend(measure_red[1])
-        spectra.extend(measure_red[2])
+        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        #print("\nPlease put EyeOne Pro in measurement position and "
+        #+ "press key to start measurement.")
+        #print("\nTurn off blue and green tubes!"
+        #+ "\nPress key to start measurement of RED tubes.")
+        #while(self.eyeone.I1_KeyPressed() != eNoError):
+        #    time.sleep(0.01)
+        #print("Starting measurement...")
+        #measure_red = self.measureOneColorChannel(imi=imi, color="red",
+        #        n=n, each=each)
+        #voltages.extend(measure_red[0])
+        #xyY_list.extend(measure_red[1])
+        #spectra.extend(measure_red[2])
 
-        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        print("\nTurn off red and blue tubes!"
-        + "\nPress key to start measurement of GREEN tubes.")
-        while(self.eyeone.I1_KeyPressed() != eNoError):
-            time.sleep(0.01)
-        print("Starting measurement...")
-        measure_green = self.measureOneColorChannel(imi=imi, color="green",
-                n=n, each=each)
-        voltages.extend(measure_green[0])
-        rgb_list.extend(measure_green[1])
-        spectra.extend(measure_green[2])
+        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        #print("\nTurn off red and blue tubes!"
+        #+ "\nPress key to start measurement of GREEN tubes.")
+        #while(self.eyeone.I1_KeyPressed() != eNoError):
+        #    time.sleep(0.01)
+        #print("Starting measurement...")
+        #measure_green = self.measureOneColorChannel(imi=imi, color="green",
+        #        n=n, each=each)
+        #voltages.extend(measure_green[0])
+        #xyY_list.extend(measure_green[1])
+        #spectra.extend(measure_green[2])
 
+        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        #print("\nTurn off red and green tubes!"
+        #+ "\nPress key to start measurement of BLUE tubes.")
+        #while(self.eyeone.I1_KeyPressed() != eNoError):
+        #    time.sleep(0.01)
+        #print("Starting measurement...")
+        #measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
+        #        n=n, each=each)
+        #voltages.extend(measure_blue[0])
+        #xyY_list.extend(measure_blue[1])
+        #spectra.extend(measure_blue[2])
+        
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        print("\nTurn off red and green tubes!"
-        + "\nPress key to start measurement of BLUE tubes.")
+        print("\nTurn ON red, green and blue tubes!"
+        + "\nPress key to start measurement of ALL tubes.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
-        measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
+        measure_all = self.measureOneColorChannel(imi=imi, color="all",
                 n=n, each=each)
-        voltages.extend(measure_blue[0])
-        rgb_list.extend(measure_blue[1])
-        spectra.extend(measure_blue[2])
+        voltages.extend(measure_all[0])
+        xyY_list.extend(measure_all[1])
+        spectra.extend( measure_all[2])
         
         print("Measurement finished.")
         self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
@@ -260,11 +272,11 @@ class CalibTubes(Tubes):
         # write data to hard drive
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
-            calibFile.write("voltage, rgb, spectra\n")
+            calibFile.write("voltage, xyY, spectra\n")
             for i in range(len(voltages)):
                 calibFile.write(", ".join([str(x) for x in voltages[i]]) +
                                 ", " + ", ".join([str(x) for x in
-                                    rgb_list[i]]) +
+                                    xyY_list[i]]) +
                                 ", " + ", ".join([str(x) for x in
                                     spectra[i]]) + 
                                 "\n")
@@ -273,7 +285,7 @@ class CalibTubes(Tubes):
         voltage_r = measure_red[0]
         voltage_g = measure_green[0]
         voltage_b = measure_blue[0]
-        rgb_r = measure_red[1]
+        rgb_r = measure_red[1] # THIS ARE NOT RGB values!!! TODO
         rgb_g = measure_green[1]
         rgb_b = measure_blue[1]
 
@@ -367,7 +379,7 @@ class CalibTubes(Tubes):
         """
         measures one color tubes from low to high luminosity.
 
-            * color -- string one of "red", "green", "blue"
+            * color -- string one of "red", "green", "blue", "all"
             * imi -- inter measurement interval in seconds
             * n -- number of steps >= 2
             * each -- number of measurements per color
@@ -398,6 +410,10 @@ class CalibTubes(Tubes):
             for i in range(n):
                 for j in range(each):
                     voltages.append( (0xFFF, 0xFFF, (0x400 + step * i)) )
+        elif color == "all":
+            for i in range(n):
+                for j in range(each):
+                    voltages.append( ((0x400 + step * i), (0x400 + step * i), (0x400 + step * i)) )
         else:
             raise ValueError("color in measureOneColorChannel must be one"
             + "of 'red', 'green', 'blue' and not %s" %str(color))
