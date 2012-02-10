@@ -214,44 +214,44 @@ class CalibTubes(Tubes):
         xyY_list = list()
         spectra = list()
 
-        ## Measurement
-        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        #print("\nPlease put EyeOne Pro in measurement position and "
-        #+ "press key to start measurement.")
-        #print("\nTurn off blue and green tubes!"
-        #+ "\nPress key to start measurement of RED tubes.")
-        #while(self.eyeone.I1_KeyPressed() != eNoError):
-        #    time.sleep(0.01)
-        #print("Starting measurement...")
-        #measure_red = self.measureOneColorChannel(imi=imi, color="red",
-        #        n=n, each=each)
-        #voltages.extend(measure_red[0])
-        #xyY_list.extend(measure_red[1])
-        #spectra.extend(measure_red[2])
+        # Measurement
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        print("\nPlease put EyeOne Pro in measurement position and "
+        + "press key to start measurement.")
+        print("\nTurn off blue and green tubes!"
+        + "\nPress key to start measurement of RED tubes.")
+        while(self.eyeone.I1_KeyPressed() != eNoError):
+            time.sleep(0.01)
+        print("Starting measurement...")
+        measure_red = self.measureOneColorChannel(imi=imi, color="red",
+                n=n, each=each)
+        voltages.extend(measure_red[0])
+        xyY_list.extend(measure_red[1])
+        spectra.extend(measure_red[2])
 
-        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        #print("\nTurn off red and blue tubes!"
-        #+ "\nPress key to start measurement of GREEN tubes.")
-        #while(self.eyeone.I1_KeyPressed() != eNoError):
-        #    time.sleep(0.01)
-        #print("Starting measurement...")
-        #measure_green = self.measureOneColorChannel(imi=imi, color="green",
-        #        n=n, each=each)
-        #voltages.extend(measure_green[0])
-        #xyY_list.extend(measure_green[1])
-        #spectra.extend(measure_green[2])
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        print("\nTurn off red and blue tubes!"
+        + "\nPress key to start measurement of GREEN tubes.")
+        while(self.eyeone.I1_KeyPressed() != eNoError):
+            time.sleep(0.01)
+        print("Starting measurement...")
+        measure_green = self.measureOneColorChannel(imi=imi, color="green",
+                n=n, each=each)
+        voltages.extend(measure_green[0])
+        xyY_list.extend(measure_green[1])
+        spectra.extend(measure_green[2])
 
-        #self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        #print("\nTurn off red and green tubes!"
-        #+ "\nPress key to start measurement of BLUE tubes.")
-        #while(self.eyeone.I1_KeyPressed() != eNoError):
-        #    time.sleep(0.01)
-        #print("Starting measurement...")
-        #measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
-        #        n=n, each=each)
-        #voltages.extend(measure_blue[0])
-        #xyY_list.extend(measure_blue[1])
-        #spectra.extend(measure_blue[2])
+        self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
+        print("\nTurn off red and green tubes!"
+        + "\nPress key to start measurement of BLUE tubes.")
+        while(self.eyeone.I1_KeyPressed() != eNoError):
+            time.sleep(0.01)
+        print("Starting measurement...")
+        measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
+                n=n, each=each)
+        voltages.extend(measure_blue[0])
+        xyY_list.extend(measure_blue[1])
+        spectra.extend(measure_blue[2])
         
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nTurn ON red, green and blue tubes!"
