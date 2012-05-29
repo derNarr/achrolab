@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 14:17 DW
+# last mod 2012-05-29 14:24 DW
 
 from eyeone.constants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
@@ -78,6 +78,18 @@ class Tubes(object):
             self.devtub.setVoltages(voltages.voltages)
         else:
             self.devtub.setVoltages(voltages) 
+
+    def printNote(self):
+        """
+        prints a note, that states what is important, when you use the
+        tubes.
+        """
+        print("""
+        Note:
+        The tubes must be switched on for at least four (!!) hours to come
+        in a state where they are not changing the illumination a
+        significant amount.
+        """)
 
 
 class CalibTubes(Tubes):
