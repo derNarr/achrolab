@@ -20,10 +20,9 @@ This module provides the calls CalibMonitor which handles measuring of the
 monitor.
 """
 
-from eyeone.constants import  (eNoError, TRISTIMULUS_SIZE)
+from eyeone.constants import eNoError, TRISTIMULUS_SIZE
 from ctypes import c_float
 import time
-from psychopy import visual, core
 from monitor import Monitor
 
 
@@ -50,7 +49,6 @@ class CalibMonitor(Monitor):
                 " and use eyeone.calibrateEyeOne() instead of" +
                 " tubes.calibrateEyeone()\n")
         self.eyeone_calibrated = self.eyeone.calibrateEyeOne()
-    
 
     def startMeasurement(self):
         """
@@ -62,8 +60,6 @@ class CalibMonitor(Monitor):
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
-        
-
 
     def measurePatchStimColor(self, patch_stim_value, n=1):
         """
@@ -80,17 +76,8 @@ class CalibMonitor(Monitor):
                                        # of the eyeone?
             self.calibrateEyeOne() # TODO change this
             self.startMeasurement()
-        
-        if not self.psychopy_win: # TODO is it possible to allway get the
-                                  # full screen with the correct resolution
-            self.psychopy_win = visual.Window(size=(800,600), monitor='mymon',
-                    color=(0,0,0))
-        if not self.patch_stim:
-            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
-                    size=(2,2), color=patch_stim_value)
-        else:
-            self.patch_stim.setColor(color=patch_stim_value)
-        
+
+        self.setColor(patch_stim_value)
         xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
@@ -107,7 +94,6 @@ class CalibMonitor(Monitor):
             xyY_list.append( tuple(tri_stim) )
 
         return xyY_list
-
 
     def measureColor(self, color, n=1):
         """
@@ -126,22 +112,6 @@ class CalibMonitor(Monitor):
         print("measureColor is not implemented yet.")
         # TODO measureColor
         pass
-    
-    def setPatchStimColor(self, patch_stim_value):
-        """
-        Sets monitor to patch_stim_color.
-        """
-        if not self.psychopy_win:
-            self.psychopy_win = visual.Window(size=(2048,1536), monitor='mymon',
-                    color=(0,0,0), screen=1)
-        if not self.patch_stim:
-            self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None, 
-                    size=(2,2), color=patch_stim_value)
-        else:
-            self.patch_stim.setColor(color=patch_stim_value)
-        self.patch_stim.draw()
-        self.psychopy_win.flip()
-
 
 
 if __name__ == "__main__":
