@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./achrolabutils/iterativColorTubes.py
+# ./iterativeColorTubes.py
 #
-# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
-#     and Dominik Wabersich <wabersich [aet] gmx.net>
+# (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# <colorlab[at]psycho.uni-tuebingen.de>
+#
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-24 KS
+# content: The IterativeColorTubes class contains algorithms to match the
+# color of the wall (which is illuminated by the tubes) to the color of the
+# monitor. However, the manual way to do this works way better!
+#
+# input: --
+# output: --
+#
+# created 2010
+# last mod 2012-05-29 12:31 DW
 
 from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne

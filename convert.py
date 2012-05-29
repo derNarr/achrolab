@@ -2,10 +2,19 @@
 # -*- encoding: utf-8 -*-
 # ./convert.py
 #
-# (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com> and Dominik Wabersich <dominik.wabersich [aet] gmail.com>
+# (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# <colorlab[at]psycho.uni-tuebingen.de>
+#
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-14 KS
+# content: The Convert Class provides functions to convert color values
+# of different color spaces in each other.
+#
+# input: --
+# output: --
+#
+# created 2010
+# last mod 2012-05-29 12:19 DW
 
 import numpy as np
 
