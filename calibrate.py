@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 20:19 KS
+# last mod 2012-05-29 22:22 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -42,6 +42,13 @@ class Calibrate(object):
     """
 
     def __init__(self, eyeone, calibmonitor, calibtubes):
+        """
+        :Parameters:
+
+            eyeone : eyeone.EyeOne object to measure the colors
+            calibmonitor : CalibMonitor object
+            calibtubes : CalibTubes object which is calibrated.
+        """
         self.eyeone = eyeone
         self.calibmonitor = calibmonitor
         self.calibtubes = calibtubes
@@ -59,9 +66,11 @@ class Calibrate(object):
         In order to match the values they are measured with the photometer
         and plotted.
 
-        :xyY: triple containing the three values for the xyY color
-        :start_voltages: triple containing three values for the voltages,
-            if None starting values are guessed
+        :Parameters:
+
+            xyY : triple containing the three values for the xyY color
+            start_voltages : triple containing three values for the voltages,
+                if None starting values are guessed
         """
         if not start_voltages:
             print("guess voltages via calibration of the tubes")
@@ -80,9 +89,11 @@ class Calibrate(object):
         wall and the target value is presented at the monitor. It should be
         possible to adjust the colors with your own visual system.
 
-        :xyY: triple containing the three values for the xyY color
-        :start_voltages: triple containing three values for the voltages,
-            if None starting values are guessed
+        :Parameters:
+
+            xyY : triple containing the three values for the xyY color
+            start_voltages : triple containing three values for the
+                voltages, if None starting values are guessed
         """
         if not start_voltages:
             print("guess voltages via calibration of the tubes")

@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 KS
+# last mod 2012-05-29 20:28 KS
 
 """
 This module provides a context manager which can be used like a file but has
