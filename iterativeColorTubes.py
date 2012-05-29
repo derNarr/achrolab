@@ -1,16 +1,25 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./achrolabutils/iterativColorTubes.py
+# ./iterativeColorTubes.py
 #
-# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
-#     and Dominik Wabersich <wabersich [aet] gmx.net>
+# (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# <colorlab[at]psycho.uni-tuebingen.de>
+#
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-10-24 KS
+# content: the IterativeColorTubes class contains algorithms to match the
+# color of the wall (which is illuminated by the tubes) to the color of the
+# monitor. However, the manual way to do this works way better!
+#
+# input: --
+# output: --
+#
+# created 2010
+# last mod 2012-05-29 14:17 DW
 
 from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne
-from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
+from eyeone.constants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from exceptions import ValueError
@@ -26,7 +35,7 @@ class IterativeColorTubes(object):
        self.tubes = tubes
        self.eyeone = eyeone
 
-    def write_data(self, voltage_color_list, filename):
+    def writeData(self, voltage_color_list, filename):
         with open("./calibdata/measurements/" + filename, "w") as f:
             f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
             for vc in voltage_color_list:
@@ -89,7 +98,18 @@ class IterativeColorTubes(object):
         dilation=1.0, imi=0.5, max_iterations=50):
         """
         iterativeColorMatch tries to match the "color" of the tubes to the
-        target_color.
+        target_color. 
+        The matching process works like this: the tubes get the value of
+        input_color, which is the target_color at the beginning. Then the
+        difference (diff_color) between this input_color and the measured_color is
+        calculated. Using this difference (diff_color) to create a new input_color, by
+        adding the difference to the (old) input_color, this whole process
+        is repeated until the diff_color is smaller than epsilon (good
+        ending) or until max_iterations is reached (bad ending, because it
+        didn't converge).
+        This process uses color values for the calculation, not voltages.
+        That might be one reason, why this process isn't very convenient
+        and why the results are not perfect. 
 
         * target_color -- tuple containing the xyY values as floats
         * epsilon
@@ -251,9 +271,30 @@ class IterativeColorTubes(object):
         iterativeColorMatch2 tries to match the measurement of the tubes to
         the target_color (with a different method than
         iterativeColorMatch).
+        The process uses voltages, not color values, and works like this:
+        for every one of the three voltage channels a measurement series is
+        created (measured_color_list_[RGB]), by adding and subtracting
+        the stepsize several times (how often is defined by
+        series_quantity). For every one of these 3 lists, the nearest value
+        to the target_color voltages is calculated and used, for the second
+        step of the algorithm: Dependent on the stepsize, the values
+        between the nearest point and its two neighbours are calculated.
+        Once again, the nearest point of the resulting measurement list is
+        taken (also seperately for every one of the three voltage channels).
+        The resulting three values are now seperatly used as new value for
+        the corresponding voltage channel and compared to the target_color.
+        The Best voltages of these three seperate comparisons is taken and used for further
+        calculations. Only one voltage channel will be changed in every
+        iteration (always that one, which brings the best improvement when
+        it gets changed).
 
         * target_color -- tuple of (x, y, Y)
-        * iterations
+        * iterations -- iterations of the process, how often should the
+                        process be done
+        * stepsize -- Number of voltages to add/subtract from the
+                      starting_value to create the measurement lists for every
+                      voltage-channel
+        * imi -- inter measurement intverall
         """
         # TODO: extra iterations for the measurement points
         # set colors
@@ -281,9 +322,9 @@ class IterativeColorTubes(object):
             filename = ("tune_x" + str(target_color[0]) + "y" +
                     str(target_color[1]) + "Y" +
                     str(target_color[2]) + "_iteration" + str(i))
-            self.write_data(measured_color_list_R, filename + "_chR.csv")
-            self.write_data(measured_color_list_G, filename + "_chG.csv")
-            self.write_data(measured_color_list_B, filename + "_chB.csv")
+            self.writeData(measured_color_list_R, filename + "_chR.csv")
+            self.writeData(measured_color_list_G, filename + "_chG.csv")
+            self.writeData(measured_color_list_B, filename + "_chB.csv")
 
             # measure in the surrounding of the nearest points 
             measured_color_R = self.measureAtColor(
