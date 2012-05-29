@@ -7,17 +7,17 @@
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# content: The DevTubes class provides all low level functionality of for
+# content: the DevTubes class provides all low level functionality of for
 # the tubes.
 #
 # input: --
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 12:20 DW
+# last mod 2012-05-29 14:20 DW
 
 from wasco.wasco import Wasco
-from wasco.WascoConstants import DAOUT1_16, DAOUT2_16, DAOUT3_16
+from wasco.constants import DAOUT1_16, DAOUT2_16, DAOUT3_16
 import time
 
 

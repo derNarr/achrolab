@@ -13,9 +13,9 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 12:31 DW
+# last mod 2012-05-29 14:17 DW
 
-from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
+from eyeone.constants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,
                                     eNoError,
                                     COLOR_SPACE_KEY, 

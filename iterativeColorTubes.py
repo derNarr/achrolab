@@ -7,7 +7,7 @@
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# content: The IterativeColorTubes class contains algorithms to match the
+# content: the IterativeColorTubes class contains algorithms to match the
 # color of the wall (which is illuminated by the tubes) to the color of the
 # monitor. However, the manual way to do this works way better!
 #
@@ -15,11 +15,11 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 12:31 DW
+# last mod 2012-05-29 14:17 DW
 
 from devtubes import DevTubes
 from eyeone.EyeOne import EyeOne
-from eyeone.EyeOneConstants import  (eNoError, TRISTIMULUS_SIZE)
+from eyeone.constants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from exceptions import ValueError
@@ -35,7 +35,7 @@ class IterativeColorTubes(object):
        self.tubes = tubes
        self.eyeone = eyeone
 
-    def write_data(self, voltage_color_list, filename):
+    def writeData(self, voltage_color_list, filename):
         with open("./calibdata/measurements/" + filename, "w") as f:
             f.write("voltage_r, voltage_g, voltage_b, xyY_x, xyY_y, xyY_Y\n") 
             for vc in voltage_color_list:
@@ -322,9 +322,9 @@ class IterativeColorTubes(object):
             filename = ("tune_x" + str(target_color[0]) + "y" +
                     str(target_color[1]) + "Y" +
                     str(target_color[2]) + "_iteration" + str(i))
-            self.write_data(measured_color_list_R, filename + "_chR.csv")
-            self.write_data(measured_color_list_G, filename + "_chG.csv")
-            self.write_data(measured_color_list_B, filename + "_chB.csv")
+            self.writeData(measured_color_list_R, filename + "_chR.csv")
+            self.writeData(measured_color_list_G, filename + "_chG.csv")
+            self.writeData(measured_color_list_B, filename + "_chB.csv")
 
             # measure in the surrounding of the nearest points 
             measured_color_R = self.measureAtColor(

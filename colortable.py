@@ -7,13 +7,13 @@
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# content:
+# content: a list of ColorEntry objects with functions
 #
 # input: --
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 12:18 DW
+# last mod 2012-05-29 14:11 DW
 
 from psychopy import event, core
 from colorentry import ColorEntry

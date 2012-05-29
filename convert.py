@@ -7,14 +7,14 @@
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# content: The Convert Class provides functions to convert color values
+# content: the Convert Class provides functions to convert color values
 # of different color spaces in each other.
 #
 # input: --
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 12:19 DW
+# last mod 2012-05-29 14:11 DW
 
 import numpy as np
 
@@ -37,7 +37,7 @@ class Convert(object):
         """
         pass
 
-    def convert_xyY_to_rgb(self, xyY):
+    def convertXyYToRgb(self, xyY):
         """
         Convert from xyY to RGB.
         """
@@ -45,11 +45,11 @@ class Convert(object):
         self.xyY_y = xyY[1]
         self.xyY_Y = xyY[2]
         xyY = (self.xyY_x, self.xyY_y, self.xyY_Y)
-        xyz = self.convert_xyY_to_xyz(xyY)
-        rgb = self.convert_xyz_to_rgb(xyz)
+        xyz = self.convertXyYToXyz(xyY)
+        rgb = self.convertXyzToRgb(xyz)
         return (rgb)
 
-    def convert_xyY_to_xyz(self, xyY):
+    def convertXyYToXyz(self, xyY):
         """
         Convert from xyY to XYZ.
         """
@@ -69,7 +69,7 @@ class Convert(object):
             self.xyz_z = 0
         return (self.xyz_x, self.xyz_y, self.xyz_z)
 
-    def convert_xyz_to_rgb(self, xyz):
+    def convertXyzToRgb(self, xyz):
         """
         Convert from XYZ to RGB.
         """
@@ -105,5 +105,5 @@ def xyY2rgb(xyY):
     Converts xyY coordinates to CIE RGB coordinates, white point D65.
     """
     convert = Convert()
-    return convert.convert_xyY_to_rgb(xyY)
+    return convert.convertXyYToRgb(xyY)
 
