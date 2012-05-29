@@ -13,13 +13,30 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 20:18 KS
+# last mod 2012-05-29 20:22 KS
 
 """
 This modules provides CalibTubes.
 """
 
+from ctypes import c_float
+import time
+from exceptions import ValueError
+
+from math import exp, log
+from scipy.optimize import curve_fit
+
+from convert import xyY2rgb
+
+import pickle
+
+import devtubes
 from tubes import Tubes
+
+from colorentry import ColorEntry
+
+from iterativeColorTubes import IterativeColorTubes
+
 
 class CalibTubes(Tubes):
     """
@@ -82,7 +99,7 @@ class CalibTubes(Tubes):
 
     def calibrate(self, imi=0.5, n=50, each=1):
         """
-        calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
+        Calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
         connected to the computer. The calibration takes around 2 minutes.
 
             * imi -- inter measurement interval in seconds
@@ -98,10 +115,6 @@ class CalibTubes(Tubes):
 
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()
-        
-        voltages = list()
-        xyY_list = list()
-        spectra = list()
 
         # Measurement
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
@@ -114,9 +127,9 @@ class CalibTubes(Tubes):
         print("Starting measurement...")
         measure_red = self.measureOneColorChannel(imi=imi, color="red",
                 n=n, each=each)
-        voltages.extend(measure_red[0])
-        xyY_list.extend(measure_red[1])
-        spectra.extend(measure_red[2])
+        voltages_r = measure_red[0]
+        xyY_r = measure_red[1]
+        spectra_r = measure_red[2]
 
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nTurn off red and blue tubes!"
@@ -126,9 +139,9 @@ class CalibTubes(Tubes):
         print("Starting measurement...")
         measure_green = self.measureOneColorChannel(imi=imi, color="green",
                 n=n, each=each)
-        voltages.extend(measure_green[0])
-        xyY_list.extend(measure_green[1])
-        spectra.extend(measure_green[2])
+        voltages_g = measure_green[0]
+        xyY_g = measure_green[1]
+        spectra_g = measure_green[2]
 
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nTurn off red and green tubes!"
@@ -138,9 +151,9 @@ class CalibTubes(Tubes):
         print("Starting measurement...")
         measure_blue = self.measureOneColorChannel(imi=imi, color="blue",
                 n=n, each=each)
-        voltages.extend(measure_blue[0])
-        xyY_list.extend(measure_blue[1])
-        spectra.extend(measure_blue[2])
+        voltages_b = measure_blue[0]
+        xyY_b = measure_blue[1]
+        spectra_b = measure_blue[2]
         
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nTurn ON red, green and blue tubes!"
@@ -150,75 +163,58 @@ class CalibTubes(Tubes):
         print("Starting measurement...")
         measure_all = self.measureOneColorChannel(imi=imi, color="all",
                 n=n, each=each)
-        voltages.extend(measure_all[0])
-        xyY_list.extend(measure_all[1])
-        spectra.extend( measure_all[2])
+        voltages_all = measure_all[0]
+        xyY_all = measure_all[1]
+        spectra_all = measure_all[2]
         
         print("Measurement finished.")
         self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
                                             # measurement is over
 
         # write data to hard drive
+        # TODO output.py
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
-            calibFile.write("voltage, xyY, spectra\n")
-            for i in range(len(voltages)):
-                calibFile.write(", ".join([str(x) for x in voltages[i]]) +
-                                ", " + ", ".join([str(x) for x in
-                                    xyY_list[i]]) +
-                                ", " + ", ".join([str(x) for x in
-                                    spectra[i]]) + 
-                                "\n")
-
-        # from here on is something weired
-        voltage_r = measure_red[0]
-        voltage_g = measure_green[0]
-        voltage_b = measure_blue[0]
-        rgb_r = measure_red[1] # THIS ARE NOT RGB values!!! TODO
-        rgb_g = measure_green[1]
-        rgb_b = measure_blue[1]
+            calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
+            for voltages in (voltages_r, voltages_g, voltages_b)
+                for i in range(len(voltages)):
+                    calibFile.write(", ".join([str(x) for x in voltages[i]]) +
+                                    ", " + ", ".join([str(x) for x in
+                                        xyY_list[i]]) +
+                                    ", " + ", ".join([str(x) for x in
+                                        spectra[i]]) + 
+                                    "\n")
 
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
             pickle.dump(voltage_r, f)
             pickle.dump(voltage_g, f)
             pickle.dump(voltage_b, f)
-            pickle.dump(rgb_r, f)
-            pickle.dump(rgb_g, f)
-            pickle.dump(rgb_b, f)
+            pickle.dump(xyY_r, f)
+            pickle.dump(xyY_g, f)
+            pickle.dump(xyY_b, f)
 
         try:
             # fit a luminance function -- non-linear regression model based
             # on Pinheiro & Bates (2000)
 
             def func(x, a, b, c):
-                return a + (b - a)*np.exp(-np.exp(c)*x)
-
-            len3 = len(voltage_r)/3
+                return a + (b - a)*exp(-exp(c)*x)
 
             # red channel
-            idr = range(len3)
-            for i in idr:
-                rgb_r_small = rgb_r[i]
-                voltage_r_small = voltage_r[i]
-            popt_r, pcov_r = curve_fit(func, voltage_r_small, rgb_r_small,
-                    p0=[50, -10, -7])
+            Y_r = [x[2] for x in xyY_r]
+            v_r = [x[2] for x in voltages_r]
+            popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[50, -10, -7])
             
             # green channel
-            idg = range(len3, 2*len3)
-            for i in idg:
-                rgb_g_small = rgb_g[i]
-                voltage_g_small = voltage_g[i]
-            popt_g, pcov_g = curve_fit(func, voltage_g_small, rgb_g_small,
-                    p0=[50, -10, -7])
+            Y_g = [x[2] for x in xyY_g]
+            v_g = [x[2] for x in voltages_g]
+            popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[50, -10, -7])
 
             # blue channel
-            idg = range(2*len3, 3*len3)
-            for i in idg:
-                rgb_b_small = rgb_b[i]
-                voltage_b_small = voltage_b[i]
-            popt_b, pcov_b = curve_fit(func, voltage_b_small, rgb_b_small,
-                    p0=[50, -15, -10])
+            Y_b = [x[2] for x in xyY_b]
+            v_b = [x[2] for x in voltages_b]
+            popt_b, pcov_b = curve_fit(func, v_b, Y_b, p0=[50, -15, -10])
 
             print("Parameters estimated.")
         except:
@@ -229,17 +225,17 @@ class CalibTubes(Tubes):
         # save all created objects to calibration_tubes.txt
         with open('calibdata/measurements/calibration_tubes_tubes' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
-            calibFile.write('voltages R:' + str(voltage_r_small) + '\n')
-            calibFile.write('voltages G:' + str(voltage_g_small) + '\n')
-            calibFile.write('voltages B:' + str(voltage_b_small) + '\n')
-            calibFile.write('RGB R:' + str(rgb_r_small) + '\n')
-            calibFile.write('RGB G:' + str(rgb_g_small) + '\n')
-            calibFile.write('RGB B:' + str(rgb_b_small) + '\n')
+            calibFile.write('voltages R:' + str(v_r) + '\n')
+            calibFile.write('voltages G:' + str(v_g) + '\n')
+            calibFile.write('voltages B:' + str(v_b) + '\n')
+            calibFile.write('Y R:' + str(Y_r) + '\n')
+            calibFile.write('Y G:' + str(Y_g) + '\n')
+            calibFile.write('Y B:' + str(Y_b) + '\n')
             calibFile.write('parameters R:' + str(popt_r) + '\n')
             calibFile.write('parameters G:' + str(popt_g) + '\n')
             calibFile.write('parameters B:' + str(popt_b) + '\n')
 
-        # save the estimated parameters to the tube object
+        # save the estimated parameters to CalibTubes object
         self.red_p1 = popt_r[0]
         self.red_p2 = popt_r[1]
         self.red_p3 = popt_r[2]
@@ -266,14 +262,14 @@ class CalibTubes(Tubes):
 
     def measureOneColorChannel(self, color, imi=0.5, n=50, each=1):
         """
-        measures one color tubes from low to high luminosity.
+        Measures one color tubes from low to high luminosity.
 
             * color -- string one of "red", "green", "blue", "all"
             * imi -- inter measurement interval in seconds
             * n -- number of steps >= 2
             * each -- number of measurements per color
 
-        returns triple of lists (voltages, rgb, spectra).
+        Returns triple of lists (voltages, rgb, spectra).
         
         This function immediately starts measuring. There is no prompt to
         start measurement.
@@ -377,8 +373,27 @@ class CalibTubes(Tubes):
 
     def guessVoltages(self, Y):
         """
-        guesses the voltages from the calibration and returns a triple of
-        integers.
+        Guesses voltages from parameters from calibration as a crude
+        starting value and returns triple of integers.
+
+        Y is target luminance of monitor. The individual color for each
+        channel is taken from an old calibration that looked good and
+        assumes that the ratio of red, green, and blue is constant for
+        different intensities. This is of course very crude!
         """
-        # TODO
+
+        Y_r = 6.173447/(6.173447+22.92364+4.036948)*Y
+        Y_g = 22.92364/(6.173447+22.92364+4.036948)*Y
+        Y_b = 4.036948/(6.173447+22.92364+4.036948)*Y
+        
+        def inv(y, a, b, c):
+            return -log((y - a)/(b - a))/exp(c)
+
+        vol_r = inv(Y_r, self.red_p1, self.red_p2, self.red_p3)
+        vol_g = inv(Y_g, self.green_p1, self.green_p2, self.green_p3)
+        vol_b = inv(Y_b, self.blue_p1, self.blue_p2, self.blue_p3)
+        
+        voltages = ( int(vol_r), int(vol_g), int(vol_b) )
+
+        return voltages
 
