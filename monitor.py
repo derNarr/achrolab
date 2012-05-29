@@ -2,8 +2,18 @@
 # -*- encoding: utf-8 -*-
 # ./monitor.py
 #
-# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# <colorlab[at]psycho.uni-tuebingen.de>
+#
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# content: all functions for monitor stuff
+#
+# input: --
+# output: --
+#
+# created 2010
+# last mod 2012-05-29 12:31 DW
 
 from eyeone.EyeOneConstants import  (I1_MEASUREMENT_MODE, 
                                     I1_SINGLE_EMISSION,

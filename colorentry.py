@@ -2,10 +2,18 @@
 # -*- encoding: utf-8 -*-
 # ./colorentry.py
 #
-# (c) 2010-2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
+# (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# <colorlab[at]psycho.uni-tuebingen.de>
+#
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-11-07 KS
+# content:
+#
+# input: --
+# output: --
+#
+# created 2010
+# last mod 2012-05-29 12:18 DW
 
 class ColorEntry(object):
     """
