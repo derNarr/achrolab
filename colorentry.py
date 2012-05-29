@@ -109,7 +109,8 @@ class ColorEntry(object):
    
     def findVoltages(self, tubes):
         """
-        Tries to find the right voltages (TODO: how?) for given monitor_xyY
+        Tries to find the right voltages (by calling the tubes.findVoltages
+        function) for given monitor_xyY
         coordinates and overwrites self.voltages and self.tubes_xyY.
         """
         if not self.monitor_xyY:
@@ -122,7 +123,8 @@ class ColorEntry(object):
 
     def findVoltagesTuning(self, tubes):
         """
-        Fine-tunes voltages towards the target monitor color. (TODO: how?)
+        Fine-tunes voltages towards the target monitor color, by calling
+        the tubes.findVoltagesTuning function. 
         """
         if not self.monitor_xyY:
             print("No monitor_xyY color. Please run measureMonitor.")

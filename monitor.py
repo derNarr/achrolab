@@ -33,32 +33,12 @@ class Monitor(object):
         Sets EyeOne Pro to correct measurement mode and calibrates EyeOne
         Pro so it is ready for use on the monitor.
         """
-        # set EyeOne Pro variables
-        if(self.eyeone.I1_SetOption(I1_MEASUREMENT_MODE, I1_SINGLE_EMISSION) ==
-                eNoError):
-            print("Measurement mode set to single emission.")
-        else:
-            print("Failed to set measurement mode.")
-            return
-        if(self.eyeone.I1_SetOption(COLOR_SPACE_KEY, COLOR_SPACE_CIExyY) ==
-                eNoError):
-            print("Color space set to CIExyY.")
-        else:
-            print("Failed to set color space.")
-            return
-        # calibrate EyeOne Pro
-        print("\nPlease put EyeOne Pro on calibration plate and "
-        + "press key to start calibration.")
-        while(self.eyeone.I1_KeyPressed() != eNoError):
-            time.sleep(0.01)
-        if (self.eyeone.I1_Calibrate() == eNoError):
-            print("Calibration of EyeOne Pro done.")
-        else:
-            print("Calibration of EyeOne Pro failed. Please RESTART "
-            + "calibration of monitor.")
-            return
-
-        self.eyeone_calibrated = True
+        # TODO: Get rid of this function, use eyeone.calibrateEyeOne
+        # instead!
+        print("WARNING: Everything is fine, but please change your code" + 
+                " and use eyeone.calibrateEyeOne() instead of" +
+                " tubes.calibrateEyeone()\n"
+        self.eyeone_calibrated = self.eyeone.calibrateEyeOne()
     
 
     def startMeasurement(self):

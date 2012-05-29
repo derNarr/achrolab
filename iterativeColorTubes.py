@@ -89,7 +89,18 @@ class IterativeColorTubes(object):
         dilation=1.0, imi=0.5, max_iterations=50):
         """
         iterativeColorMatch tries to match the "color" of the tubes to the
-        target_color.
+        target_color. 
+        The matching process works like this: the tubes get the value of
+        input_color, which is the target_color at the beginning. Then the
+        difference (diff_color) between this input_color and the measured_color is
+        calculated. Using this difference (diff_color) to create a new input_color, by
+        adding the difference to the (old) input_color, this whole process
+        is repeated until the diff_color is smaller than epsilon (good
+        ending) or until max_iterations is reached (bad ending, because it
+        didn't converge).
+        This process uses color values for the calculation, not voltages.
+        That might be one reason, why this process isn't very convenient
+        and why the results are not perfect. 
 
         * target_color -- tuple containing the xyY values as floats
         * epsilon
@@ -251,9 +262,30 @@ class IterativeColorTubes(object):
         iterativeColorMatch2 tries to match the measurement of the tubes to
         the target_color (with a different method than
         iterativeColorMatch).
+        The process uses voltages, not color values, and works like this:
+        for every one of the three voltage channels a measurement series is
+        created (measured_color_list_[RGB]), by adding and subtracting
+        the stepsize several times (how often is defined by
+        series_quantity). For every one of these 3 lists, the nearest value
+        to the target_color voltages is calculated and used, for the second
+        step of the algorithm: Dependent on the stepsize, the values
+        between the nearest point and its two neighbours are calculated.
+        Once again, the nearest point of the resulting measurement list is
+        taken (also seperately for every one of the three voltage channels).
+        The resulting three values are now seperatly used as new value for
+        the corresponding voltage channel and compared to the target_color.
+        The Best voltages of these three seperate comparisons is taken and used for further
+        calculations. Only one voltage channel will be changed in every
+        iteration (always that one, which brings the best improvement when
+        it gets changed).
 
         * target_color -- tuple of (x, y, Y)
-        * iterations
+        * iterations -- iterations of the process, how often should the
+                        process be done
+        * stepsize -- Number of voltages to add/subtract from the
+                      starting_value to create the measurement lists for every
+                      voltage-channel
+        * imi -- inter measurement intverall
         """
         # TODO: extra iterations for the measurement points
         # set colors

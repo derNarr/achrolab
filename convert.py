@@ -26,6 +26,7 @@ class Convert(object):
         """
         Convert object init function.
         """
+        pass
 
     def convert_xyY_to_rgb(self, xyY):
         """

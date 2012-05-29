@@ -346,7 +346,8 @@ class CalibColorTable(ColorTable):
 
     def findVoltages(self, name_list=None):
         """
-        findVoltages TODO
+        Calls the tubes.findVoltages function for every entry in the
+        name_list.
         """
         #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
@@ -363,7 +364,8 @@ class CalibColorTable(ColorTable):
 
     def findVoltagesTuning(self, name_list=None):
         """
-        findVoltagesTuning TODO
+        Calls the tubes.findVoltagesTuning function for every entry in the
+        name_list.
         """
         #self.tubes.calibrateEyeOne()
         self.tubes.startMeasurement()
