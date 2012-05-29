@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 KS
+# last mod 2012-05-29 20:18 KS
 
 """
 This modules provides CalibTubes.
@@ -35,27 +35,9 @@ class CalibTubes(Tubes):
         EyeOne.
         """
         self.dummy = dummy
-
         self.eyeone = eyeone
-        self.eyeone_calibrated = False
-        self.IsCalibrated = False           # TODO: Why do we have 2 variables for calibrated
-
-        self.devtub = devtubes.DevTubes()
+        self.is_calibrated = False
         self.loadParameter(calibfile)
-
-        self.ict = IterativeColorTubes(self, self.eyeone)
-
-    def calibrateEyeOne(self):
-        """
-        Sets EyeOne Pro to correct measurement mode and calibrates EyeOne
-        Pro for use with tubes.
-        """
-        # TODO: Get rid of this function, use eyeone.calibrateEyeOne
-        # instead!
-        print("WARNING: Everything is fine, but please change your code" + 
-                " and use eyeone.calibrateEyeOne() instead of" +
-                " tubes.calibrateEyeone()\n")
-        self.eyeone_calibrated = self.eyeone.calibrateEyeOne()
 
     def startMeasurement(self):
         """
@@ -78,9 +60,9 @@ class CalibTubes(Tubes):
         
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eyeone_calibrated: #TODO can I get this information
-                                       # out of the eyeone object?
-            self.calibrateEyeOne() # TODO change this one
+        self.printNote()
+        if not self.eyeone.is_calibrated:
+            self.eyeone.calibrate()
 
         xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
@@ -112,9 +94,10 @@ class CalibTubes(Tubes):
         # TODO check what happens, if fitting of the curves failed!
         #      it should give a reasonable error message and stores the
         #      data in a way, that it is easy to refit.
+        self.printNote()
 
-        if not self.eyeone_calibrated:
-            self.calibrateEyeOne()
+        if not self.eyeone.is_calibrated:
+            self.eyeone.calibrate()
         
         voltages = list()
         xyY_list = list()
@@ -278,7 +261,7 @@ class CalibTubes(Tubes):
         print("blue_p3" + str(self.blue_p3))
 
         # finished calibration :)
-        self.IsCalibrated = True
+        self.is_calibrated = True
         print("Calibration of tubes finished.")
 
     def measureOneColorChannel(self, color, imi=0.5, n=50, each=1):
@@ -295,8 +278,8 @@ class CalibTubes(Tubes):
         This function immediately starts measuring. There is no prompt to
         start measurement.
         """
-        if not self.eyeone_calibrated:
-            self.calibrateEyeOne()
+        if not self.eyeone.is_calibrated:
+            self.eyeone.calibrate()
         
         # define some variables
         # generating the tested voltages (r, g, b)
@@ -353,7 +336,7 @@ class CalibTubes(Tubes):
         """
         Saves parameters used for interpolation function.
         """
-        # TODO what to do, if file doesn't exist? Throw exception?
+        # TODO warn if a file gets replaced?
         with open(filename, 'wb') as f:
             pickle.dump(self.red_p1, f)
             pickle.dump(self.red_p2, f)
@@ -369,7 +352,7 @@ class CalibTubes(Tubes):
         """
         Loads parameters used for interpolation function.
         """
-        # TODO warn if a file gets replaced?
+        # TODO what to do, if file doesn't exist? Throw exception?
         with open(filename, 'rb') as f: 
             self.red_p1   = pickle.load(f)
             self.red_p2   = pickle.load(f)
@@ -380,6 +363,7 @@ class CalibTubes(Tubes):
             self.blue_p1  = pickle.load(f)
             self.blue_p2  = pickle.load(f)
             self.blue_p3  = pickle.load(f)
+        self.is_calibrated = True
 
 
     def plotCalibration(self):

@@ -7,14 +7,19 @@
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# content: the Convert Class provides functions to convert color values
-# of different color spaces in each other.
+# content: (1) class Convert
+#          (2) function xyY2rgb
 #
 # input: --
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 14:11 DW
+# last mod 2012-05-29 KS
+
+"""
+This module provides a class to convert xyY color values to rgb and vica
+versa.
+"""
 
 import numpy as np
 

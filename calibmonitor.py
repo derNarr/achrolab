@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-05-29 20:15 KS
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -38,18 +38,6 @@ class CalibMonitor(Monitor):
         self.psychopy_win = psychopy_win
         self.patch_stim = None
 
-    def calibrateEyeOne(self):
-        """
-        Sets EyeOne Pro to correct measurement mode and calibrates EyeOne
-        Pro so it is ready for use on the monitor.
-        """
-        # TODO: Get rid of this function, use eyeone.calibrateEyeOne
-        # instead!
-        print("WARNING: Everything is fine, but please change your code" + 
-                " and use eyeone.calibrateEyeOne() instead of" +
-                " tubes.calibrateEyeone()\n")
-        self.eyeone_calibrated = self.eyeone.calibrateEyeOne()
-
     def startMeasurement(self):
         """
         Simply prompts to move EyeOne Pro to measurement position and
@@ -72,9 +60,8 @@ class CalibMonitor(Monitor):
         
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eyeone_calibrated: #TODO can I extract the status out
-                                       # of the eyeone?
-            self.calibrateEyeOne() # TODO change this
+        if not self.eyeone.is_calibrated:
+            self.eyeone.calibrate()
             self.startMeasurement()
 
         self.setColor(patch_stim_value)
@@ -106,8 +93,8 @@ class CalibMonitor(Monitor):
 
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eyeone_calibrated:
-            self.calibrateEyeOne()
+        if not self.eyeone.is_calibrated:
+            self.eyeone.calibrate()
             self.startMeasurement()
         print("measureColor is not implemented yet.")
         # TODO measureColor
