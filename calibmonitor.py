@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./monitor.py
+# ./calibmonitor.py
 #
 # (c) 2010-2012 Konstantin Sering, Nora Umbach, Dominik Wabersich
 # <colorlab[at]psycho.uni-tuebingen.de>
@@ -15,13 +15,19 @@
 # created 2010
 # last mod 2012-05-29 KS
 
+"""
+This module provides the calls CalibMonitor which handles measuring of the
+monitor.
+"""
+
 from eyeone.constants import  (eNoError, TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from psychopy import visual, core
+from monitor import Monitor
 
 
-class CalibMonitor(object):
+class CalibMonitor(Monitor):
     """
     provides an easy interface to measure psychopy.visual.PatchStim
     colors with an EyeOne Pro.
