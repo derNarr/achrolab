@@ -1,7 +1,7 @@
 achrolab provides some classes and algorithms to calibrate lightning and
 use the calibrated colors in a vision lab.
 
-Copyright (C) 2010-2012  Konstantin Sering, Nora Umbach, Sominik Wabersich
+Copyright (C) 2010-2012  Konstantin Sering, Nora Umbach, Dominik Wabersich
 <colorlab[at]psycho.uni-tuebingen.de>
 
 This program is dual licensed. You have three options:
