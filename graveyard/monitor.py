@@ -13,17 +13,22 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-05-29 14:17 DW
 
-from eyeone.constants import  (eNoError, TRISTIMULUS_SIZE)
+from eyeone.constants import  (I1_MEASUREMENT_MODE, 
+                                    I1_SINGLE_EMISSION,
+                                    eNoError,
+                                    COLOR_SPACE_KEY, 
+                                    COLOR_SPACE_CIExyY,
+                                    TRISTIMULUS_SIZE)
 from ctypes import c_float
 import time
 from psychopy import visual, core
 
 
-class CalibMonitor(object):
+class Monitor(object):
     """
-    provides an easy interface to measure psychopy.visual.PatchStim
+    Monitor provides an easy interface to measure psychopy.visual.PatchStim
     colors with an EyeOne Pro.
     """
     
@@ -42,7 +47,7 @@ class CalibMonitor(object):
         # instead!
         print("WARNING: Everything is fine, but please change your code" + 
                 " and use eyeone.calibrateEyeOne() instead of" +
-                " tubes.calibrateEyeone()\n")
+                " tubes.calibrateEyeone()\n"
         self.eyeone_calibrated = self.eyeone.calibrateEyeOne()
     
 
@@ -70,13 +75,11 @@ class CalibMonitor(object):
         
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
-        if not self.eyeone_calibrated: #TODO can I extract the status out
-                                       # of the eyeone?
-            self.calibrateEyeOne() # TODO change this
+        if not self.eyeone_calibrated:
+            self.calibrateEyeOne()
             self.startMeasurement()
         
-        if not self.psychopy_win: # TODO is it possible to allway get the
-                                  # full screen with the correct resolution
+        if not self.psychopy_win:
             self.psychopy_win = visual.Window(size=(800,600), monitor='mymon',
                     color=(0,0,0))
         if not self.patch_stim:
@@ -140,8 +143,8 @@ class CalibMonitor(object):
 
 if __name__ == "__main__":
     print("1")
-    from eyeone import eyeone
-    eyeone = eyeone.EyeOne(dummy=True)
-    mon = CalibMonitor(eyeone)
+    from eyeone import EyeOne
+    eyeone = EyeOne.EyeOne(dummy=True)
+    mon = Monitor(eyeone)
     print("2")
 
