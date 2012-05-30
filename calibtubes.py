@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 20:22 KS
+# last mod 2012-05-30 12:40 KS
 
 """
 This modules provides CalibTubes.
@@ -26,14 +26,10 @@ from exceptions import ValueError
 from math import exp, log
 from scipy.optimize import curve_fit
 
-from convert import xyY2rgb
-
 import pickle
 
-import devtubes
 from tubes import Tubes
-
-from colorentry import ColorEntry
+from eyeone.constants import TRISTIMULUS_SIZE, SPECTRUM_SIZE, eNoError
 
 
 class CalibTubes(Tubes):
@@ -48,6 +44,7 @@ class CalibTubes(Tubes):
 
         If dummy=True no runtime libraries will be loaded for Wasco and
         EyeOne.
+
         """
         self.dummy = dummy
         self.eyeone = eyeone
@@ -58,6 +55,7 @@ class CalibTubes(Tubes):
         """
         Simply prompts to move EyeOne Pro to measurement position and
         wait for button response.
+
         """
         print("\nPlease put EyeOne Pro in measurement position for TUBES"
                 + " and press key to start measurement.")
@@ -65,45 +63,82 @@ class CalibTubes(Tubes):
             time.sleep(0.01)
         print("Starting measurement...")
 
-    def measureVoltages(self, voltages, n=1):
+    def measureVoltages(self, voltages, imi=0.5, each=1):
         """
         Measures color of tubes for given voltages.
 
-        Input:
-            voltages -- triple of three integers (0x000, 0x000, 0x000) 
-            n -- number of measurements (positive integer)
-        
-        Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
+        :Parameters:
+
+            voltages : ( (vol_r1, vol_g1, volb1), (vol_r2, vol_g2, vol_b2), ...)
+                a list of triples of integers
+            imi : *0.5* or any positive float
+                inter measurement interval in seconds
+            each : *1* or any positive integer
+                number of measurements per voltage
+
+        Returns list of tripels (voltages, yxY, spectrum). All elements of
+        the triples are tuples as well. For example: [( (vol_r1, vol_g1,
+        vol_b1), (x1, y1, Y1), (l_1, l_2, l_3, ..., l_36) ), ...]
+
         """
         self.printNote()
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()
 
-        xyY_list = []
-        tri_stim = (c_float * TRISTIMULUS_SIZE)()
-
+        vol_col_spec_list = list()
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
+                                                  # saves tristim.
+        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where EyeOne Pro
+                                                  # saves spectrum.
         #start measurement
-        for i in range(n):
-            self.setVoltages(voltages)
-            time.sleep(.5)
+        filename = ('calibdata/measurements/measure_tubes_' +
+                    time.strftime("%Y%m%d_%H%M") + '.txt')
+        print("writing measurements in " + filename)
+        with open(filename, 'w') as calibfile:
+            calibfile.write("volR, volG, volB, x, y, Y," +
+                    ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
+            print("Starting measurement...")
+            for voltage in voltages:
+                for i in range(each):
+                    self.setVoltages(voltage)
+                    print(voltage)
+                    time.sleep(imi) # to give the EyeOne Pro time to adapt
+                                    # and to reduce carry-over effects
+                    if(eyeone.I1_TriggerMeasurement() != eNoError):
+                        print("Measurement failed for voltage %s ."
+                                %str(voltage))
+                    if(eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+                        print("Failed to get tristim for voltage %s ."
+                                %str(voltage))
+                    if(eyeone.I1_GetSpectrum(spectrum, 0) != eNoError):
+                        print("Failed to get spectrum for voltage %s ."
+                                %str(voltage))
+                    #write data #TODO output.py
+                    calibfile.write(", ".join([str(x) for x in voltage]) +
+                            ", " + ", ".join([str(x) for x in tri_stim]) +
+                            ", " + ", ".join([str(x) for x in spectrum]) +
+                            "\n")
+                    calibfile.flush()
+                    #store data in lists
+                    vol_col_spec_list.append( (voltage, tri_stim, spectrum) )
+        return vol_col_spec_list
 
-            if(self.eyeone.I1_TriggerMeasurement() != eNoError):
-                print("Measurement failed.")
-            if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
-                print("Failed to get tri stimulus.")
-            xyY_list.append( tuple(tri_stim) )
-
-        return xyY_list
 
     def calibrate(self, imi=0.5, n=50, each=1):
         """
         Calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
-        connected to the computer. The calibration takes around 2 minutes.
+        connected to the computer. The calibration takes around 2 ?? minutes.
 
-            * imi -- inter measurement interval in seconds
-            * n -- number of steps per tube to calibrate (must be greater 
-              equal 2)
-            * each -- number of measurements per color
+        :Paramter:
+
+            imi : *0.5* or any positive float
+                inter measurement interval in seconds
+            n : *50* or any positive integer greater 2
+                number of steps per tube to calibrate (must be greater
+                equal 2)
+            each : *1* or any positive integer
+                number of measurements per color
+
         """
         # TODO generate logfile for every calibration
         # TODO check what happens, if fitting of the curves failed!
@@ -271,6 +306,7 @@ class CalibTubes(Tubes):
         
         This function immediately starts measuring. There is no prompt to
         start measurement.
+
         """
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()

@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 22:22 KS
+# last mod 2012-05-30 12:38 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -68,9 +68,12 @@ class Calibrate(object):
 
         :Parameters:
 
-        xyY : triple containing the three values for the xyY color
-        start_voltages : triple containing three values for the voltages,
-        if None starting values are guessed
+            xyY : (x, y, Y)
+                triple containing the three values for the xyY color
+            start_voltages : *None* or (vol_red, vol_green, vol_blue)
+                triple containing three values for the voltages if *None*
+                starting values are guessed
+
         """
 
         if not start_voltages:
@@ -93,9 +96,12 @@ class Calibrate(object):
 
         :Parameters:
 
-        xyY : triple containing the three values for the xyY color
-        start_voltages : triple containing three values for the
-        voltages, if None starting values are guessed
+            xyY : (x, y, Y)
+                triple containing the three values for the xyY color
+            start_voltages : *None* or (vol_red, vol_green, vol_blue)
+                triple containing three values for the voltages if *None*
+                starting values are guessed
+
         """
         if not start_voltages:
             print("guess voltages via calibration of the tubes")
@@ -113,6 +119,12 @@ def calibrateColorTable(colortable):
     """
     convinient function to calibrate a colortable. Changes the colortable
     object!
+
+    :Parameters:
+
+        colortable : colortable.ColorTable
+            all color is the ColorTable object will be calibrated
+
     """
     # TODO
 
@@ -120,6 +132,12 @@ def calibrateColorEntry(colorentry):
     """
     convinient function to calibrate a single colorentry object. Changes
     the colorentry object!
+
+    :Parameters:
+
+        colorentry : colorentry.ColorEntry
+            the ColorEntry object will be calibrated
+
     """
     # TODO
 
