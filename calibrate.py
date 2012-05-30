@@ -15,12 +15,15 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-30 12:38 KS
+# last mod 2012-05-30 18:08 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
 the color of a monitor to each other with a photometer.
+
 """
+
+from setmanual import SetTubesManualPlot, SetTubesManualVision
 
 class Calibrate(object):
     """
@@ -39,17 +42,21 @@ class Calibrate(object):
     * start adjustManualVision check if the achieved calibration fits to
       your own visual system and adjust if necessary
     * store final calibration in color entry
+
     """
 
-    def __init__(self, eyeone, calibmonitor, calibtubes):
+    def __init__(self, calibmonitor, calibtubes):
         """
         :Parameters:
 
-            eyeone : eyeone.EyeOne object to measure the colors
-            calibmonitor : CalibMonitor object
-            calibtubes : CalibTubes object which is calibrated.
+            calibmonitor : calibmonitor.CalibMonitor object
+                the CalibMonitor object is used to present the stimuli on the
+                monitor and to measure the corresponding values
+            calibtubes : calibtubes.CalibTubes object which is calibrated
+                the CalibTubes object is used to set the voltages of the
+                tubes and to measure the corresponding values
+
         """
-        self.eyeone = eyeone
         self.calibmonitor = calibmonitor
         self.calibtubes = calibtubes
         if not calibtubes.is_calibrated:
@@ -57,6 +64,9 @@ class Calibrate(object):
             Calibrate object with CalibTubes where an old parameters file
             is loaded!""")
             # TODO insert reasonable exception here
+        self.set_manually_plot = SetTubesManualPlot(self.calibtubes)
+        self.set_manually_vision = SetTubesManualVision(self.calibtubes,
+                self.calibmonitor)
 
     def adjustManualPlot(self, xyY, start_voltages=None):
         """
@@ -66,6 +76,8 @@ class Calibrate(object):
         In order to match the values they are measured with the photometer
         and plotted.
 
+        Returns the final triple (voltages, xyY, spectrum).
+
         :Parameters:
 
             xyY : (x, y, Y)
@@ -75,17 +87,16 @@ class Calibrate(object):
                 starting values are guessed
 
         """
-
         if not start_voltages:
             print("Guess voltages via calibration of tubes.")
             start_voltages = self.calibtubes.guessVoltages(xyY[2])
-
         self.calibtubes.setVoltages(start_voltages)
         self.calibtubes.printNote()
-        
-        # TODO
+        self.set_manually_plot.start_voltages = start_voltages
+        self.set_manually_plot.target_color = xyY
+        return self.set_manually_plot.run()
 
-    def adjustManualVision(self, xyY, start_voltages=None):
+    def adjustManualVision(self, color, start_voltages=None):
         """
         changes the tubes with key strokes in order to match the color and
         luminance of the wall to a given color value.
@@ -94,10 +105,14 @@ class Calibrate(object):
         wall and the target value is presented at the monitor. It should be
         possible to adjust the colors with your own visual system.
 
+        Returns the final triple of voltages.
+
         :Parameters:
 
-            xyY : (x, y, Y)
-                triple containing the three values for the xyY color
+            color : color, that can be used by monitor.Monitor.setColor
+                this color will be presented by monitor.Monitor.setColor
+                and is the target color to which you want to match the
+                tubes
             start_voltages : *None* or (vol_red, vol_green, vol_blue)
                 triple containing three values for the voltages if *None*
                 starting values are guessed
@@ -106,38 +121,36 @@ class Calibrate(object):
         if not start_voltages:
             print("guess voltages via calibration of the tubes")
             start_voltages = self.calibtubes.guessVoltages(xyY[2])
+        self.calibtubes.setVoltages(start_voltages)
+        self.calibtubes.printNote()
+        self.set_manually_vision.start_voltages = start_voltages
+        self.set_manually_vision.target_color = color
+        return self.set_manually_vision.run()
+
+
+    def calibrateColorTable(self, colortable):
+        """
+        convinient function to calibrate a colortable. Changes the
+        colortable object!
+
+        :Parameters:
+
+            colortable : colortable.ColorTable
+                all color is the ColorTable object will be calibrated
+
+        """
         # TODO
 
-    def _adjustManual(self):
+    def calibrateColorEntry(self, colorentry):
         """
-        non-public method containing the key stroke and tubes setting
-        things needed in setManual* methods.
+        convinient function to calibrate a single colorentry object.
+        Changes the colorentry object!
+
+        :Parameters:
+
+            colorentry : colorentry.ColorEntry
+                the ColorEntry object will be calibrated
+
         """
         # TODO
- 
-def calibrateColorTable(colortable):
-    """
-    convinient function to calibrate a colortable. Changes the colortable
-    object!
-
-    :Parameters:
-
-        colortable : colortable.ColorTable
-            all color is the ColorTable object will be calibrated
-
-    """
-    # TODO
-
-def calibrateColorEntry(colorentry):
-    """
-    convinient function to calibrate a single colorentry object. Changes
-    the colorentry object!
-
-    :Parameters:
-
-        colorentry : colorentry.ColorEntry
-            the ColorEntry object will be calibrated
-
-    """
-    # TODO
 
