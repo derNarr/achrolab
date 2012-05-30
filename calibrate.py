@@ -30,15 +30,15 @@ class Calibrate(object):
     This class also implements the calibration procedure. This calibration
     start, when calibrateColorTable or calibrateColorEntry are called.
 
-    # test if the tubes are calibrated, if not abort
-    # test if the color entry was measured at the monitor, if not skip this
+    * test if the tubes are calibrated, if not abort
+    * test if the color entry was measured at the monitor, if not skip this
       color entry value
-    # guess starting voltages from color entry values (or use given)
-    # start adjustManualPlot so that you can adjust the tubes by hand and
+    * guess starting voltages from color entry values (or use given)
+    * start adjustManualPlot so that you can adjust the tubes by hand and
       see your result measured with the photometer
-    # start adjustManualVision check if the achieved calibration fits to
+    * start adjustManualVision check if the achieved calibration fits to
       your own visual system and adjust if necessary
-    # store final calibration in color entry
+    * store final calibration in color entry
     """
 
     def __init__(self, eyeone, calibmonitor, calibtubes):
@@ -68,13 +68,15 @@ class Calibrate(object):
 
         :Parameters:
 
-            xyY : triple containing the three values for the xyY color
-            start_voltages : triple containing three values for the voltages,
-                if None starting values are guessed
+        xyY : triple containing the three values for the xyY color
+        start_voltages : triple containing three values for the voltages,
+        if None starting values are guessed
         """
+
         if not start_voltages:
-            print("guess voltages via calibration of the tubes")
+            print("Guess voltages via calibration of tubes.")
             start_voltages = self.calibtubes.guessVoltages(xyY[2])
+
         self.calibtubes.setVoltages(start_voltages)
         self.calibtubes.printNote()
         
@@ -91,9 +93,9 @@ class Calibrate(object):
 
         :Parameters:
 
-            xyY : triple containing the three values for the xyY color
-            start_voltages : triple containing three values for the
-                voltages, if None starting values are guessed
+        xyY : triple containing the three values for the xyY color
+        start_voltages : triple containing three values for the
+        voltages, if None starting values are guessed
         """
         if not start_voltages:
             print("guess voltages via calibration of the tubes")

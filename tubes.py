@@ -45,7 +45,6 @@ import devtubes
 
 from colorentry import ColorEntry
 
-from iterativeColorTubes import IterativeColorTubes
 
 # TODO: Paths
 #from os import chdir, path

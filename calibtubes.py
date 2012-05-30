@@ -35,8 +35,6 @@ from tubes import Tubes
 
 from colorentry import ColorEntry
 
-from iterativeColorTubes import IterativeColorTubes
-
 
 class CalibTubes(Tubes):
     """
@@ -176,7 +174,7 @@ class CalibTubes(Tubes):
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
             calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
-            for voltages in (voltages_r, voltages_g, voltages_b)
+            for voltages in (voltages_r, voltages_g, voltages_b):
                 for i in range(len(voltages)):
                     calibFile.write(", ".join([str(x) for x in voltages[i]]) +
                                     ", " + ", ".join([str(x) for x in
