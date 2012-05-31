@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2012-05-30 17:53 KS
+# last mod 2012-05-31 13:09 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -21,31 +21,6 @@ you can adjust the color of the tubes and then with another key stroke
 measure the current color with the EyeOne photometer. The measurements and
 the target color are plottet in a figure, so that you know in which
 direction you should change your illumination.
-
-:Examples:
-
-    Example for SetTubesManualVision:
-    
-    >>> from achrolab.tubes import Tubes
-    >>> from achrolab.monitor import Monitor
-    >>> tubes = Tubes()
-    >>> monitor = Monitor()
-    >>> man_vision = SetTubesManualVision(tubes, monitor,
-            >>> start_voltages=(1561, 2253, 2181), target_color=(0, 100, 0))
-    >>> final_voltages = man_vision.run()
-    >>> print(final_voltages)
-    (...,...,...)
-
-    Example for SetTubesManualPlot:
-
-    >>> from achrolab.eyeone.eyeone import EyeOne
-    >>> from achrolab.calibtubes import CalibTubes
-    >>> eyeone = EyeOne()
-    >>> calibtubes = CalibTubes(eyeone)
-    >>> man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561, 2253, 2181), target_color=(0.298, 0.321, 64.1))
-    >>> final_measurement = man_plot.run()
-    >>> print(final_measurement)
-    ( (...,...,...), (...,...,...), (...))
 
 """
 
@@ -224,6 +199,19 @@ class SetTubesManualVision(SetTubesManualBase):
     creates an interactive screen, which shows the target color and allows
     to adjust the tubes with key strokes.
 
+    :Example:
+
+        >>> from achrolab.tubes import Tubes
+        ... from achrolab.monitor import Monitor
+        ... tubes = Tubes()
+        ... monitor = Monitor()
+        ... man_vision = SetTubesManualVision(tubes, monitor,
+        ...         start_voltages=(1561, 2253, 2181), target_color=(0,
+        ...         100, 0))
+        ... final_voltages = man_vision.run()
+        ... #print(final_voltages) should give something like:
+        ... #(...,...,...)
+
     """
 
     def __init__(self, tubes, monitor, start_voltages=None, target_color=None):
@@ -278,6 +266,18 @@ class SetTubesManualPlot(SetTubesManualBase):
     """
     creates an interactive figure with matplotlib, so that you can adjust
     the tubes and plot you measurements in this figure.
+
+    :Example:
+
+        >>> from achrolab.eyeone.eyeone import EyeOne
+        ... from achrolab.calibtubes import CalibTubes
+        ... eyeone = EyeOne()
+        ... calibtubes = CalibTubes(eyeone)
+        ... man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
+        ...         2253, 2181), target_color=(0.298, 0.321, 64.1))
+        ... final_measurement = man_plot.run()
+        ... #print(final_measurement) should give something like:
+        ... #( (...,...,...), (...,...,...), (...))
 
     """
 
