@@ -13,11 +13,11 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-06-04 09:50 KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
-import pickle,time
+import pickle
 from exceptions import ValueError
 
 # TODO save measurements of each EyeOne Pro measurement in a folder

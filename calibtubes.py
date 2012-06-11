@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-30 12:40 KS
+# last mod 2012-06-11 09:04 KS
 
 """
 This modules provides CalibTubes.
@@ -38,18 +38,16 @@ class CalibTubes(Tubes):
     Pro and to find corresponding voltages for a given color.
     """
 
-    def __init__(self, eyeone, calibfile="./calibdata/lastParameterTubes.pkl", dummy=False):
+    def __init__(self, eyeone):
         """
-        Initializes tubes object and stores eyeone object.
+        :Parameters:
 
-        If dummy=True no runtime libraries will be loaded for Wasco and
-        EyeOne.
-
+            :eyeone: eyeone.eyeone.EyeOne instance
+                needed for measuring the tubes
         """
-        self.dummy = dummy
+        Tubes.__init__(self)
         self.eyeone = eyeone
         self.is_calibrated = False
-        self.loadParameter(calibfile)
 
     def startMeasurement(self):
         """
