@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-06-11 09:04 KS
+# last mod 2012-06-11 15:50 KS
 
 """
 This modules provides CalibTubes.
@@ -207,23 +207,33 @@ class CalibTubes(Tubes):
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
             calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
-            for voltages in (voltages_r, voltages_g, voltages_b):
+            for j in range(4):
+                voltages = (voltages_r, voltages_g, voltages_b,
+                        voltages_all)[j]
+                xyY = (xyY_r, xyY_g, xyY_b, xyY_all)[j]
+                spectra = (spectra_r, spectra_g, spectra_b, spectra_all)[j]
                 for i in range(len(voltages)):
                     calibFile.write(", ".join([str(x) for x in voltages[i]]) +
                                     ", " + ", ".join([str(x) for x in
-                                        xyY_list[i]]) +
+                                        xyY[i]]) +
                                     ", " + ", ".join([str(x) for x in
                                         spectra[i]]) + 
                                     "\n")
 
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
-            pickle.dump(voltage_r, f)
-            pickle.dump(voltage_g, f)
-            pickle.dump(voltage_b, f)
+            pickle.dump(voltages_r, f)
+            pickle.dump(voltages_g, f)
+            pickle.dump(voltages_b, f)
+            pickle.dump(voltages_all, f)
             pickle.dump(xyY_r, f)
             pickle.dump(xyY_g, f)
             pickle.dump(xyY_b, f)
+            pickle.dump(xyY_all, f)
+            pickle.dump(spectra_r, f)
+            pickle.dump(spectra_g, f)
+            pickle.dump(spectra_b, f)
+            pickle.dump(spectra_all, f)
 
         try:
             # fit a luminance function -- non-linear regression model based

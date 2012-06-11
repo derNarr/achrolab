@@ -14,8 +14,10 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 14:20 DW
+# last mod 2012-06-11 16:14 KS
 
+from __future__ import print_function
+import sys
 from wasco.wasco import Wasco
 from wasco.constants import DAOUT1_16, DAOUT2_16, DAOUT3_16
 import time
@@ -70,27 +72,28 @@ class DevTubes(object):
         U_g_new = int(U_rgb[1])
         U_b_new = int(U_rgb[2])
         if U_r_new < self.low_threshold:
-            print("red channel is on minimum (" + str(self.low_threshold) +")")
+            print("red channel is on minimum (" + str(self.low_threshold)
+                    +")", file=sys.stderr)
             U_r_new = self.low_threshold
         if U_r_new > self.high_threshold:
             print("red channel is on maximum (" + str(self.high_threshold)
-                    +")")
+                    +")", file=sys.stderr)
             U_r_new = self.high_threshold
         if U_g_new < self.low_threshold:
             print("green channel is on minimum (" + str(self.low_threshold)
-            +")")
+            +")", file=sys.stderr)
             U_g_new = self.low_threshold
         if U_g_new > self.high_threshold:
             print("green channel is on maximum (" + str(self.high_threshold)
-                    +")")
+                    +")", file=sys.stderr)
             U_g_new = self.high_threshold
         if U_b_new < self.low_threshold:
             print("blue channel is on minimum (" + str(self.low_threshold)
-                    +")")
+                    +")", file=sys.stderr)
             U_b_new = self.low_threshold
         if U_b_new > self.high_threshold:
             print("blue channel is on maximum (" + str(self.high_threshold)
-                    +")")
+                    +")", file=sys.stderr)
             U_b_new = self.high_threshold
 
         diff_r = U_r_new - self.U_r

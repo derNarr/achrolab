@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-06-04 09:50 KS
+# last mod 2012-06-11 15:27 KS
 
 from psychopy import event, core
 from colorentry import ColorEntry
@@ -49,6 +49,19 @@ class ColorTable(object):
             else:
                 print("Warning: Cannot load ColorTable. Wrong filetype.")
 
+    def addColorEntry(self, ce):
+        """
+        adds a color entry to the color table.
+
+        :Parameters:
+
+            ce : colorentry.ColorEntry instance
+                object that stores a color entry
+
+        """
+        if not isinstance(ce, ColorEntry):
+            raise ValueError("ce must be colorentry.ColorEntry instance")
+        self.color_list.append( ce )
 
     def getColorByName(self,name):
         """

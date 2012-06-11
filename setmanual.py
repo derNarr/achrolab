@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2012-06-11 10:02 KS
+# last mod 2012-06-11 15:37 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -91,7 +91,10 @@ class SetTubesManualBase(object):
                 method run() is called
 
         """
-        self.voltages = list(start_voltages)
+        if start_voltages:
+            self.voltages = list(start_voltages)
+        else:
+            self.voltages = None
         self.target_color = target_color
         self.tub = tubes
         self.imi = 0.5
@@ -108,7 +111,10 @@ class SetTubesManualBase(object):
         
         """
         if name in ("voltages", "start_voltages"):
-            self.__dict__["voltages"] = list(value)
+            if value:
+                self.__dict__["voltages"] = list(value)
+            else:
+                self.__dict__["voltages"] = None
         else:
             self.__dict__[name] = value
     
