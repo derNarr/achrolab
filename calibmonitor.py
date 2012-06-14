@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 20:15 KS
+# last mod 2012-06-14 16:45 KS
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -33,10 +33,9 @@ class CalibMonitor(Monitor):
     """
     
     def __init__(self, eyeone, psychopy_win=None):
+        Monitor.__init__(self, psychopy_win)
         self.eyeone = eyeone
         self.eyeone_calibrated = False
-        self.psychopy_win = psychopy_win
-        self.patch_stim = None
 
     def startMeasurement(self):
         """
@@ -72,7 +71,7 @@ class CalibMonitor(Monitor):
         for i in range(n):
             self.patch_stim.draw()
             self.psychopy_win.flip()
-            core.wait(.5)
+            time.sleep(.5)
 
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")
