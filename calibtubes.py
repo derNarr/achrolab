@@ -17,6 +17,7 @@
 
 """
 This modules provides CalibTubes.
+
 """
 
 from ctypes import c_float
@@ -36,6 +37,15 @@ class CalibTubes(Tubes):
     """
     CalibTubes provides an easy interface to measure a color with EyeOne
     Pro and to find corresponding voltages for a given color.
+
+    :Example:
+
+        >>> from achrolab.eyeone.eyeone import EyeOne
+        >>> eyeone = EyeOne(dummy=True)
+        >>> caltub = CalibTubes(eyeone)
+        >>> caltub.calibrate(imi=0.5, n=100, each=5)
+        >>> caltub.saveParameter("example_tube_calibration.pkl")
+
     """
 
     def __init__(self, eyeone):
@@ -44,10 +54,20 @@ class CalibTubes(Tubes):
 
             :eyeone: eyeone.eyeone.EyeOne instance
                 needed for measuring the tubes
+
         """
         Tubes.__init__(self)
         self.eyeone = eyeone
         self.is_calibrated = False
+        self.red_p1 = None
+        self.red_p2 = None
+        self.red_p3 = None
+        self.green_p1 = None
+        self.green_p2 = None
+        self.green_p3 = None
+        self.blue_p1 = None
+        self.blue_p2 = None
+        self.blue_p3 = None
 
     def startMeasurement(self):
         """
