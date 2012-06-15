@@ -15,13 +15,16 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 KS
+# last mod 2012-06-14 16:42 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
 the color of a monitor to each other with a photometer.
 
 """
+
+import math
+import scipy
 
 from setmanual import SetTubesManualPlot, SetTubesManualVision
 
@@ -33,15 +36,93 @@ class Calibrate(object):
     This class also implements the calibration procedure. This calibration
     start, when calibrateColorTable or calibrateColorEntry are called.
 
-    * test if the tubes are calibrated, if not abort
-    * test if the color entry was measured at the monitor, if not skip this
-      color entry value
-    * guess starting voltages from color entry values (or use given)
-    * start adjustManualPlot so that you can adjust the tubes by hand and
-      see your result measured with the photometer
-    * start adjustManualVision check if the achieved calibration fits to
-      your own visual system and adjust if necessary
-    * store final calibration in color entry
+    1. test if the tubes are calibrated, if not abort
+    2. test if the color entry was measured at the monitor, if not skip this
+       color entry value
+    3. guess starting voltages from color entry values (or use given)
+    4. start adjustManualPlot so that you can adjust the tubes by hand and
+       see your result measured with the photometer
+    5. start adjustManualVision check if the achieved calibration fits to
+       your own visual system and adjust if necessary
+    6. store final calibration in color entry
+
+    :Example:
+        
+        >>> from achrolab.eyeone.eyeone import EyeOne
+        >>> from achrolab.calibmonitor import CalibMonitor
+        >>> from achrolab.calibtubes import CalibTubes
+        >>> from achrolab.colortable import ColorTable
+        >>> from achrolab.colorentry import ColorEntry
+        >>> eyeone = EyeOne()
+        >>> calibmonitor = CalibMonitor(eyeone)
+        >>> calibtubes = CalibTubes(eyeone)
+        >>> calibtubes.calibrate(imi=0.1, n=4, each=1) #doctest: +ELLIPSIS
+        <BLANKLINE>
+                Note:
+                The tubes must be switched on for at least four (!!) hours to come
+                in a state where they are not changing the illumination a
+                significant amount.
+        <BLANKLINE>
+        Measurement mode set to SingleEmission.
+        Color space set to CIExyY.
+        <BLANKLINE>
+        Please put EyeOne Pro on calibration plate and press key to start calibration.
+        Calibration of EyeOne Pro done.
+        <BLANKLINE>
+        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+        <BLANKLINE>
+        Please put EyeOne Pro in measurement position and press key to start measurement.
+        <BLANKLINE>
+        Turn off blue and green tubes!
+        Press key to start measurement of RED tubes.
+        Starting measurement...
+        (1024, 4095, 4095)
+        (2047, 4095, 4095)
+        (3070, 4095, 4095)
+        (4093, 4095, 4095)
+        <BLANKLINE>
+        Turn off red and blue tubes!
+        Press key to start measurement of GREEN tubes.
+        Starting measurement...
+        (4095, 1024, 4095)
+        (4095, 2047, 4095)
+        (4095, 3070, 4095)
+        (4095, 4093, 4095)
+        <BLANKLINE>
+        Turn off red and green tubes!
+        Press key to start measurement of BLUE tubes.
+        Starting measurement...
+        (4095, 4095, 1024)
+        (4095, 4095, 2047)
+        (4095, 4095, 3070)
+        (4095, 4095, 4093)
+        <BLANKLINE>
+        Turn ON red, green and blue tubes!
+        Press key to start measurement of ALL tubes.
+        Starting measurement...
+        (1024, 1024, 1024)
+        (2047, 2047, 2047)
+        (3070, 3070, 3070)
+        (4093, 4093, 4093)
+        Measurement finished.
+        ...
+        ...
+        >>> calibtubes.is_calibrated = True
+        >>> calibrate = Calibrate(calibmonitor, calibtubes)
+        <BLANKLINE>
+        Initializing search mode complete.
+        >>> colortable = ColorTable()
+        >>> color1 = ColorEntry("darkgreen", patch_stim_value=(0,100,0))
+        >>> color2 = ColorEntry("darkred", patch_stim_value=(100,0,0))
+        >>> colortable.addColorEntry(color1)
+        >>> colortable.addColorEntry(color2)
+        >>> calibrate.calibrateColorTable(colortable)
+        >>> print(colortable.color_list[0].monitor_xyY) #doctest: +ELLIPSIS
+        (..., ..., ...)
+        >>> print(colortable.color_list[0].voltages) #doctest: +ELLIPSIS
+        (..., ..., ...)
+        >>> print(colortable.color_list[0].tubes_xyY) #doctest: +ELLIPSIS
+        (..., ..., ...)
 
     """
 
@@ -128,7 +209,7 @@ class Calibrate(object):
         return self.set_manually_vision.run()
 
 
-    def calibrateColorTable(self, colortable):
+    def calibrateColorTable(self, colortable, each=5):
         """
         convinient function to calibrate a colortable. Changes the
         colortable object!
@@ -137,21 +218,88 @@ class Calibrate(object):
 
             colortable : colortable.ColorTable
                 all color is the ColorTable object will be calibrated
+            each : *5* or int
+                number of repeated measurements per colorentry
 
         """
-        # TODO
+        if not self.calibtubes.is_calibrated:
+            print("ERROR Please calibrate tubes and start again.")
+            return
+        # MONITOR
+        self.calibmonitor.startMeasurement()
+        for ce in colortable.color_list:
+            self._measureColorEntryMonitor(ce, n=each)
+        # TUBES
+        self.calibtubes.startMeasurement()
+        for ce in colortable.color_list:
+            start_voltages = ce.voltages
+            (voltages, xyY, spectrum) = self.adjustManualPlot(
+                    ce.monitor_xyY, start_voltages)
+            ce.voltages = voltages
+        print("Now the visual calibration starts. Please make sure, that" +
+                " you can see the monitor and the illuminated wall at the"
+                + " same time.\n")
+        for ce in colortable.color_list:
+            voltages_vision = self.adjustManualVision(
+                    ce.patch_stim_value, ce.voltages)
+            ce.voltages = voltages_vision
+        self.calibtubes.startMeasurement()
+        for ce in colortable.color_list:
+            self._measureColorEntryTubes(ce, n=each)
 
-def calibrateColorTable(colortable):
-    """
-    convenient function to calibrate a colortable. Changes the colortable
-    object!
-    """
-    # TODO
 
-def calibrateColorEntry(colorentry):
-    """
-    convenient function to calibrate a single colorentry object. Changes
-    the colorentry object!
-    """
-    # TODO
+    def calibrateColorEntry(self, colorentry, n=5):
+        """
+        convenient function to calibrate a single colorentry object.
+        Changes the colorentry object!
+
+        :Parameters:
+
+            colorentry : colorentry.ColorEntry
+                the ColorEntry object will be calibrated
+            n : *5* or int
+                number of repeated measurements per condition
+
+        """
+        if not self.calibtubes.is_calibrated:
+            print("ERROR Please calibrate tubes and start again.")
+            return
+        # MONITOR
+        self.calibmonitor.startMeasurement()
+        self._measureColorEntryMonitor(colorentry, n=n)
+        # TUBES
+        self.calibtubes.startMeasurement()
+        start_voltages = colorentry.voltages
+        (voltages, xyY, spectrum) = self.adjustManualPlot(
+                colorentry.monitor_xyY, start_voltages)
+        voltages_vision = self.adjustManualVision(
+                colorentry.patch_stim_value, voltages)
+        colorentry.voltages = voltages_vision
+        self.calibtubes.startMeasurement()
+        self._measureColorEntryTubes(colorentry, n=n)
+
+    def _measureColorEntryMonitor(self, colorentry, n=5):
+        xyY_list = self.calibmonitor.measurePatchStimColor(
+                colorentry.patch_stim_value, n)
+        colorentry.monitor_xyY = (
+                scipy.mean([xyY[0] for xyY in xyY_list]),
+                scipy.mean([xyY[1] for xyY in xyY_list]),
+                scipy.mean([xyY[2] for xyY in xyY_list]))
+        colorentry.monitor_xyY_sd = (
+                math.sqrt(scipy.var([xyY[0] for xyY in xyY_list])),
+                math.sqrt(scipy.var([xyY[1] for xyY in xyY_list])),
+                math.sqrt(scipy.var([xyY[2] for xyY in xyY_list])))
+
+    def _measureColorEntryTubes(self, colorentry, n=5):
+        ans = self.calibtubes.measureVoltages([colorentry.voltages,],
+                imi=0.5, each=n)
+        xyY_list = ans[0][1]
+        colorentry.calibtubes_xyY = (
+                scipy.mean([xyY[0] for xyY in xyY_list]),
+                scipy.mean([xyY[1] for xyY in xyY_list]),
+                scipy.mean([xyY[2] for xyY in xyY_list]))
+        colorentry.calibtubes_xyY_sd = (
+                math.sqrt(scipy.var([xyY[0] for xyY in xyY_list])),
+                math.sqrt(scipy.var([xyY[1] for xyY in xyY_list])),
+                math.sqrt(scipy.var([xyY[2] for xyY in xyY_list])))
 

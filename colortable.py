@@ -13,11 +13,10 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-06-14 16:59 KS
 
-from psychopy import event, core
 from colorentry import ColorEntry
-import pickle,time
+import pickle
 from exceptions import ValueError
 
 # TODO save measurements of each EyeOne Pro measurement in a folder
@@ -49,6 +48,19 @@ class ColorTable(object):
             else:
                 print("Warning: Cannot load ColorTable. Wrong filetype.")
 
+    def addColorEntry(self, ce):
+        """
+        adds a color entry to the color table.
+
+        :Parameters:
+
+            ce : colorentry.ColorEntry instance
+                object that stores a color entry
+
+        """
+        if not isinstance(ce, ColorEntry):
+            raise ValueError("ce must be colorentry.ColorEntry instance")
+        self.color_list.append( ce )
 
     def getColorByName(self,name):
         """
@@ -71,40 +83,6 @@ class ColorTable(object):
         for name in name_list:
            color_list.append(self.getColorByName(name))
         return color_list
-
-    def showColorList(self, tubes, monitor, index_list=None, name_list=None):
-        """
-        draws every color on the screen and changes the illumination of the
-        tubes to the corresponding voltage. Left mouse click changes to
-        next color in color list.
-        """
-        # TODO implement index_list 
-        print('''Click left mouse button to move to the next
-        corresponding colors of tubes and monitor.''')
-        color_list = []
-        if name_list:
-            color_dict = {}
-            for ce in self.color_list:
-                color_dict[ce.name] = ce
-            for name in name_list:
-                color_list.append(color_dict[name])
-        else:
-            color_list = self.color_list
-
-        for colorentry in color_list:
-            monitor.setPatchStimColor(colorentry.patch_stim_value)
-            tubes.setVoltages(colorentry.voltages)
-            mouse = event.Mouse(win=self.monitor.psychopy_win) 
-            event.clearEvents()
-            show = True 
-            print("Show color " + colorentry.name + ".")
-            while show:
-                core.wait(0.01)
-                left, middle, right = mouse.getPressed()
-                if left: 
-                    core.wait(0.2)
-                    show=False
-        print("Finished showing all colors.")
 
     def saveToCsv(self, filename):
         """

@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2012-05-31 13:09 KS
+# last mod 2012-06-11 15:37 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -91,7 +91,10 @@ class SetTubesManualBase(object):
                 method run() is called
 
         """
-        self.voltages = list(start_voltages)
+        if start_voltages:
+            self.voltages = list(start_voltages)
+        else:
+            self.voltages = None
         self.target_color = target_color
         self.tub = tubes
         self.imi = 0.5
@@ -108,7 +111,10 @@ class SetTubesManualBase(object):
         
         """
         if name in ("voltages", "start_voltages"):
-            self.__dict__["voltages"] = list(value)
+            if value:
+                self.__dict__["voltages"] = list(value)
+            else:
+                self.__dict__["voltages"] = None
         else:
             self.__dict__[name] = value
     
@@ -202,15 +208,33 @@ class SetTubesManualVision(SetTubesManualBase):
     :Example:
 
         >>> from achrolab.tubes import Tubes
-        ... from achrolab.monitor import Monitor
-        ... tubes = Tubes()
-        ... monitor = Monitor()
-        ... man_vision = SetTubesManualVision(tubes, monitor,
+        >>> from achrolab.monitor import Monitor
+        >>> tubes = Tubes()
+        >>> monitor = Monitor()
+        >>> man_vision = SetTubesManualVision(tubes, monitor,
         ...         start_voltages=(1561, 2253, 2181), target_color=(0,
         ...         100, 0))
-        ... final_voltages = man_vision.run()
-        ... #print(final_voltages) should give something like:
-        ... #(...,...,...)
+        >>> final_voltages = man_vision.run()
+        <BLANKLINE>
+        <BLANKLINE>
+        Manual adjustment of tubes` color
+        <BLANKLINE>
+        Press [up] for higher intensity or press [down] for lower intensity.
+        To set tube color and step size press the following buttons:
+        Stepsize:
+         [1] - 1
+         [2] - 5
+         [3] - 10
+         [4] - 50
+         [5] - 100
+        Colortube:
+         [r] - Red
+         [g] - Green
+         [b] - Blue
+         [a] - all
+        Press [escape] to quit (and save last voltages)
+        >>> print(final_voltages) #doctest: +ELLIPSIS
+        [...,...,...]
 
     """
 
@@ -232,7 +256,7 @@ class SetTubesManualVision(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(tubes, start_voltages, target_color)
+        SetTubesManualBase.__init__(self, tubes, start_voltages, target_color)
         self.mon = monitor
 
     def run(self):
@@ -258,7 +282,8 @@ class SetTubesManualVision(SetTubesManualBase):
               + '\nPress [escape] to quit (and save last voltages)')
         self.stop=False
         while not self.stop:
-            self.mon.waitForButtonPress(self.onKeyPress)
+            self.mon.waitForButtonPress()
+            self.onKeyPress(self.mon.e)
         return( self.voltages )
  
 
@@ -270,14 +295,48 @@ class SetTubesManualPlot(SetTubesManualBase):
     :Example:
 
         >>> from achrolab.eyeone.eyeone import EyeOne
-        ... from achrolab.calibtubes import CalibTubes
-        ... eyeone = EyeOne()
-        ... calibtubes = CalibTubes(eyeone)
-        ... man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
+        >>> from achrolab.calibtubes import CalibTubes
+        >>> eyeone = EyeOne()
+        >>> calibtubes = CalibTubes(eyeone)
+        >>> man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
         ...         2253, 2181), target_color=(0.298, 0.321, 64.1))
-        ... final_measurement = man_plot.run()
-        ... #print(final_measurement) should give something like:
-        ... #( (...,...,...), (...,...,...), (...))
+        Measurement mode set to SingleEmission.
+        Color space set to CIExyY.
+        <BLANKLINE>
+        Please put EyeOne Pro on calibration plate and press key to start calibration.
+        Calibration of EyeOne Pro done.
+        <BLANKLINE>
+        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+        <BLANKLINE>
+        Initializing search mode complete.
+        >>> final_measurement = man_plot.run() #doctest: +ELLIPSIS
+        <BLANKLINE>
+        <BLANKLINE>
+        Wait until first measurement is done.
+        Get to the red cross
+        xyY: ...,...,...
+        <BLANKLINE>
+        <BLANKLINE>
+        Manual adjustment of tubes` color
+        <BLANKLINE>
+        Press [up] for higher intensity or press [down] for lower intensity.
+        To set tube color and step size press the following buttons:
+        Stepsize:
+         [1] - 1
+         [2] - 5
+         [3] - 10
+         [4] - 50
+         [5] - 100
+        Colortube:
+         [r] - Red
+         [g] - Green
+         [b] - Blue
+         [a] - all
+        To trigger measurement press [space].
+        Press [c] to redraw figure.
+        Press [escape] to quit (and save last voltages)
+        >>> print(final_measurement) #doctest: +ELLIPSIS
+        ([...,...,...], [...,...,...], [...])
 
     """
 
@@ -299,7 +358,8 @@ class SetTubesManualPlot(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(calibtubes, start_voltages, target_color)
+        SetTubesManualBase.__init__(self, calibtubes, start_voltages,
+                target_color)
         self.eyeone = calibtubes.eyeone
         self.fig = None
         self.last_vol_xyY_spect = None
@@ -357,7 +417,11 @@ class SetTubesManualPlot(SetTubesManualBase):
             self.stop=False
             while not self.stop:
                 plt.waitforbuttonpress()
-            return( self.last_vol_xyY_spect )
+            # cast all data to python float and deep copy them
+            voltages = self.last_vol_xyY_spect[0][:]
+            color = [float(x) for x in self.last_vol_xyY_spect[1]]
+            spectrum = [float(x) for x in self.last_vol_xyY_spect[2]]
+            return( (voltages, color, spectrum) )
     
     def newFigure(self):
         """
@@ -373,13 +437,13 @@ class SetTubesManualPlot(SetTubesManualBase):
         plt.clf()
         self.plot_xy = plt.subplot(1,2,1)
         self.plot_xy.axis([0.29, 0.31, 0.29, 0.31])
-        self.plot_xy.plot(self.target_xyY[0], self.target_xyY[1], "rx")
+        self.plot_xy.plot(self.target_color[0], self.target_color[1], "rx")
         self.plot_xy.set_aspect(1)
         self.plot_Y = plt.subplot(1,2,2)
         self.plot_Y.axis([0, 10, 19, 23])
-        self.plot_Y.axhline(y=self.target_xyY[2], color="r", xmin=0,
+        self.plot_Y.axhline(y=self.target_color[2], color="r", xmin=0,
                 xmax=1000)
-        tellme('Get to the red cross')
+        self.tellme('Get to the red cross')
         self.fig.canvas.mpl_connect('key_press_event', self.onKeyPress)
         # reset self.i
         self.i = 0

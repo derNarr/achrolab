@@ -14,35 +14,15 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-06-11 09:06 KS
 
 """
 The tubes class gives an easy interface to handle the tubes and CalibTubes
 provides convenient methods to measure and calibrate the tubes.
+
 """
 
-from eyeone.constants import  (I1_MEASUREMENT_MODE, 
-                                    I1_SINGLE_EMISSION,
-                                    eNoError,
-                                    COLOR_SPACE_KEY, 
-                                    COLOR_SPACE_CIExyY,
-                                    COLOR_SPACE_RGB,
-                                    TRISTIMULUS_SIZE,
-                                    SPECTRUM_SIZE)
-from ctypes import c_float
-import time
-from exceptions import ValueError
-
-from math import exp,log
-import numpy as np
-from scipy.optimize import curve_fit
-
-from convert import xyY2rgb
-
-import pickle
-
 import devtubes
-
 from colorentry import ColorEntry
 
 
@@ -56,6 +36,7 @@ class Tubes(object):
 
     This class hides all the hardware specifications and has no
     dependencies on the eyeone module.
+
     """
     def __init__(self):
         """
@@ -64,6 +45,7 @@ class Tubes(object):
         devtub contains an object with a method setVoltages. This method
         gets a triple of integers and sets the voltages of the tubes. The
         devtubes object takes care of all the hardware stuff.
+
         """
         self.devtub = devtubes.DevTubes()
 
@@ -77,6 +59,7 @@ class Tubes(object):
         WARNING: Don't set the tubes directly (e.g. via wasco), because
         the change in voltage has to be smoothly. This prevents the
         fluorescent tubes to accidentally give out.
+
         """
         if isinstance(voltages, ColorEntry):
             self.devtub.setVoltages(voltages.voltages)
@@ -87,6 +70,7 @@ class Tubes(object):
         """
         prints a note, that states what is important, when you use the
         tubes.
+
         """
         print("""
         Note:
@@ -94,5 +78,4 @@ class Tubes(object):
         in a state where they are not changing the illumination a
         significant amount.
         """)
-
 
