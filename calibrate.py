@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-30 18:08 KS
+# last mod 2012-05-29 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -141,16 +141,17 @@ class Calibrate(object):
         """
         # TODO
 
-    def calibrateColorEntry(self, colorentry):
-        """
-        convinient function to calibrate a single colorentry object.
-        Changes the colorentry object!
+def calibrateColorTable(colortable):
+    """
+    convenient function to calibrate a colortable. Changes the colortable
+    object!
+    """
+    # TODO
 
-        :Parameters:
-
-            colorentry : colorentry.ColorEntry
-                the ColorEntry object will be calibrated
-
-        """
-        # TODO
+def calibrateColorEntry(colorentry):
+    """
+    convenient function to calibrate a single colorentry object. Changes
+    the colorentry object!
+    """
+    # TODO
 
