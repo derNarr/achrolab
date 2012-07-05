@@ -35,7 +35,7 @@ class CalibDataFile():
         #print "init"
         #Open file object here
 
-    def writeDataJSON(self, graayvals=None, rgb=None, xyY=None, voltage=None, listcolorlist=None, listspeclist=None, measurement=None, imi=None, times=None, recalibrate=None):
+    def writeDataJSON(self, grayvals=None, rgb=None, xyY=None, voltage=None, spec_list=None, measurement=None, imi=None, times=None, recalibrate=None):
         #Make list of dictionaries to do nested JSON
         #Needs to be modified to include all variables
         #Can this be modified to save data whilst running?
@@ -106,7 +106,7 @@ class CalibDataFile():
         else:
             for i in range(36):
                 writestr+="NA"+str(delimiter)
-                writestr=writestr[:-1] #remove trailing delimiter
+            writestr=writestr[:-1] #remove trailing delimiter
         #Terminate record with newline
         writestr+="\n"
         self.file_object.write(writestr)
