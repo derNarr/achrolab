@@ -5,7 +5,9 @@
 
 
 """
-This modules provides the class CalibDataFile, which provides a convenient method of writing the calibration data to a comma separated file.
+This modules provides the class CalibDataFile, which provides a convenient
+method of writing the calibration data to a comma separated file.
+
 """
 
 import json #JSON format is used so comments can be saved
@@ -14,7 +16,8 @@ import time
 #Fix inheriting from file later, need way of working with open()
 class CalibDataFile():
     """
-    CalibDataFile inherits from the built-in File, and provides a new method to write the calibration data to a comma separated file.
+    CalibDataFile inherits from the built-in File, and provides a new method to
+    write the calibration data to a comma separated file.
     TODO add arguments, etc. here
 
     Use with closing() from the contextlib module as follows: ::
@@ -26,8 +29,8 @@ class CalibDataFile():
             filename.writeTXT(rgb=rgb, xyY=None, voltage=None, spec_list=spec_list, delimiter="\t")
             #more code
 
-    This way if there is an error, inside the with context, it will immediately close and write to the file, so data is not lost.
-    """
+    This way if there is an error, inside the with context, it will immediately
+    close and write to the file, so data is not lost. """
 
     def __init__(self, prefix=""):
         #For now only works with justmeasure, can generalise this later
@@ -39,10 +42,11 @@ class CalibDataFile():
         #Make list of dictionaries to do nested JSON
         #Needs to be modified to include all variables
         #Can this be modified to save data whilst running?
-        data=[]
-        i=0
-        while i<measurement:
-            data.append({"colorlist" : listcolorlist[i], "speclist" : listspeclist[i]})
+        # TODO code looks broken
+        data = []
+        i = 0
+        for i in range(len(color_list)):
+            data.append({"colorlist" : listcolorlist[i], "speclist" : spec_list[i]})
             i+=1
         python_data = {
             "measurement" : measurement,
@@ -119,3 +123,4 @@ class CalibDataFile():
 
     def close(self):
         self.file_object.close()
+

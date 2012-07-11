@@ -39,7 +39,7 @@ class ColorEntry(object):
 
     def __init__(self, name, patch_stim_value=None, voltages=None):
         """
-        * name (string) -- "color1" 
+        * name (string) -- "color1"
         * patch_stim_value (float or triple of floats) -- 0.1 or (0.3, -0.3, -0.3)
         * monitor_xyY (triple of floats) -- (0.21, 0.23, 0.9)
         * monitor_xyY_sd (triple of floats) -- (0.02, 0.02, 0.001)
@@ -52,9 +52,9 @@ class ColorEntry(object):
 
         # monitor values
         self.patch_stim_value = patch_stim_value
-        self.monitor_xyY = None  
+        self.monitor_xyY = None
         self.monitor_xyY_sd = None
-        
+
         # tubes values
         self.voltages = voltages
         self.tubes_xyY = None
