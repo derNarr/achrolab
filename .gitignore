@@ -5,4 +5,5 @@
 *.RData
 *.swp
 calibdata/measurements/*
+\#*\#
 
