@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-06-25 14:57 DW
+# last mod 2012-07-11 12:18 DW
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -42,9 +42,7 @@ class CalibMonitor(Monitor):
         Simply prompts to move EyeOne Pro to measurement position and
         waits for button response.
         """
-        print("\nPlease put EyeOne Pro in measurement position for"
-                + " MONITOR and press key to start measurement. (Measure
-                through the Box! Not directly on the monitor.)")
+        print("\nPlease put EyeOne Pro in measurement position for" + " MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
