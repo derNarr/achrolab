@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-30 17:55 KS
+# last mod 2012-06-11 09:58 KS
 
 """
 This module provides the class Monitor, which capsulates the presentation
@@ -63,15 +63,9 @@ class Monitor(object):
         self.patch_stim.draw()
         self.psychopy_win.flip()
 
-    def waitForButtonPress(self, callback):
+    def waitForButtonPress(self):
         """
-        waits for a key press and calls callback with one argument, when
-        key is pressed.
-
-        argument of callback musst have attribute key e. g. callback(event)
-        and event has attribute event.key. event.key must store the
-        key press as a string and coded as ("1", "2", "3", "4", "5", "r",
-        "g", "b", "a", "c", "escape", "space", "up", "down")
+        waits for a key press and stores button press in self.e.key.
 
         """
         event.clearEvents()

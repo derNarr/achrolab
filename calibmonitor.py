@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 20:15 KS
+# last mod 2012-07-11 12:18 DW
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -33,18 +33,16 @@ class CalibMonitor(Monitor):
     """
     
     def __init__(self, eyeone, psychopy_win=None):
+        Monitor.__init__(self, psychopy_win)
         self.eyeone = eyeone
         self.eyeone_calibrated = False
-        self.psychopy_win = psychopy_win
-        self.patch_stim = None
 
     def startMeasurement(self):
         """
         Simply prompts to move EyeOne Pro to measurement position and
         waits for button response.
         """
-        print("\nPlease put EyeOne Pro in measurement position for"
-                + "MONITOR and press key to start measurement.")
+        print("\nPlease put EyeOne Pro in measurement position for" + " MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
@@ -72,7 +70,7 @@ class CalibMonitor(Monitor):
         for i in range(n):
             self.patch_stim.draw()
             self.psychopy_win.flip()
-            core.wait(.5)
+            time.sleep(.5)
 
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed.")

@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2012-05-31 13:09 KS
+# last mod 2012-06-30 18:29 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -29,13 +29,15 @@ import numpy as np
 import time
 from ctypes import c_float
 
-from achrolab.eyeone.constants import  (eNoError,
+from eyeone.constants import  (eNoError,
                                     SPECTRUM_SIZE,
                                     TRISTIMULUS_SIZE)
 
 def setColorTube(key):
     """
     Defines which color tubes should be changed.
+
+    returns tuple (color channel, index)
 
     """
     if key == 'r':
@@ -45,7 +47,7 @@ def setColorTube(key):
     elif key == 'b':
         return ('blue', 2)
     elif key == 'a':
-        return ('all', None) #second element is out of range, should not be used!
+        return ('all', None) #index is out of range, should not be used!
     else:
         pass
 
@@ -91,7 +93,10 @@ class SetTubesManualBase(object):
                 method run() is called
 
         """
-        self.voltages = list(start_voltages)
+        if start_voltages:
+            self.voltages = list(start_voltages)
+        else:
+            self.voltages = None
         self.target_color = target_color
         self.tub = tubes
         self.imi = 0.5
@@ -105,13 +110,16 @@ class SetTubesManualBase(object):
         cast the voltages to list, if they are set, to make them mutable.
         Additionally, if start_voltages are assigned, then set voltages
         accordingly.
-        
+
         """
         if name in ("voltages", "start_voltages"):
-            self.__dict__["voltages"] = list(value)
+            if value:
+                self.__dict__["voltages"] = list(value)
+            else:
+                self.__dict__["voltages"] = None
         else:
             self.__dict__[name] = value
-    
+
     def adjustTube(self):
         """
         Enables up and down arrow to adjust tubes' color step by step (lower if
@@ -159,7 +167,7 @@ class SetTubesManualBase(object):
         this method.
 
         """
-        pass            
+        pass
 
     def newFigure(self):
         """
@@ -202,15 +210,33 @@ class SetTubesManualVision(SetTubesManualBase):
     :Example:
 
         >>> from achrolab.tubes import Tubes
-        ... from achrolab.monitor import Monitor
-        ... tubes = Tubes()
-        ... monitor = Monitor()
-        ... man_vision = SetTubesManualVision(tubes, monitor,
+        >>> from achrolab.monitor import Monitor
+        >>> tubes = Tubes()
+        >>> monitor = Monitor()
+        >>> man_vision = SetTubesManualVision(tubes, monitor,
         ...         start_voltages=(1561, 2253, 2181), target_color=(0,
         ...         100, 0))
-        ... final_voltages = man_vision.run()
-        ... #print(final_voltages) should give something like:
-        ... #(...,...,...)
+        >>> final_voltages = man_vision.run()
+        <BLANKLINE>
+        <BLANKLINE>
+        Manual adjustment of tubes` color
+        <BLANKLINE>
+        Press [up] for higher intensity or press [down] for lower intensity.
+        To set tube color and step size press the following buttons:
+        Stepsize:
+         [1] - 1
+         [2] - 5
+         [3] - 10
+         [4] - 50
+         [5] - 100
+        Colortube:
+         [r] - Red
+         [g] - Green
+         [b] - Blue
+         [a] - all
+        Press [escape] to quit (and save last voltages)
+        >>> print(final_voltages) #doctest: +ELLIPSIS
+        [...,...,...]
 
     """
 
@@ -232,7 +258,7 @@ class SetTubesManualVision(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(tubes, start_voltages, target_color)
+        SetTubesManualBase.__init__(self, tubes, start_voltages, target_color)
         self.mon = monitor
 
     def run(self):
@@ -242,25 +268,25 @@ class SetTubesManualVision(SetTubesManualBase):
         Returns the final triple of voltages.
 
         """
-        if not (self.target_color or self.voltages):
-            print("""Please assign target_color and start_voltages before
-            calling run()!""")
-            return None # TODO insert reasonable exception
+        if not (self.target_color and self.voltages):
+            raise ValueError("Please assign target_color and start_voltages"
+                    + "before calling run()!")
         self.tub.setVoltages(self.voltages)
         self.mon.setColor( self.target_color )
         print('\n\nManual adjustment of tubes` color\n\n' +
               'Press [up] for higher intensity ' +
               'or press [down] for lower intensity.\n' +
               'To set tube color and step size press the following buttons:\n' +
-              'Stepsize:\n' + 
+              'Stepsize:\n' +
               ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n' +
               'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
               + '\nPress [escape] to quit (and save last voltages)')
         self.stop=False
         while not self.stop:
-            self.mon.waitForButtonPress(self.onKeyPress)
+            self.mon.waitForButtonPress()
+            self.onKeyPress(self.mon.e)
         return( self.voltages )
- 
+
 
 class SetTubesManualPlot(SetTubesManualBase):
     """
@@ -270,14 +296,48 @@ class SetTubesManualPlot(SetTubesManualBase):
     :Example:
 
         >>> from achrolab.eyeone.eyeone import EyeOne
-        ... from achrolab.calibtubes import CalibTubes
-        ... eyeone = EyeOne()
-        ... calibtubes = CalibTubes(eyeone)
-        ... man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
+        >>> from achrolab.calibtubes import CalibTubes
+        >>> eyeone = EyeOne()
+        >>> calibtubes = CalibTubes(eyeone)
+        >>> man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
         ...         2253, 2181), target_color=(0.298, 0.321, 64.1))
-        ... final_measurement = man_plot.run()
-        ... #print(final_measurement) should give something like:
-        ... #( (...,...,...), (...,...,...), (...))
+        Measurement mode set to SingleEmission.
+        Color space set to CIExyY.
+        <BLANKLINE>
+        Please put EyeOne Pro on calibration plate and press key to start calibration.
+        Calibration of EyeOne Pro done.
+        <BLANKLINE>
+        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+        <BLANKLINE>
+        Initializing search mode complete.
+        >>> final_measurement = man_plot.run() #doctest: +ELLIPSIS
+        <BLANKLINE>
+        <BLANKLINE>
+        Wait until first measurement is done.
+        Get to the red cross
+        xyY: ...,...,...
+        <BLANKLINE>
+        <BLANKLINE>
+        Manual adjustment of tubes` color
+        <BLANKLINE>
+        Press [up] for higher intensity or press [down] for lower intensity.
+        To set tube color and step size press the following buttons:
+        Stepsize:
+         [1] - 1
+         [2] - 5
+         [3] - 10
+         [4] - 50
+         [5] - 100
+        Colortube:
+         [r] - Red
+         [g] - Green
+         [b] - Blue
+         [a] - all
+        To trigger measurement press [space].
+        Press [c] to redraw figure.
+        Press [escape] to quit (and save last voltages)
+        >>> print(final_measurement) #doctest: +ELLIPSIS
+        ([...,...,...], [...,...,...], [...])
 
     """
 
@@ -299,7 +359,8 @@ class SetTubesManualPlot(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(calibtubes, start_voltages, target_color)
+        SetTubesManualBase.__init__(self, calibtubes, start_voltages,
+                target_color)
         self.eyeone = calibtubes.eyeone
         self.fig = None
         self.last_vol_xyY_spect = None
@@ -330,35 +391,39 @@ class SetTubesManualPlot(SetTubesManualBase):
         Returns the final triple (voltages, xyY, spectrum).
 
         """
+        if not (self.target_color and self.voltages):
+            raise ValueError("Please assign target_color and start_voltages"
+                    + "before calling run()!")
         self.tub.setVoltages(self.voltages)
-        if not (self.target_color or self.voltages):
-            print("""Please assign target_color and start_voltages before
-            calling run()!""")
-            return None # TODO insert reasonable exception
         # open file to write data while manual search
         with open('./calibdata/measurements/measure_tubes_manual_' +
                 time.strftime("%Y%m%d_%H%M") + '.txt', 'w') as self.calibfile:
             self.calibfile.write("volR, volG, volB, x, y, Y," +
                     ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
-        
+
             #set figures
             print('\n\nWait until first measurement is done.')
             self.newFigure()
-            print('\n\nManual adjustment of tubes` color\n\n' +
-                  'Press [up] for higher intensity ' +
-                  'or press [down] for lower intensity.\n' +
-                  'To set tube color and step size press the following buttons:\n' +
-                  'Stepsize:\n' + 
-                  ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n' +
-                  'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
-                  + '\nTo trigger measurement press [space].'
-                  + '\nPress [c] to redraw figure.'
-                  + '\nPress [escape] to quit (and save last voltages)')
+            print(
+            '\n\nManual adjustment of tubes` color\n\n'
+            + 'Press [up] for higher intensity '
+            + 'or press [down] for lower intensity.\n'
+            + 'To set tube color and step size press the following buttons:\n'
+            + 'Stepsize:\n'
+            + ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n'
+            + 'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
+            + '\nTo trigger measurement press [space].'
+            + '\nPress [c] to redraw figure.'
+            + '\nPress [escape] to quit (and save last voltages)')
             self.stop=False
             while not self.stop:
                 plt.waitforbuttonpress()
-            return( self.last_vol_xyY_spect )
-    
+            # cast all data to python float and deep copy them
+            voltages = self.last_vol_xyY_spect[0][:]
+            color = [float(x) for x in self.last_vol_xyY_spect[1]]
+            spectrum = [float(x) for x in self.last_vol_xyY_spect[2]]
+            return( (voltages, color, spectrum) )
+
     def newFigure(self):
         """
         closes figure and recreates it.
@@ -373,27 +438,27 @@ class SetTubesManualPlot(SetTubesManualBase):
         plt.clf()
         self.plot_xy = plt.subplot(1,2,1)
         self.plot_xy.axis([0.29, 0.31, 0.29, 0.31])
-        self.plot_xy.plot(self.target_xyY[0], self.target_xyY[1], "rx")
+        self.plot_xy.plot(self.target_color[0], self.target_color[1], "rx")
         self.plot_xy.set_aspect(1)
         self.plot_Y = plt.subplot(1,2,2)
         self.plot_Y.axis([0, 10, 19, 23])
-        self.plot_Y.axhline(y=self.target_xyY[2], color="r", xmin=0,
+        self.plot_Y.axhline(y=self.target_color[2], color="r", xmin=0,
                 xmax=1000)
-        tellme('Get to the red cross')
+        self.tellme('Get to the red cross')
         self.fig.canvas.mpl_connect('key_press_event', self.onKeyPress)
         # reset self.i
         self.i = 0
         # measure once to draw current point
         self.measureVoltage()
-       
-    
+
+
     def measureVoltage(self):
         """
         measures the voltages *each* times.
 
         TODO this function might be replaced by
         calibtubes.CalibTubes.measureVoltages()
-        
+
         """
         xyY_list = list()
         self.i += 1
@@ -414,7 +479,7 @@ class SetTubesManualPlot(SetTubesManualBase):
             # write data
             self.calibfile.write(", ".join([str(x) for x in self.voltages]) +
                             ", " + ", ".join([str(x) for x in self.tri_stim]) +
-                            ", " + ", ".join([str(x) for x in self.spectrum]) + 
+                            ", " + ", ".join([str(x) for x in self.spectrum]) +
                             "\n")
             self.calibfile.flush()
             # store measurement for last return (voltages could change,
