@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-06-14 16:42 KS
+# last mod 2012-07-11 15:37 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -47,7 +47,7 @@ class Calibrate(object):
     6. store final calibration in color entry
 
     :Example:
-        
+
         >>> from achrolab.eyeone.eyeone import EyeOne
         >>> from achrolab.calibmonitor import CalibMonitor
         >>> from achrolab.calibtubes import CalibTubes
@@ -201,7 +201,7 @@ class Calibrate(object):
         """
         if not start_voltages:
             print("guess voltages via calibration of the tubes")
-            start_voltages = self.calibtubes.guessVoltages(xyY[2])
+            start_voltages = self.calibtubes.guessVoltages(color[2])
         self.calibtubes.setVoltages(start_voltages)
         self.calibtubes.printNote()
         self.set_manually_vision.start_voltages = start_voltages

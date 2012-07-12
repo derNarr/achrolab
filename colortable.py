@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-06-14 16:59 KS
+# last mod 2012-07-11 18:40 KS
 
 from colorentry import ColorEntry
 import pickle
@@ -28,13 +28,24 @@ class ColorTable(object):
     psychopy.visual.PatchStim, the monitor, and the tubes.
 
     The colors in ColorTable are indexed. So there is a first and a last
-    color. 
+    color.
 
     ColorTable is a list of ColorEntries with some useful functions defined
     on this list.
+
+    :Example:
+
+        >>> from colorentry import ColorEntry
+        >>> coltab = ColorTable()
+        >>> coltab.addColorEntry(ColorEntry("grey1",
+        ...    patch_stim_value="#505050FF"))
+        >>> ce = coltab.getColorByName("grey1")
+        >>> print(ce.patch_stim_value)
+        #505050FF
+
     """
 
-    def __init__(self, filename=False):
+    def __init__(self, filename=""):
         self.color_list = []
         if filename:
             filetype = filename.split(".")[-1]
@@ -62,11 +73,15 @@ class ColorTable(object):
             raise ValueError("ce must be colorentry.ColorEntry instance")
         self.color_list.append( ce )
 
-    def getColorByName(self,name):
+    def getColorByName(self, name):
         """
-        returns the first object in color_list with the given name
+        returns the first object in color_list with the given name.
 
-            * name -- name of colorentry object
+        :Parameters:
+
+            name : string
+                name of colorentry.ColorEntry object
+
         """
         for ce in self.color_list:
             if ce.name == name:
@@ -75,9 +90,13 @@ class ColorTable(object):
 
     def getColorsByName(self,name_list):
         """
-        returns colorentry objects in a list, ordered after name_list
+        returns colorentry objects in a list, ordered after name_list.
 
-            * name_list -- list with names of colorentry objects
+        :Parameters:
+
+            name_list : list of strings
+                list with names of colorentry.ColorEntry objects
+
         """
         color_list = []
         for name in name_list:
@@ -87,19 +106,20 @@ class ColorTable(object):
     def saveToCsv(self, filename):
         """
         Saves object to comma separated text file (.csv).
+
         """
         with open(filename, "w") as f:
             f.write("name, patch_stim_value, "
                     +"monitor_xyY_x, monitor_xyY_y, monitor_xyY_Y, "
-                    +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, " 
+                    +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, "
                     +"voltages_r, voltages_g, voltages_b, "
                     +"tubes_xyY_x, tubes_xyY_y, tubes_xyY_Y, "
-                    +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n") 
-            for ce in self.color_list: 
+                    +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n")
+            for ce in self.color_list:
                 f.write(ce.name+", "+str(ce.patch_stim_value))
                 if not ce.monitor_xyY:
                     f.write(", NA, NA, NA")
-                else: 
+                else:
                     for x in ce.monitor_xyY:
                         f.write(", "+str(x))
                 if not ce.monitor_xyY_sd:
@@ -127,13 +147,25 @@ class ColorTable(object):
     def saveToPickle(self, filename):
         """
         Saves object to pickle file (.pkl).
+
+        :Parameters:
+
+            filename : string
+                string that gives the filename and the location of the file.
+
         """
         with open(filename, "wb") as f:
             pickle.dump(self.color_list, f)
 
     def loadFromCsv(self, filename):
         """
-        Loads object to comma separated text file (.csv).
+        Loads object from comma separated text file (.csv).
+
+        :Parameters:
+
+            filename : string
+                string that gives the filename and the location of the file.
+
         """
         def float_None(x):
             if x=="NA":
@@ -141,7 +173,7 @@ class ColorTable(object):
             else:
                 return float(x)
         with open(filename, "r") as f:
-            f.readline() 
+            f.readline()
             currentline = f.readline()
             while currentline:
                 currentline = currentline.split(',')
@@ -168,9 +200,27 @@ class ColorTable(object):
 
     def loadFromPickle(self, filename):
         """
-        Loads object to pickle file (.pkl).
+        Loads object from pickle file (.pkl).
+
+        :Parameters:
+
+            filename : string
+                string that gives the filename and the location of the file.
+
         """
         with open(filename, "rb") as f:
             self.color_list = pickle.load(f)
 
+    def loadFromR(self, filename):
+        """
+        Loads object from R data file.
+
+        :Parameters:
+
+            filename : string
+                string that gives the filename and the location of the file.
+
+        """
+        # TODO implement loadFromR
+        print("ERROR, not implemented yet.")
 
