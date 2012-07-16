@@ -219,7 +219,7 @@ class CalibTubes(Tubes):
         spectra_all = measure_all[2]
         
         print("Measurement finished.")
-        self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
+        self.setVoltages( (0x400, 0x400, 0x400) ) # to signal that the
                                             # measurement is over
 
         # write data to hard drive
