@@ -14,11 +14,12 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-07-11 18:42 KS
 
 """
 This module provides a class to convert xyY color values to rgb and vica
 versa.
+
 """
 
 import numpy as np
@@ -34,17 +35,20 @@ class Convert(object):
     2. Use transformation matrix to convert XYZ to RGB. This matrix is
        different for different RGB spaces. Right now the class is
        implemented for CIE RGB with reference white E.
+
     """
-    
+
     def __init__(self):
         """
         Convert object init function.
+
         """
         pass
 
     def convertXyYToRgb(self, xyY):
         """
         Convert from xyY to RGB.
+
         """
         self.xyY_x = xyY[0]
         self.xyY_y = xyY[1]
@@ -57,6 +61,7 @@ class Convert(object):
     def convertXyYToXyz(self, xyY):
         """
         Convert from xyY to XYZ.
+
         """
         self.xyY_x = xyY[0]
         self.xyY_y = xyY[1]
@@ -77,6 +82,7 @@ class Convert(object):
     def convertXyzToRgb(self, xyz):
         """
         Convert from XYZ to RGB.
+
         """
         self.xyz_x = xyz[0]
         self.xyz_y = xyz[1]
@@ -85,7 +91,7 @@ class Convert(object):
         # sRGB, Reference White: D65
         #print("Convert: Using sRGB, reference white D65.")
         #m = np.array([[ 3.2404542, -1.5371385, -0.4985314],
-        #             [-0.9692660,  1.8760108, 0.0415560], 
+        #             [-0.9692660,  1.8760108, 0.0415560],
         #             [ 0.0556434, -0.2040259, 1.0572252]])
         ## RGB Working Space: CIE RGB, Reference White: E
         print("Convert: Using CIE RGB Working Space with Reference White E.")
@@ -108,6 +114,7 @@ class Convert(object):
 def xyY2rgb(xyY):
     """
     Converts xyY coordinates to CIE RGB coordinates, white point D65.
+
     """
     convert = Convert()
     return convert.convertXyYToRgb(xyY)

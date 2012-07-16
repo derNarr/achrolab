@@ -1,7 +1,18 @@
-# (c) 2010-2012 James McMurray, Konstantin Sering, Nora Umbach, Dominik Wabersich
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# printing.py
+# (c) 2012 James McMurray, Konstantin Sering, Nora Umbach, Dominik Wabersich
 # <colorlab[at]psycho.uni-tuebingen.de>
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# content:
+#
+# input: --
+# output: --
+#
+# created 2012-05-29 JM
+# last mod 2012-07-11 19:08 KS
 
 
 """
@@ -30,7 +41,9 @@ class CalibDataFile():
             #more code
 
     This way if there is an error, inside the with context, it will immediately
-    close and write to the file, so data is not lost. """
+    close and write to the file, so data is not lost.
+
+    """
 
     def __init__(self, prefix=""):
         #For now only works with justmeasure, can generalise this later
@@ -45,8 +58,9 @@ class CalibDataFile():
         # TODO code looks broken
         data = []
         i = 0
+        color_list = grayvals
         for i in range(len(color_list)):
-            data.append({"colorlist" : listcolorlist[i], "speclist" : spec_list[i]})
+            data.append({"colorlist" : color_list[i], "speclist" : spec_list[i]})
             i+=1
         python_data = {
             "measurement" : measurement,

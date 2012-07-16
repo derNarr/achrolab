@@ -14,11 +14,12 @@
 # output: --
 #
 # created 2010
-# last mod 2012-05-29 KS
+# last mod 2012-07-11 18:09 KS
 
 """
 This modules provides the class ColorEntry, which stores all important
 information for one color.
+
 """
 
 class ColorEntry(object):
@@ -26,26 +27,43 @@ class ColorEntry(object):
     ColorEntry contains all information for one color that we need in the
     lab.
 
-    It contains:
+    :Attributes:
 
-      * a name
-      * the corresponding value for psychopy.PatchStim
-      * measured xyY values for monitor
-      * standard deviation for xyY values
-      * corresponding voltages for color tubes
-      * measured xyY values for tubes
-      * standard deviation for xyY values
+        name : string
+            name of the color
+        patch_stim_value : float, triple or string
+            a value that can be used to set the color of psychopy.PatchStim
+        monitor_xyY : triple of floats
+            measured xyY values for monitor
+        monitor_xyY_sd : triple of floats
+            standard deviation for xyY values
+        voltages : triple of int
+            corresponding voltages for color tubes
+        tubes_xyY : triple of floats
+            measured xyY values for tubes
+        tubes_xyY_sd : triple of floats
+            standard deviation for xyY values
+
+    :Example:
+
+        >>> ce1 = ColorEntry(name="grey1", patch_stim_value="#404040FF")
+        >>> ce2 = ColorEntry(name="grey2", voltages=(0xA00, 0xA00, 0xA00))
+
     """
 
     def __init__(self, name, patch_stim_value=None, voltages=None):
         """
-        * name (string) -- "color1"
-        * patch_stim_value (float or triple of floats) -- 0.1 or (0.3, -0.3, -0.3)
-        * monitor_xyY (triple of floats) -- (0.21, 0.23, 0.9)
-        * monitor_xyY_sd (triple of floats) -- (0.02, 0.02, 0.001)
-        * voltages (triple of integers) -- (0x000, 0x0F3, 0xFFF)
-        * tubes_xyY (triple of floats) -- (0.21, 0.23, 0.9)
-        * tubes_xyY_sd (triple of floats) -- (0.02, 0.02, 0.001)
+        initializes the ColorEntry instance.
+
+        :Parameters:
+
+            name : string
+                name of the color
+            patch_stim_value : *None*, float, triple or string
+                default value that is used to set the color of psychopy.PatchStim
+            voltages : *None* or triple of int
+                default voltages for color tubes
+
         """
         # general
         self.name = name

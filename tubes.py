@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 15:42 KS
+# last mod 2012-07-11 19:02 KS
 
 """
 The tubes class gives an easy interface to handle the tubes and CalibTubes
@@ -37,8 +37,21 @@ class Tubes(object):
     This class hides all the hardware specifications and has no
     dependencies on the eyeone module.
 
+    :Example:
+
+        >>> tub = Tubes(dummy=True)
+        >>> tub.setVoltages((1000, 1000, 1000))
+        >>> tub.printNote()
+        <BLANKLINE>
+                Note:
+                The tubes must be switched on for at least four (!!) hours to come
+                in a state where they are not changing the illumination a
+                significant amount.
+        <BLANKLINE>
+
+
     """
-    def __init__(self):
+    def __init__(self, dummy=False):
         """
         Initializes tubes object.
 
@@ -46,8 +59,13 @@ class Tubes(object):
         gets a triple of integers and sets the voltages of the tubes. The
         devtubes object takes care of all the hardware stuff.
 
+        :Parameters:
+
+            dummy : *False* or True
+                If dummy=True no wasco runtimelibraries will be loaded.
+
         """
-        self.devtub = devtubes.DevTubes()
+        self.devtub = devtubes.DevTubes(dummy=dummy)
 
     def setVoltages(self, voltages):
         """

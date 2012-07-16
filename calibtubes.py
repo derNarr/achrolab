@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-06-11 15:50 KS
+# last mod 2012-07-11 17:58 KS
 
 """
 This modules provides CalibTubes.
@@ -40,10 +40,124 @@ class CalibTubes(Tubes):
 
     :Example:
 
-        >>> from achrolab.eyeone.eyeone import EyeOne
+        >>> from eyeone.eyeone import EyeOne
         >>> eyeone = EyeOne(dummy=True)
         >>> caltub = CalibTubes(eyeone)
-        >>> caltub.calibrate(imi=0.5, n=100, each=5)
+        >>> caltub.calibrate(imi=0.1, n=10, each=2)
+        <BLANKLINE>
+                Note:
+                The tubes must be switched on for at least four (!!) hours to come
+                in a state where they are not changing the illumination a
+                significant amount.
+        <BLANKLINE>
+        Measurement mode set to SingleEmission.
+        Color space set to CIExyY.
+        <BLANKLINE>
+        Please put EyeOne Pro on calibration plate and press key to start calibration.
+        Calibration of EyeOne Pro done.
+        <BLANKLINE>
+        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+        <BLANKLINE>
+        Please put EyeOne Pro in measurement position and press key to start measurement.
+        <BLANKLINE>
+        Turn off blue and green tubes!
+        Press key to start measurement of RED tubes.
+        Starting measurement...
+        (1024, 4095, 4095)
+        (1024, 4095, 4095)
+        (1365, 4095, 4095)
+        (1365, 4095, 4095)
+        (1706, 4095, 4095)
+        (1706, 4095, 4095)
+        (2047, 4095, 4095)
+        (2047, 4095, 4095)
+        (2388, 4095, 4095)
+        (2388, 4095, 4095)
+        (2729, 4095, 4095)
+        (2729, 4095, 4095)
+        (3070, 4095, 4095)
+        (3070, 4095, 4095)
+        (3411, 4095, 4095)
+        (3411, 4095, 4095)
+        (3752, 4095, 4095)
+        (3752, 4095, 4095)
+        (4093, 4095, 4095)
+        (4093, 4095, 4095)
+        <BLANKLINE>
+        Turn off red and blue tubes!
+        Press key to start measurement of GREEN tubes.
+        Starting measurement...
+        (4095, 1024, 4095)
+        (4095, 1024, 4095)
+        (4095, 1365, 4095)
+        (4095, 1365, 4095)
+        (4095, 1706, 4095)
+        (4095, 1706, 4095)
+        (4095, 2047, 4095)
+        (4095, 2047, 4095)
+        (4095, 2388, 4095)
+        (4095, 2388, 4095)
+        (4095, 2729, 4095)
+        (4095, 2729, 4095)
+        (4095, 3070, 4095)
+        (4095, 3070, 4095)
+        (4095, 3411, 4095)
+        (4095, 3411, 4095)
+        (4095, 3752, 4095)
+        (4095, 3752, 4095)
+        (4095, 4093, 4095)
+        (4095, 4093, 4095)
+        <BLANKLINE>
+        Turn off red and green tubes!
+        Press key to start measurement of BLUE tubes.
+        Starting measurement...
+        (4095, 4095, 1024)
+        (4095, 4095, 1024)
+        (4095, 4095, 1365)
+        (4095, 4095, 1365)
+        (4095, 4095, 1706)
+        (4095, 4095, 1706)
+        (4095, 4095, 2047)
+        (4095, 4095, 2047)
+        (4095, 4095, 2388)
+        (4095, 4095, 2388)
+        (4095, 4095, 2729)
+        (4095, 4095, 2729)
+        (4095, 4095, 3070)
+        (4095, 4095, 3070)
+        (4095, 4095, 3411)
+        (4095, 4095, 3411)
+        (4095, 4095, 3752)
+        (4095, 4095, 3752)
+        (4095, 4095, 4093)
+        (4095, 4095, 4093)
+        <BLANKLINE>
+        Turn ON red, green and blue tubes!
+        Press key to start measurement of ALL tubes.
+        Starting measurement...
+        (1024, 1024, 1024)
+        (1024, 1024, 1024)
+        (1365, 1365, 1365)
+        (1365, 1365, 1365)
+        (1706, 1706, 1706)
+        (1706, 1706, 1706)
+        (2047, 2047, 2047)
+        (2047, 2047, 2047)
+        (2388, 2388, 2388)
+        (2388, 2388, 2388)
+        (2729, 2729, 2729)
+        (2729, 2729, 2729)
+        (3070, 3070, 3070)
+        (3070, 3070, 3070)
+        (3411, 3411, 3411)
+        (3411, 3411, 3411)
+        (3752, 3752, 3752)
+        (3752, 3752, 3752)
+        (4093, 4093, 4093)
+        (4093, 4093, 4093)
+        Measurement finished.
+        FAILED to estimate parameters of tubes.
+        Look at calibration_tubes_raw_XX.txt for the data.
         >>> caltub.saveParameter("example_tube_calibration.pkl")
 
     """
@@ -52,7 +166,7 @@ class CalibTubes(Tubes):
         """
         :Parameters:
 
-            :eyeone: eyeone.eyeone.EyeOne instance
+            eyeone: eyeone.eyeone.EyeOne instance
                 needed for measuring the tubes
 
         """
@@ -122,13 +236,13 @@ class CalibTubes(Tubes):
                     print(voltage)
                     time.sleep(imi) # to give the EyeOne Pro time to adapt
                                     # and to reduce carry-over effects
-                    if(eyeone.I1_TriggerMeasurement() != eNoError):
+                    if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                         print("Measurement failed for voltage %s ."
                                 %str(voltage))
-                    if(eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
+                    if(self.eyeone.I1_GetTriStimulus(tri_stim, 0) != eNoError):
                         print("Failed to get tristim for voltage %s ."
                                 %str(voltage))
-                    if(eyeone.I1_GetSpectrum(spectrum, 0) != eNoError):
+                    if(self.eyeone.I1_GetSpectrum(spectrum, 0) != eNoError):
                         print("Failed to get spectrum for voltage %s ."
                                 %str(voltage))
                     #write data #TODO output.py
@@ -205,7 +319,7 @@ class CalibTubes(Tubes):
         voltages_b = measure_blue[0]
         xyY_b = measure_blue[1]
         spectra_b = measure_blue[2]
-        
+
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
         print("\nTurn ON red, green and blue tubes!"
         + "\nPress key to start measurement of ALL tubes.")
@@ -217,7 +331,7 @@ class CalibTubes(Tubes):
         voltages_all = measure_all[0]
         xyY_all = measure_all[1]
         spectra_all = measure_all[2]
-        
+
         print("Measurement finished.")
         self.setVoltages( (0x400, 0x400, 0x400) ) # to signal that the
                                             # measurement is over
@@ -237,7 +351,7 @@ class CalibTubes(Tubes):
                                     ", " + ", ".join([str(x) for x in
                                         xyY[i]]) +
                                     ", " + ", ".join([str(x) for x in
-                                        spectra[i]]) + 
+                                        spectra[i]]) +
                                     "\n")
 
         with open('calibdata/measurements/calibration_tubes_raw_' +
@@ -266,7 +380,7 @@ class CalibTubes(Tubes):
             Y_r = [x[2] for x in xyY_r]
             v_r = [x[2] for x in voltages_r]
             popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[50, -10, -7])
-            
+
             # green channel
             Y_g = [x[2] for x in xyY_g]
             v_g = [x[2] for x in voltages_g]
@@ -307,8 +421,8 @@ class CalibTubes(Tubes):
         self.blue_p2 = popt_b[1]
         self.blue_p3 = popt_b[2]
 
-        print("red_p1" + str(self.red_p1)) 
-        print("red_p2" + str(self.red_p2)) 
+        print("red_p1" + str(self.red_p1))
+        print("red_p2" + str(self.red_p2))
         print("red_p3" + str(self.red_p3))
         print("green_p1" + str(self.green_p1))
         print("green_p2" + str(self.green_p2))
@@ -331,14 +445,14 @@ class CalibTubes(Tubes):
             * each -- number of measurements per color
 
         Returns triple of lists (voltages, rgb, spectra).
-        
+
         This function immediately starts measuring. There is no prompt to
         start measurement.
 
         """
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()
-        
+
         # define some variables
         # generating the tested voltages (r, g, b)
         voltages = list()
@@ -393,6 +507,7 @@ class CalibTubes(Tubes):
     def saveParameter(self, filename="./lastParameterTubes.pkl"):
         """
         Saves parameters used for interpolation function.
+
         """
         # TODO warn if a file gets replaced?
         with open(filename, 'wb') as f:
@@ -409,9 +524,10 @@ class CalibTubes(Tubes):
     def loadParameter(self, filename="./lastParameterTubes.pkl"):
         """
         Loads parameters used for interpolation function.
+
         """
         # TODO what to do, if file doesn't exist? Throw exception?
-        with open(filename, 'rb') as f: 
+        with open(filename, 'rb') as f:
             self.red_p1   = pickle.load(f)
             self.red_p2   = pickle.load(f)
             self.red_p3   = pickle.load(f)
@@ -428,6 +544,7 @@ class CalibTubes(Tubes):
         """
         plotCalibration plots luminance curves for each channel (data and
         fitted curve).
+
         """
         # TODO implement with matplotlib --> till then use
         # plotCalibration.R in achrolabutils
@@ -447,14 +564,14 @@ class CalibTubes(Tubes):
         Y_r = 6.173447/(6.173447+22.92364+4.036948)*Y
         Y_g = 22.92364/(6.173447+22.92364+4.036948)*Y
         Y_b = 4.036948/(6.173447+22.92364+4.036948)*Y
-        
+
         def inv(y, a, b, c):
             return -log((y - a)/(b - a))/exp(c)
 
         vol_r = inv(Y_r, self.red_p1, self.red_p2, self.red_p3)
         vol_g = inv(Y_g, self.green_p1, self.green_p2, self.green_p3)
         vol_b = inv(Y_b, self.blue_p1, self.blue_p2, self.blue_p3)
-        
+
         voltages = ( int(vol_r), int(vol_g), int(vol_b) )
 
         return voltages

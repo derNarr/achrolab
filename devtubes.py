@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-06-11 16:14 KS
+# last mod 2012-07-11 18:48 KS
 
 from __future__ import print_function
 import sys
@@ -27,15 +27,22 @@ class DevTubes(object):
     """
     DevTubes encapsulates all functions controlling fluorescent tubes in the
     booth. It provides all low level functionality.
+
+    :Example:
+
+        >>> devtub = DevTubes(dummy=True)
+        >>> devtub.setVoltages((1000, 1000, 1000))
+
     """
-    def __init__(self):
+    def __init__(self, dummy=False):
         """Setting some "global" variables.
-        
+
         If dummy=True no wasco runtimelibraries will be loaded.
+
         """
 
-        self.wascocard = Wasco()    # create wasco object
-        self.wasco_boardId = self.wascocard.boardId 
+        self.wascocard = Wasco(dummy=dummy)    # create wasco object
+        self.wasco_boardId = self.wascocard.boardId
 
         self.red_out = DAOUT3_16
         self.green_out = DAOUT1_16
@@ -43,29 +50,18 @@ class DevTubes(object):
         self.low_threshold = 0x400 # min voltages must be integer
         self.high_threshold = 0xFFF # max voltages must be integer
 
-
-        # set default values for the sRGBtoU transformation function
-        self.red_p1 =   278.03951766
-        self.red_p2 =  -139.315857925
-        self.red_p3 =    -6.59992420598      
-        self.green_p1 = 272.879675867
-        self.green_p2 = -97.9412320578
-        self.green_p3 =  -6.84536739156 
-        self.blue_p1 =  263.734050868
-        self.blue_p2 = -187.047396719
-        self.blue_p3 =   -6.45686046205
-
-        # voltage wich is set at the moment
+        # voltage which is set at the moment
         self.U_r = self.high_threshold
-        self.U_b = self.high_threshold 
+        self.U_b = self.high_threshold
         self.U_g = self.high_threshold
 
 
     def setVoltages(self, U_rgb):
         """
         setVoltages sets voltage in list or tuple of U_rgb to wasco card.
-        U_rgb should contain three integers between self.low_threshold and 
+        U_rgb should contain three integers between self.low_threshold and
         self.high_threshold.
+
         """
         #set the wasco-card stepwise to the right voltage
         U_r_new = int(U_rgb[0])
@@ -112,11 +108,11 @@ class DevTubes(object):
 
         for i in range(steps):
             time.sleep(0.0001)
-            self.wascocard.wasco_outportW(self.wasco_boardId, 
+            self.wascocard.wasco_outportW(self.wasco_boardId,
                     self.red_out, int(self.U_r + slope_r*i))
-            self.wascocard.wasco_outportW(self.wasco_boardId, 
+            self.wascocard.wasco_outportW(self.wasco_boardId,
                     self.green_out, int(self.U_g + slope_g*i))
-            self.wascocard.wasco_outportW(self.wasco_boardId, 
+            self.wascocard.wasco_outportW(self.wasco_boardId,
                     self.blue_out, int(self.U_b + slope_b*i))
         self.U_r = U_r_new
         self.U_g = U_g_new

@@ -13,11 +13,12 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 12:18 DW
+# last mod 2012-07-11 17:43 KS
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
 monitor.
+
 """
 
 from eyeone.constants import eNoError, TRISTIMULUS_SIZE
@@ -30,8 +31,27 @@ class CalibMonitor(Monitor):
     """
     provides an easy interface to measure psychopy.visual.PatchStim
     colors with an EyeOne Pro.
+
+    :Example:
+
+        >>> from eyeone import eyeone
+        >>> eyeone = eyeone.EyeOne(dummy=True)
+        >>> mon = CalibMonitor(eyeone)
+        >>> mon.measurePatchStimColor("#FF0000FF", n=2) # doctest: +ELLIPSIS
+        Measurement mode set to SingleEmission.
+        Color space set to CIExyY.
+        <BLANKLINE>
+        Please put EyeOne Pro on calibration plate and press key to start calibration.
+        Calibration of EyeOne Pro done.
+        <BLANKLINE>
+        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+        <BLANKLINE>
+        Please put EyeOne Pro in measurement position for MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)
+        Starting measurement...
+        [(...), ...]
+
     """
-    
+
     def __init__(self, eyeone, psychopy_win=None):
         Monitor.__init__(self, psychopy_win)
         self.eyeone = eyeone
@@ -41,6 +61,7 @@ class CalibMonitor(Monitor):
         """
         Simply prompts to move EyeOne Pro to measurement position and
         waits for button response.
+
         """
         print("\nPlease put EyeOne Pro in measurement position for" + " MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)")
         while(self.eyeone.I1_KeyPressed() != eNoError):
@@ -51,12 +72,14 @@ class CalibMonitor(Monitor):
         """
         Measures patch_stim_value on monitor.
 
-        Input:
-            patch_stim_value -- psychopy.visual.PatchStim color value
-            n -- number of measurements (positive integer)
+        :Parameters:
+            patch_stim_value : triple, float or string
+                psychopy.visual.PatchStim color value
+            n : *1* or any other positive integer
+                number of measurements (positive integer)
 
-        
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
+
         """
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()
@@ -85,9 +108,13 @@ class CalibMonitor(Monitor):
         Converts xyY color (triple of floats) to psychopy.visual.PatchStim
         color and measures color on monitor.
 
-        Input: 
-            color -- xyY color list or tuple of three floats
-            n -- number of measurements (positive integer)
+        :Parameters:
+            color : triple of float
+                xyY color list or tuple of three floats
+            patch_stim_value : triple, float or string
+                psychopy.visual.PatchStim color value
+            n : *1* or any other positive integer
+                number of measurements
 
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
         """
@@ -97,12 +124,4 @@ class CalibMonitor(Monitor):
         print("measureColor is not implemented yet.")
         # TODO measureColor
         pass
-
-
-if __name__ == "__main__":
-    print("1")
-    from eyeone import eyeone
-    eyeone = eyeone.EyeOne(dummy=True)
-    mon = CalibMonitor(eyeone)
-    print("2")
 
