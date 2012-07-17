@@ -379,17 +379,17 @@ class CalibTubes(Tubes):
             # red channel
             Y_r = [x[2] for x in xyY_r]
             v_r = [x[2] for x in voltages_r]
-            popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[50, -10, -7])
+            popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[67.8, -6.7, -9.0])
 
             # green channel
             Y_g = [x[2] for x in xyY_g]
             v_g = [x[2] for x in voltages_g]
-            popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[50, -10, -7])
+            popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[138.7, -16.4, -8.9])
 
             # blue channel
             Y_b = [x[2] for x in xyY_b]
             v_b = [x[2] for x in voltages_b]
-            popt_b, pcov_b = curve_fit(func, v_b, Y_b, p0=[50, -15, -10])
+            popt_b, pcov_b = curve_fit(func, v_b, Y_b, p0=[58.2, -2.7, -9.8])
 
             print("Parameters estimated.")
         except:
