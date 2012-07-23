@@ -142,7 +142,7 @@ class ExperimentDataFile():
     def __init__(self, expInfo):
         #For now only works with justmeasure, can generalise this later
         self.fileName = expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
-        self.file_object=open(self.filename + ".txt", "w")
+        self.file_object=open(self.fileName + ".txt", "w")
         #print "init"
         #Open file object here
 
@@ -194,11 +194,9 @@ class ExperimentDataFile():
             writestr+="NA"+str(delimiter)
 
         if bg != None:
-            for i in range(3):
-                writestr+=str(bg[i])+str(delimiter)
+            writestr+=str(bg)+str(delimiter)
         else:
-            for i in range(3):
-                writestr+="NA"+str(delimiter)
+            writestr+="NA"+str(delimiter)
 
         if voltages != None:
             for i in range(3):
