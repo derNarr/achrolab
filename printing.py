@@ -142,17 +142,17 @@ class ExperimentDataFile():
     def __init__(self, expInfo):
         #For now only works with justmeasure, can generalise this later
         self.fileName = expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
-        self.file_object=open(self.fileName + ".txt", "w")
+        self.file_object=open(self.fileName + ".txt", "a")
         #print "init"
         #Open file object here
 
-    def writeDataTXT(self, stimuliName=None, leftmean=None, leftvar=None, leftgrayplus=None, rightmean=None, rightvar=None, rightgrayplus=None, bg=None, voltages=None, rtTime=None, key=None, thisResp=None, delimiter="\t"):
+    def writeDataTXT(self, stimuliName=None, leftmean=None, leftvar=None, leftgrayplus=None, leftseed="1", rightmean=None, rightvar=None, rightgrayplus=None, rightseed="1", bg=None, voltages=None, rtTime=None, key=None, thisResp=None, delimiter="\t"):
         #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
         #If at 0, write headers:
 
         #thisResp, rtTime, key, stimuliname, leftmean, leftvar, rightmean, rightvar, leftgreyplus, rightgreyplus, bg
         if self.file_object.tell()==0:
-            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"bgR"+str(delimiter)+"bgG"+str(delimiter)+"bgB"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
+            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"seedleft"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"seedright"+str(delimiter)+"bgR"+str(delimiter)+"bgG"+str(delimiter)+"bgB"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
             writestr+="\n"
             self.file_object.write(writestr)
 
@@ -178,6 +178,9 @@ class ExperimentDataFile():
         else:
             writestr+="NA"+str(delimiter)
 
+        writestr+=str(leftseed)+str(delimiter)
+
+
         if rightmean != None:
             writestr+=str(rightmean)+str(delimiter)
         else:
@@ -193,6 +196,8 @@ class ExperimentDataFile():
         else:
             writestr+="NA"+str(delimiter)
 
+        writestr+=str(rightseed)+str(delimiter)            
+
         if bg != None:
             writestr+=str(bg)+str(delimiter)
         else:
@@ -202,8 +207,8 @@ class ExperimentDataFile():
             for i in range(3):
                 writestr+=str(voltages[i])+str(delimiter)
         else:
-            for i in range(3):            
-                writestr+="NA"+str(delimiter)                
+            for i in range(3):
+                writestr+="NA"+str(delimiter)
 
         if rtTime != None:
             writestr+=str(rtTime)+str(delimiter)
