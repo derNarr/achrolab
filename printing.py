@@ -139,9 +139,9 @@ class CalibDataFile():
         self.file_object.close()
 
 class ExperimentDataFile():
-    def __init__(self, expInfo):
+    def __init__(self, path, expInfo):
         #For now only works with justmeasure, can generalise this later
-        self.fileName = expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
+        self.fileName = str(path) + expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
         self.file_object=open(self.fileName + ".txt", "a")
         #print "init"
         #Open file object here
