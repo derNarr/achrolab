@@ -152,7 +152,7 @@ class ExperimentDataFile():
 
         #thisResp, rtTime, key, stimuliname, leftmean, leftvar, rightmean, rightvar, leftgreyplus, rightgreyplus, bg
         if self.file_object.tell()==0:
-            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"seedleft"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"seedright"+str(delimiter)+"bgR"+str(delimiter)+"bgG"+str(delimiter)+"bgB"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
+            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"seedleft"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"seedright"+str(delimiter)+"bg"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
             writestr+="\n"
             self.file_object.write(writestr)
 
