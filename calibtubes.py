@@ -333,7 +333,7 @@ class CalibTubes(Tubes):
         spectra_all = measure_all[2]
 
         print("Measurement finished.")
-        self.setVoltages( (0x0, 0x0, 0x0) ) # to signal that the
+        self.setVoltages( (0x400, 0x400, 0x400) ) # to signal that the
                                             # measurement is over
 
         # write data to hard drive
@@ -379,17 +379,17 @@ class CalibTubes(Tubes):
             # red channel
             Y_r = [x[2] for x in xyY_r]
             v_r = [x[2] for x in voltages_r]
-            popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[50, -10, -7])
+            popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[67.8, -6.7, -9.0])
 
             # green channel
             Y_g = [x[2] for x in xyY_g]
             v_g = [x[2] for x in voltages_g]
-            popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[50, -10, -7])
+            popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[138.7, -16.4, -8.9])
 
             # blue channel
             Y_b = [x[2] for x in xyY_b]
             v_b = [x[2] for x in voltages_b]
-            popt_b, pcov_b = curve_fit(func, v_b, Y_b, p0=[50, -15, -10])
+            popt_b, pcov_b = curve_fit(func, v_b, Y_b, p0=[58.2, -2.7, -9.8])
 
             print("Parameters estimated.")
         except:
@@ -462,19 +462,19 @@ class CalibTubes(Tubes):
         if color == "red":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( ((0x400 + step * i), 0xFFF, 0xFFF) )
+                    voltages.append( ((0xFFF - step * i), 0xFFF, 0xFFF) )
         elif color == "green":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( (0xFFF, (0x400 + step * i), 0xFFF) )
+                    voltages.append( (0xFFF, (0xFFF - step * i), 0xFFF) )
         elif color == "blue":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( (0xFFF, 0xFFF, (0x400 + step * i)) )
+                    voltages.append( (0xFFF, 0xFFF, (0xFFF - step * i)) )
         elif color == "all":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( ((0x400 + step * i), (0x400 + step * i), (0x400 + step * i)) )
+                    voltages.append( ((0xFFF - step * i), (0xFFF - step * i), (0xFFF - step * i)) )
         else:
             raise ValueError("color in measureOneColorChannel must be one"
             + "of 'red', 'green', 'blue' and not %s" %str(color))

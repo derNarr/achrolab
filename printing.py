@@ -27,7 +27,7 @@ import time
 #Fix inheriting from file later, need way of working with open()
 class CalibDataFile():
     """
-    CalibDataFile inherits from the built-in File, and provides a new method to
+    CalibDataFile provides a new method to
     write the calibration data to a comma separated file.
     TODO add arguments, etc. here
 
@@ -138,3 +138,97 @@ class CalibDataFile():
     def close(self):
         self.file_object.close()
 
+class ExperimentDataFile():
+    def __init__(self, path, expInfo):
+        #For now only works with justmeasure, can generalise this later
+        self.fileName = str(path) + expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
+        self.file_object=open(self.fileName + ".txt", "a")
+        #print "init"
+        #Open file object here
+
+    def writeDataTXT(self, stimuliName=None, leftmean=None, leftvar=None, leftgrayplus=None, leftseed="1", rightmean=None, rightvar=None, rightgrayplus=None, rightseed="1", bg=None, voltages=None, rtTime=None, key=None, thisResp=None, delimiter="\t"):
+        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
+        #If at 0, write headers:
+
+        #thisResp, rtTime, key, stimuliname, leftmean, leftvar, rightmean, rightvar, leftgreyplus, rightgreyplus, bg
+        if self.file_object.tell()==0:
+            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"seedleft"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"seedright"+str(delimiter)+"bg"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
+            writestr+="\n"
+            self.file_object.write(writestr)
+
+        writestr = ""
+        # Write grayvals from 2 element list
+        if stimuliName != None:
+            writestr+=str(stimuliName)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if leftmean != None:
+            writestr+=str(leftmean)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if leftvar != None:
+            writestr+=str(leftvar)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if leftgrayplus != None:
+            writestr+=str(leftgrayplus)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        writestr+=str(leftseed)+str(delimiter)
+
+
+        if rightmean != None:
+            writestr+=str(rightmean)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if rightvar != None:
+            writestr+=str(rightvar)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if rightgrayplus != None:
+            writestr+=str(rightgrayplus)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        writestr+=str(rightseed)+str(delimiter)            
+
+        if bg != None:
+            writestr+=str(bg)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if voltages != None:
+            for i in range(3):
+                writestr+=str(voltages[i])+str(delimiter)
+        else:
+            for i in range(3):
+                writestr+="NA"+str(delimiter)
+
+        if rtTime != None:
+            writestr+=str(rtTime)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if key != None:
+            writestr+=str(key)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+        if thisResp != None:
+            writestr+=str(thisResp)+str(delimiter)
+        else:
+            writestr+="NA"+str(delimiter)
+
+            writestr=writestr[:-1] #remove trailing delimiter
+        #Terminate record with newline
+        writestr+="\n"
+        self.file_object.write(writestr)
+
+    def close(self):
+        self.file_object.close()
