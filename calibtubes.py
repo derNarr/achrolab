@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-07-11 17:58 KS
+# last mod 2012-08-29 17:36 KS
 
 """
 This modules provides CalibTubes.
@@ -24,7 +24,7 @@ from ctypes import c_float
 import time
 from exceptions import ValueError
 
-from math import exp, log
+import numpy as np
 from scipy.optimize import curve_fit
 
 import pickle
@@ -374,16 +374,17 @@ class CalibTubes(Tubes):
             # on Pinheiro & Bates (2000)
 
             def func(x, a, b, c):
-                return a + (b - a)*exp(-exp(c)*x)
+                x = np.array(x)
+                return a + (b - a)*np.exp(-np.exp(c)*x)
 
             # red channel
             Y_r = [x[2] for x in xyY_r]
-            v_r = [x[2] for x in voltages_r]
+            v_r = [x[0] for x in voltages_r]
             popt_r, pcov_r = curve_fit(func, v_r, Y_r, p0=[67.8, -6.7, -9.0])
 
             # green channel
             Y_g = [x[2] for x in xyY_g]
-            v_g = [x[2] for x in voltages_g]
+            v_g = [x[1] for x in voltages_g]
             popt_g, pcov_g = curve_fit(func, v_g, Y_g, p0=[138.7, -16.4, -8.9])
 
             # blue channel
@@ -411,15 +412,15 @@ class CalibTubes(Tubes):
             calibFile.write('parameters B:' + str(popt_b) + '\n')
 
         # save the estimated parameters to CalibTubes object
-        self.red_p1 = popt_r[0]
-        self.red_p2 = popt_r[1]
-        self.red_p3 = popt_r[2]
-        self.green_p1 = popt_g[0]
-        self.green_p2 = popt_g[1]
-        self.green_p3 = popt_g[2]
-        self.blue_p1 = popt_b[0]
-        self.blue_p2 = popt_b[1]
-        self.blue_p3 = popt_b[2]
+        self.red_p1 = float(popt_r[0])
+        self.red_p2 = float(popt_r[1])
+        self.red_p3 = float(popt_r[2])
+        self.green_p1 = float(popt_g[0])
+        self.green_p2 = float(popt_g[1])
+        self.green_p3 = float(popt_g[2])
+        self.blue_p1 = float(popt_b[0])
+        self.blue_p2 = float(popt_b[1])
+        self.blue_p3 = float(popt_b[2])
 
         print("red_p1" + str(self.red_p1))
         print("red_p2" + str(self.red_p2))
@@ -570,7 +571,8 @@ class CalibTubes(Tubes):
         Y_b = 4.036948/(6.173447+22.92364+4.036948)*Y
 
         def inv(y, a, b, c):
-            return -log((y - a)/(b - a))/exp(c)
+            y = np.array(y)
+            return -np.log((y - a)/(b - a))/np.exp(c)
 
         vol_r = inv(Y_r, self.red_p1, self.red_p2, self.red_p3)
         vol_g = inv(Y_g, self.green_p1, self.green_p2, self.green_p3)
