@@ -291,15 +291,21 @@ class Calibrate(object):
                 math.sqrt(scipy.var([xyY[2] for xyY in xyY_list])))
 
     def _measureColorEntryTubes(self, colorentry, n=5):
-        ans = self.calibtubes.measureVoltages([colorentry.voltages,],
+        vol_col_spec_list = self.calibtubes.measureVoltages(
+                [colorentry.voltages,],
                 imi=0.5, each=n)
-        xyY_list = ans[0][1]
-        colorentry.calibtubes_xyY = (
-                scipy.mean([xyY[0] for xyY in xyY_list]),
-                scipy.mean([xyY[1] for xyY in xyY_list]),
-                scipy.mean([xyY[2] for xyY in xyY_list]))
-        colorentry.calibtubes_xyY_sd = (
-                math.sqrt(scipy.var([xyY[0] for xyY in xyY_list])),
-                math.sqrt(scipy.var([xyY[1] for xyY in xyY_list])),
-                math.sqrt(scipy.var([xyY[2] for xyY in xyY_list])))
+        colorentry.tubes_xyY = (
+                scipy.mean([vol_col_spec[1][0] for vol_col_spec in
+                    vol_col_spec_list]),
+                scipy.mean([vol_col_spec[1][1] for vol_col_spec in
+                    vol_col_spec_list]),
+                scipy.mean([vol_col_spec[1][2] for vol_col_spec in
+                    vol_col_spec_list]))
+        colorentry.tubes_xyY_sd = (
+                math.sqrt(scipy.var([vol_col_spec[1][0] for vol_col_spec in
+                    vol_col_spec_list])),
+                math.sqrt(scipy.var([vol_col_spec[1][1] for vol_col_spec in
+                    vol_col_spec_list])),
+                math.sqrt(scipy.var([vol_col_spec[1][2] for vol_col_spec in
+                    vol_col_spec_list])))
 

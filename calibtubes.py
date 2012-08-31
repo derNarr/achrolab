@@ -458,23 +458,27 @@ class CalibTubes(Tubes):
         voltages = list()
 
         step = int((0xFFF-0x400)/float(n-1))
-
         if color == "red":
             for i in range(n):
                 for j in range(each):
                     voltages.append( ((0xFFF - step * i), 0xFFF, 0xFFF) )
+
         elif color == "green":
             for i in range(n):
                 for j in range(each):
                     voltages.append( (0xFFF, (0xFFF - step * i), 0xFFF) )
+
         elif color == "blue":
             for i in range(n):
                 for j in range(each):
                     voltages.append( (0xFFF, 0xFFF, (0xFFF - step * i)) )
+
         elif color == "all":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( ((0xFFF - step * i), (0xFFF - step * i), (0xFFF - step * i)) )
+                    voltages.append( ((0xFFF - step * i), (0xFFF - step *
+                        i), (0xFFF - step * i)))
+
         else:
             raise ValueError("color in measureOneColorChannel must be one"
             + "of 'red', 'green', 'blue' and not %s" %str(color))
