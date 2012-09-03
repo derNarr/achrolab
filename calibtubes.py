@@ -436,7 +436,11 @@ class CalibTubes(Tubes):
         self.is_calibrated = True
         print("Calibration of tubes finished.")
 
-    def measureOneColorChannel(self, color, imi=0.5, n=50, each=1):
+    def voltageSteps(self, step, i, n=None):
+        return (0xFFF - step * i)
+
+    def measureOneColorChannel(self, color, imi=0.5, n=50, each=1,
+            insertfunction=voltageSteps):
         """
         Measures one color tubes from low to high luminosity.
 
@@ -462,23 +466,26 @@ class CalibTubes(Tubes):
         if color == "red":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( ((0xFFF - step * i), 0xFFF, 0xFFF) )
+                    voltages.append( ((insertfunction(self, step, i,n)), 0xFFF, 0xFFF) )
 
         elif color == "green":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( (0xFFF, (0xFFF - step * i), 0xFFF) )
+                    voltages.append( (0xFFF, (insertfunction(self, step,
+                        i,n)), 0xFFF) )
 
         elif color == "blue":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( (0xFFF, 0xFFF, (0xFFF - step * i)) )
+                    voltages.append( (0xFFF, 0xFFF, (insertfunction(self,
+                        step, i,n))))
 
         elif color == "all":
             for i in range(n):
                 for j in range(each):
-                    voltages.append( ((0xFFF - step * i), (0xFFF - step *
-                        i), (0xFFF - step * i)))
+                    voltages.append( ((insertfunction(self, step, i,n)),
+                        (insertfunction(self, step, i,n)),
+                        (insertfunction(self, step, i,n))))
 
         else:
             raise ValueError("color in measureOneColorChannel must be one"
