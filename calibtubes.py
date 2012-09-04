@@ -230,7 +230,7 @@ class CalibTubes(Tubes):
         # with open(filename, 'w') as calibfile:
         #     calibfile.write("volR, volG, volB, x, y, Y," +
         #             ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
-        with closing(printing.TubesDataFile(prefix="measure_tubes_")) as calibfile:
+        with closing(printing.TubesDataFile(prefix="calibdata/measurements/measure_tubes_")) as calibfile:
             print("Starting measurement...")
             for voltage in voltages:
                 for i in range(each):
@@ -253,7 +253,7 @@ class CalibTubes(Tubes):
                     #         ", " + ", ".join([str(x) for x in spectrum]) +
                     #         "\n")
                     # calibfile.flush()
-                    calibfile.WriteDataTXT(xyY=tri_stim, voltage=voltage, spec_list=spectrum)
+                    calibfile.writeDataTXT(xyY=tri_stim, voltage=voltage, spec_list=spectrum)
                     #store data in lists
                     vol_col_spec_list.append( (voltage, tri_stim, spectrum) )
         return vol_col_spec_list
@@ -342,7 +342,7 @@ class CalibTubes(Tubes):
         # write data to hard drive
         # TODO output.py
 
-        with closing(printing.TubesDataFile(prefix="calibration_tubes_raw_")) as calibFile:
+        with closing(printing.TubesDataFile(prefix="calibdata/measurements/calibration_tubes_raw_")) as calibFile:
             #with open('calibdata/measurements/calibration_tubes_raw_' +
             #time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
             #calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
@@ -358,7 +358,7 @@ class CalibTubes(Tubes):
                     #                 ", " + ", ".join([str(x) for x in
                     #                     spectra[i]]) +
                     #                 "\n")
-                    calibFile.writeDataTXT(xyY=xyY, voltage=voltages, spec_list=spectra)
+                    calibFile.writeDataTXTloop(xyY=xyY, voltage=voltages, spec_list=spectra)
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
             pickle.dump(voltages_r, f)

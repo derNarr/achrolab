@@ -250,9 +250,9 @@ class ExperimentDataFile():
     def close(self):
         self.file_object.close()
 
-class TubeDataFile():
+class TubesDataFile():
     """
-    TubeDataFile provides a new method to
+    TubesDataFile provides a new method to
     write the calibration of the tubes data to a comma separated file.
     TODO add arguments, etc. here
 
@@ -274,13 +274,60 @@ class TubeDataFile():
         self.file_object=open(str(prefix) + time.strftime("%Y%m%d_%H%M") + ".txt", "w")
         #Open file object here
 
+    def writeDataTXTloop(self, xyY=None, voltage=None, spec_list=None, delimiter="\t"):
+        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
+        #If at 0, write headers:
+        for p in range(len(xyY)):
+            if self.file_object.tell()==0:
+                writestr="x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
+                for i in range(36):
+                    writestr+=str(delimiter) +"l"+str(i+1)
+                writestr+="\n"
+                self.file_object.write(writestr)
+
+            writestr = ""
+
+            #Write xyY values from 3 element list (should really be tuple as different data)
+            if xyY != None:
+                for i in range(3):
+                    writestr+=str(xyY[p][i])+str(delimiter)
+            else:
+                for i in range(3):
+                    writestr+="NA"+str(delimiter)
+
+            #Write voltage_{r,g,b} values from 3 element list (should really be tuple as different data)
+            if voltage != None:
+                for i in range(3):
+                    writestr+=str(voltage[p][i])+str(delimiter)
+            else:
+                for i in range(3):
+                    writestr+="NA"+str(delimiter)
+
+            #Write spectral values from 36 element list
+            if spec_list != None:
+                for i in range(36):
+                    writestr+=str(spec_list[p][i])+str(delimiter)
+            else:
+                for i in range(36):
+                    writestr+="NA"+str(delimiter)
+                writestr=writestr[:-1] #remove trailing delimiter
+            #Terminate record with newline
+            writestr+="\n"
+            self.file_object.write(writestr)
+
+            #rgb_r rgb_g rgb_b x y Y  voltage_r voltage_g voltage_b l1 l2 l3 ...
+            #NA    NA    NA    0.2 ...
+
+            #"{rgb_r}  {}".format(rgb_r="NA", ...
+            #                 " ".join(list of strings)
+
     def writeDataTXT(self, xyY=None, voltage=None, spec_list=None, delimiter="\t"):
         #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
         #If at 0, write headers:
         if self.file_object.tell()==0:
             writestr="x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
             for i in range(36):
-                 writestr+=str(delimiter) +"l"+str(i+1)
+                writestr+=str(delimiter) +"l"+str(i+1)
             writestr+="\n"
             self.file_object.write(writestr)
 
@@ -302,7 +349,7 @@ class TubeDataFile():
             for i in range(3):
                 writestr+="NA"+str(delimiter)
 
-          #Write spectral values from 36 element list
+        #Write spectral values from 36 element list
         if spec_list != None:
             for i in range(36):
                 writestr+=str(spec_list[i])+str(delimiter)
@@ -319,6 +366,6 @@ class TubeDataFile():
 
         #"{rgb_r}  {}".format(rgb_r="NA", ...
         #                 " ".join(list of strings)
-
+    
     def close(self):
         self.file_object.close()
