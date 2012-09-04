@@ -31,7 +31,8 @@ import pickle
 
 from tubes import Tubes
 from eyeone.constants import TRISTIMULUS_SIZE, SPECTRUM_SIZE, eNoError
-
+from contextlib import closing
+import printing
 
 class CalibTubes(Tubes):
     """
@@ -226,9 +227,10 @@ class CalibTubes(Tubes):
         filename = ('calibdata/measurements/measure_tubes_' +
                     time.strftime("%Y%m%d_%H%M") + '.txt')
         print("writing measurements in " + filename)
-        with open(filename, 'w') as calibfile:
-            calibfile.write("volR, volG, volB, x, y, Y," +
-                    ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
+        # with open(filename, 'w') as calibfile:
+        #     calibfile.write("volR, volG, volB, x, y, Y," +
+        #             ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
+        with closing(printing.TubesDataFile(prefix="measure_tubes_")) as calibfile:
             print("Starting measurement...")
             for voltage in voltages:
                 for i in range(each):
@@ -246,11 +248,12 @@ class CalibTubes(Tubes):
                         print("Failed to get spectrum for voltage %s ."
                                 %str(voltage))
                     #write data #TODO output.py
-                    calibfile.write(", ".join([str(x) for x in voltage]) +
-                            ", " + ", ".join([str(x) for x in tri_stim]) +
-                            ", " + ", ".join([str(x) for x in spectrum]) +
-                            "\n")
-                    calibfile.flush()
+                    # calibfile.write(", ".join([str(x) for x in voltage]) +
+                    #         ", " + ", ".join([str(x) for x in tri_stim]) +
+                    #         ", " + ", ".join([str(x) for x in spectrum]) +
+                    #         "\n")
+                    # calibfile.flush()
+                    calibfile.WriteDataTXT(xyY=tri_stim, voltage=voltage, spec_list=spectrum)
                     #store data in lists
                     vol_col_spec_list.append( (voltage, tri_stim, spectrum) )
         return vol_col_spec_list
@@ -338,22 +341,24 @@ class CalibTubes(Tubes):
 
         # write data to hard drive
         # TODO output.py
-        with open('calibdata/measurements/calibration_tubes_raw_' +
-                time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
-            calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
+
+        with closing(printing.TubesDataFile(prefix="calibration_tubes_raw_")) as calibFile:
+            #with open('calibdata/measurements/calibration_tubes_raw_' +
+            #time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
+            #calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
             for j in range(4):
                 voltages = (voltages_r, voltages_g, voltages_b,
                         voltages_all)[j]
                 xyY = (xyY_r, xyY_g, xyY_b, xyY_all)[j]
                 spectra = (spectra_r, spectra_g, spectra_b, spectra_all)[j]
                 for i in range(len(voltages)):
-                    calibFile.write(", ".join([str(x) for x in voltages[i]]) +
-                                    ", " + ", ".join([str(x) for x in
-                                        xyY[i]]) +
-                                    ", " + ", ".join([str(x) for x in
-                                        spectra[i]]) +
-                                    "\n")
-
+                    # calibFile.write(", ".join([str(x) for x in voltages[i]]) +
+                    #                 ", " + ", ".join([str(x) for x in
+                    #                     xyY[i]]) +
+                    #                 ", " + ", ".join([str(x) for x in
+                    #                     spectra[i]]) +
+                    #                 "\n")
+                    calibFile.writeDataTXT(xyY=xyY, voltage=voltages, spec_list=spectra)
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
             pickle.dump(voltages_r, f)
