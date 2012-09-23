@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-08-28 KS
-# last mod 2012-08-29 17:31 KS
+# last mod 2012-08-30 16:01 KS
 
 """
 fittubesmanual collects code that can be used to fit functions the voltage -
@@ -26,7 +26,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 f = open("../../calibration_tubes_raw_20120827_1858.pkl")
-f = open("calibration_tubes_raw_20120827_1858.pkl")
+f = open("calibration_tubes_raw_20120829_1404.pkl")
 
 voltages_r   = pickle.load(f)
 voltages_g   = pickle.load(f)
@@ -85,7 +85,7 @@ plt.xlabel("Voltages (input to wasco card)")
 plt.title("Luminance-voltages functions for all three colours")
 plt.show()
 
-filename = "parameter_tubes_00_abs.pkl"
+filename = "parameter_tubes_75_abs.pkl"
 
 with open(filename, 'wb') as f:
     pickle.dump(float(popt_r[0]), f)

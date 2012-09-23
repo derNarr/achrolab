@@ -13,11 +13,12 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 18:40 KS
+# last mod 2012-09-23 13:14 KS
+
+import pickle
+import exceptions
 
 from colorentry import ColorEntry
-import pickle
-from exceptions import ValueError
 
 # TODO save measurements of each EyeOne Pro measurement in a folder
 # ./measurements/ with date (as R-Datafile)
@@ -33,8 +34,8 @@ class ColorTable(object):
     ColorTable is a list of ColorEntries with some useful functions defined
     on this list.
 
-    :Example:
-
+    Example
+    -------
         >>> from colorentry import ColorEntry
         >>> coltab = ColorTable()
         >>> coltab.addColorEntry(ColorEntry("grey1",
@@ -57,16 +58,17 @@ class ColorTable(object):
                     "Rdat"):
                 self.loadFromR(filename)
             else:
-                print("Warning: Cannot load ColorTable. Wrong filetype.")
+                raise exceptions.ValueError("Cannot load ColorTable. Wrong \
+                        filetype.")
 
     def addColorEntry(self, ce):
         """
-        adds a color entry to the color table.
+        Adds a color entry to the color table.
 
-        :Parameters:
-
-            ce : colorentry.ColorEntry instance
-                object that stores a color entry
+        Parameters
+        ----------
+        ce : colorentry.ColorEntry instance
+            object that stores a color entry
 
         """
         if not isinstance(ce, ColorEntry):
@@ -75,37 +77,53 @@ class ColorTable(object):
 
     def getColorByName(self, name):
         """
-        returns the first object in color_list with the given name.
+        Returns the first object in color_list with the given name.
 
-        :Parameters:
+        Parameters
+        ----------
+        name : string
+            name of colorentry.ColorEntry object
 
-            name : string
-                name of colorentry.ColorEntry object
+        Returns
+        -------
+        out : ColorEntry
+            first object in color_list with the given name.
 
         """
         for ce in self.color_list:
             if ce.name == name:
                 return ce
-        raise ValueError("No color for this name")
+        raise exceptions.ValueError("No color for this name")
 
-    def getColorsByName(self,name_list):
+    def getColorsByName(self, names):
         """
-        returns colorentry objects in a list, ordered after name_list.
+        Returns ColorEntry objects in a list, ordered after name_list.
 
-        :Parameters:
+        Parameters
+        ----------
+        names : sequence of strings
+            list with names of colorentry.ColorEntry objects
 
-            name_list : list of strings
-                list with names of colorentry.ColorEntry objects
+        Returns
+        -------
+        out : sequence of ColorEntry objects
+            list with colorentry.ColorEntry objects corresponding to the names
+            given in names
 
         """
-        color_list = []
-        for name in name_list:
-           color_list.append(self.getColorByName(name))
-        return color_list
+        color_entries = []
+        for name in names:
+           color_entries.append(self.getColorByName(name))
+        return color_entries
 
     def saveToCsv(self, filename):
         """
         Saves object to comma separated text file (.csv).
+
+        Parameters
+        ----------
+        filename : string
+            string that gives the filename and the location of the file.
 
         """
         with open(filename, "w") as f:
@@ -148,10 +166,10 @@ class ColorTable(object):
         """
         Saves object to pickle file (.pkl).
 
-        :Parameters:
-
-            filename : string
-                string that gives the filename and the location of the file.
+        Parameters
+        ----------
+        filename : string
+            string that gives the filename and the location of the file.
 
         """
         with open(filename, "wb") as f:
@@ -161,10 +179,10 @@ class ColorTable(object):
         """
         Loads object from comma separated text file (.csv).
 
-        :Parameters:
-
-            filename : string
-                string that gives the filename and the location of the file.
+        Parameters
+        ----------
+        filename : string
+            string that gives the filename and the location of the file.
 
         """
         def float_None(x):
@@ -202,10 +220,10 @@ class ColorTable(object):
         """
         Loads object from pickle file (.pkl).
 
-        :Parameters:
-
-            filename : string
-                string that gives the filename and the location of the file.
+        Parameters
+        ----------
+        filename : string
+            string that gives the filename and the location of the file.
 
         """
         with open(filename, "rb") as f:
@@ -215,12 +233,12 @@ class ColorTable(object):
         """
         Loads object from R data file.
 
-        :Parameters:
-
-            filename : string
-                string that gives the filename and the location of the file.
+        Parameters
+        ----------
+        filename : string
+            string that gives the filename and the location of the file.
 
         """
+        raise exceptions.NotImplementedError("not implemented to load from Rdata file")
         # TODO implement loadFromR
-        print("ERROR, not implemented yet.")
 
