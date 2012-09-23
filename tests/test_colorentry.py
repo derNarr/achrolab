@@ -4,10 +4,7 @@
 #
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
-# last mod 2012-09-23 12:54 KS
-
-#import sys
-#sys.path.append("..")
+# last mod 2012-09-23 13:54 KS
 
 import unittest
 
