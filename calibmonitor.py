@@ -81,9 +81,9 @@ class CalibMonitor(Monitor):
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
 
         """
-        if not self.eyeone.is_calibrated:
-            self.eyeone.calibrate()
-            self.startMeasurement()
+        #if not self.eyeone.is_calibrated:
+        #    self.eyeone.calibrate()
+        #    self.startMeasurement()
 
         self.setColor(patch_stim_value)
         xyY_list = []

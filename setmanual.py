@@ -194,8 +194,10 @@ class SetTubesManualBase(object):
             self.tellme('Step size set to ' + str(self.step))
         elif key == 'up' or key == 'down':
             self.adjustTube()
-        elif key == 'space':
+        elif key in ('space', ' '):
+            self.tellme('start measuring...')
             self.measureVoltage()
+            self.tellme('measured!')
         elif key == 'c':
             # close and reprint figure
             self.newFigure()
@@ -283,6 +285,7 @@ class SetTubesManualVision(SetTubesManualBase):
               + '\nPress [escape] to quit (and save last voltages)')
         self.stop=False
         while not self.stop:
+            time.sleep(0.01)
             self.mon.waitForButtonPress()
             self.onKeyPress(self.mon.e)
         return( self.voltages )
