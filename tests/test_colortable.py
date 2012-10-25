@@ -5,47 +5,36 @@
 # (c) 2011 Konstantin Sering <konstantin.sering [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# last mod 2011-11-07 KS
+# last mod 2012-09-23 13:19 KS
 
-from psychopy import visual
+import unittest
 
-from ..colortable import ColorTable, CalibColorTable
+from ..colortable import ColorTable
 from ..colorentry import ColorEntry
-from ..eyeone import EyeOne
-from ..monitor import Monitor
-from ..tubes import Tubes
 
-eyeone = EyeOne.EyeOne(dummy=True)
-mywin = visual.Window(size=(800,600), color=(0,0,0))
-mon = Monitor(eyeone, mywin)
-tub = Tubes()
-
-
-class TestColorTable(object):
+class TestColorTable(unittest.TestCase):
     """
     All tests which end on DRY can be run and should pass in dummy
     mode.
     """
 
+    def setUp(self):
+        self.col_table = ColorTable("./tests/testdata/color_table.csv")
+
     def testInitColorTable(self):
-        test_table = ColorTable("./tests/testdata/color_table.csv")
+        col_table1 = ColorTable()
+        self.assertEqual(col_table1.color_list, [])
 
     def testGetColorByName(self):
-        test_table = ColorTable("./tests/testdata/color_table.csv")
-        assert isinstance( test_table.getColorByName("color121"),
+        assert isinstance( self.col_table.getColorByName("color121"),
                 ColorEntry)
 
     def testGetColorsByName(self):
-        test_table = ColorTable("./tests/testdata/color_table.csv")
-        ce_list = test_table.getColorsByName( ["color1",
+        ce_list = self.col_table.getColorsByName( ["color1",
             "color2", "color3"] )
         assert isinstance( ce_list , list)
         assert isinstance( ce_list[0], ColorEntry)
 
-    def testShowColorList(self):
-        test_table = ColorTable("./tests/testdata/color_table.csv")
-        test_table.showColorList(tub, mon,index_list=[3,4,5])
-
     def testSaveToR(self):
         pass
 
@@ -64,66 +53,6 @@ class TestColorTable(object):
     def testLoadFromPickle(self):
         pass
 
-
-
-class TestCalibColorTable(object):
-    """
-    All tests which end on DRY can be run and should pass in dummy
-    mode.
-    """
-
-    def testInitColorTable(self):
-        test_table = CalibColorTable(mon, tub)
-
-    def testCheckColorTable(self):
-        pass
-
-    def testCheckColorTableTubes(self):
-        pass
-
-    def testCheckColorTableMonitor(self):
-        pass
-
-    def testGetColorByName(self):
-        pass
-
-    def testGetColorsByName(self):
-        pass
-
-    def testCreateColorList(self):
-        pass
-
-    def testMeasureColorListMonitor(self):
-        pass
-
-    def testFindVoltages(self):
-        pass
-
-    def testVoltagesTuning(self):
-        pass
-
-    def testMeasureColorListTubes(self):
-        pass
-
-    def testShowColorList(self):
-        pass
-
-    def testSaveToR(self):
-        pass
-    
-    def testSaveToCsv(self):
-        pass
-
-    def testSaveToPickle(self):
-        pass
-
-    def testLoadFromR(self):
-        pass
-
-    def testLoadFromCsv(sefl):
-        pass
-
-    def testLoadFromPickle(self):
-        pass
-
+if __name__ == "__main__":
+    unittest.main()
 
