@@ -3,9 +3,9 @@ https://github.com/derNarr/achrolab). It was generated using Sphinx version
 1.1.
 
 This repository contains all reStructuredText files. To build the
-documentation cd into documentation-achrolab and run Sphinx:
+documentation cd into achrolab/doc/ and run Sphinx:
 
-    cd documentation-achrolab
+    cd doc
     make html
 
 or:
@@ -14,9 +14,9 @@ or:
 
 to get a pdf version.
 
-If you clone achrolabutils (https://github.com/derNarr/achrolabutils) and
-documentation-achrolab in the same folder you can run Sphinx and the
-auto-documentation will work.
+If you clone achrolabutils (https://github.com/derNarr/achrolabutils) the
+documentation will be in the folder achrolab/doc/. If you run Sphinx there,
+the auto-documentation will work.
 
 This documentation includes documentation about the modules achrolab,
 eyeone, and wasco as well as two tutorials. The first tutorial gives an
