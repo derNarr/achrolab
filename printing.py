@@ -72,6 +72,7 @@ class CalibDataFile(object):
                  writestr+=str(delimiter) +"l"+str(i+1)
             writestr+="\n"
             self.file_object.write(writestr)
+        return self
 
     def __exit__(self, *exc):
         self.close()
