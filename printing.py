@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 JM
-# last mod 2012-07-11 19:08 KS
+# last mod 2012-12-18 12:05 KS
 
 
 """
@@ -25,10 +25,11 @@ method of writing the calibration data to a comma separated file.
 import time
 
 #Fix inheriting from file later, need way of working with open()
-class CalibDataFile():
+class CalibDataFile(object):
     """
     CalibDataFile provides a new method to
-    write the calibration data of the monitor/photometer to a comma separated file.
+    write the calibration data of the monitor/photometer to a comma
+    separated file.
     TODO add arguments, etc. here
 
     Use with closing() from the contextlib module as follows: ::
@@ -45,11 +46,36 @@ class CalibDataFile():
 
     """
 
-    def __init__(self, prefix="calibdata_"):
+    def __init__(self, prefix="calibdata_", file_type="txt", delimiter="\t"):
+        """
+
+        """
+        self.file_type = file_type
+        self.delimiter = delimiter
         #For now only works with justmeasure, can generalise this later
         self.file_object=open(str(prefix) + time.strftime("%Y%m%d_%H%M") + ".txt", "w")
+
         #print "init"
         #Open file object here
+
+    def __enter__(self):
+        """
+        Print header to file_object.
+
+        When entering a context print the header to the file_object.
+
+        """
+        delimiter = self.delimiter
+        if self.file_type == "txt":
+            writestr="gray_1" + str(delimiter) + "gray_2" + str(delimiter) + "rgb_r"+str(delimiter)+"rgb_g"+str(delimiter)+"rgb_b"+str(delimiter)+"x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
+            for i in range(36):
+                 writestr+=str(delimiter) +"l"+str(i+1)
+            writestr+="\n"
+            self.file_object.write(writestr)
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
 
     # def writeDataJSON(self, grayvals=None, rgb=None, xyY=None, voltage=None, spec_list=None, measurement=None, imi=None, times=None, recalibrate=None):
     #     #Make list of dictionaries to do nested JSON
@@ -73,17 +99,12 @@ class CalibDataFile():
     #     #Write me to file
 
 
-    def writeDataTXT(self, grayvals=None, rgb=None, xyY=None, voltage=None, spec_list=None, delimiter="\t"):
-        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
-        #If at 0, write headers:
-        if self.file_object.tell()==0:
-            writestr="gray_1" + str(delimiter) + "gray_2" + str(delimiter) + "rgb_r"+str(delimiter)+"rgb_g"+str(delimiter)+"rgb_b"+str(delimiter)+"x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
-            for i in range(36):
-                 writestr+=str(delimiter) +"l"+str(i+1)
-            writestr+="\n"
-            self.file_object.write(writestr)
-
+    def writeDataTXT(self, grayvals=None, rgb=None, xyY=None, voltage=None,
+            spec_list=None, delimiter="\t"):
+        # Fundamentally different to JSON, as can write to buffer on the fly
+        #  - i.e. does not need complete structure to write
         writestr = ""
+        delimiter = self.delimiter
         # Write grayvals from 2 element list
         if grayvals != None:
             for i in range(2):
@@ -137,7 +158,7 @@ class CalibDataFile():
     def close(self):
         self.file_object.close()
 
-class ExperimentDataFile():
+class ExperimentDataFile(object):
     """
     ExperimentDataFile provides a new method to
     write the experiment  data to a comma separated file.
@@ -250,13 +271,13 @@ class ExperimentDataFile():
     def close(self):
         self.file_object.close()
 
-class TubesDataFile():
+class TubesDataFile(object):
     """
     TubesDataFile provides a new method to
     write the calibration of the tubes data to a comma separated file.
     TODO add arguments, etc. here
 
-    Use with closing() from the contextlib module as follows: ::
+    Use with closing() from the contextlib module as follows::
 
         from contextlib import closing
         import printing
@@ -366,6 +387,7 @@ class TubesDataFile():
 
         #"{rgb_r}  {}".format(rgb_r="NA", ...
         #                 " ".join(list of strings)
-    
+
     def close(self):
         self.file_object.close()
+
