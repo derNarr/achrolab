@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 18:48 KS
+# last mod 2013-01-01 10:37 KS
 
 from __future__ import print_function
 import sys
@@ -47,7 +47,8 @@ class DevTubes(object):
         self.red_out = DAOUT3
         self.green_out = DAOUT1
         self.blue_out = DAOUT2
-        self.low_threshold = 0x400 # min voltages must be integer
+        self.low_threshold = 0x200 # min voltages must be integer
+        self.low_warning = 0x800 # low warning voltages must be integer
         self.high_threshold = 0xFFF # max voltages must be integer
 
         # voltage which is set at the moment
@@ -67,6 +68,19 @@ class DevTubes(object):
         U_r_new = int(U_rgb[0])
         U_g_new = int(U_rgb[1])
         U_b_new = int(U_rgb[2])
+
+        # warning
+        if U_r_new < self.low_warning:
+            print("WARNING: red channel is below recommended range (" +
+                    str(self.low_warning) +")", file=sys.stderr)
+        if U_g_new < self.low_warning:
+            print("WARNING: green channel is below recommended range (" +
+                    str(self.low_warning) +")", file=sys.stderr)
+        if U_b_new < self.low_warning:
+            print("WARNING: blue channel is below recommended range (" +
+                    str(self.low_warning) +")", file=sys.stderr)
+
+        # hard threshold
         if U_r_new < self.low_threshold:
             print("red channel is on minimum (" + str(self.low_threshold)
                     +")", file=sys.stderr)
