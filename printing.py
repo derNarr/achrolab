@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 JM
-# last mod 2012-12-18 12:05 KS
+# last mod 2013-01-01 12:13 KS
 
 
 """
@@ -30,33 +30,39 @@ class CalibDataFile(object):
     CalibDataFile provides a new method to
     write the calibration data of the monitor/photometer to a comma
     separated file.
-    TODO add arguments, etc. here
 
-    Use with closing() from the contextlib module as follows: ::
-
-        from contextlib import closing
-        import printing
-        with closing(printing.CalibDataFile(prefix="YourPrefixHere")) as filename:
-            #code here
-            filename.writeDataTXT(rgb=rgb, xyY=None, voltage=None, spec_list=spec_list, delimiter="\t")
-            #more code
+    Example
+    -------
+    >>> import printing
+    >>> with printing.CalibDataFile(prefix="YourPrefixHere",
+    ...             delimiter="\t") as filename:
+    >>>     #code here
+    >>>     filename.write_data_txt(rgb=rgb, xyY=None, voltage=None,
+    ...             spec_list=spec_list)
+    >>>     #more code
 
     This way if there is an error, inside the with context, it will immediately
     close and write to the file, so data is not lost.
 
     """
-
     def __init__(self, prefix="calibdata_", file_type="txt", delimiter="\t"):
         """
+        Parameters
+        ----------
+        prefix : str
+            file name prefix
+        file_type : str
+            one of "txt"...
+            not used at the moment
+        delimiter : str
+            delimiter which separates the values
 
         """
         self.file_type = file_type
         self.delimiter = delimiter
         #For now only works with justmeasure, can generalise this later
-        self.file_object=open(str(prefix) + time.strftime("%Y%m%d_%H%M") + ".txt", "w")
-
-        #print "init"
-        #Open file object here
+        self.file_object = open(str(prefix) + time.strftime("%Y%m%d_%H%M")
+                + ".txt", "w")
 
     def __enter__(self):
         """
@@ -67,10 +73,15 @@ class CalibDataFile(object):
         """
         delimiter = self.delimiter
         if self.file_type == "txt":
-            writestr="gray_1" + str(delimiter) + "gray_2" + str(delimiter) + "rgb_r"+str(delimiter)+"rgb_g"+str(delimiter)+"rgb_b"+str(delimiter)+"x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
+            writestr = ("gray_1" + str(delimiter) + "gray_2" +
+                    str(delimiter) + "rgb_r" + str(delimiter) + "rgb_g" +
+                    str(delimiter) + "rgb_b" + str(delimiter) + "x" +
+                    str(delimiter)+"y" + str(delimiter) + "Y" +
+                    str(delimiter) + "voltage_r" + str(delimiter) +
+                    "voltage_g" + str(delimiter) + "voltage_b")
             for i in range(36):
-                 writestr+=str(delimiter) +"l"+str(i+1)
-            writestr+="\n"
+                 writestr += str(delimiter) + "l" + str(i+1)
+            writestr += "\n"
             self.file_object.write(writestr)
         return self
 
@@ -88,7 +99,7 @@ class CalibDataFile(object):
     #     color_list = grayvals
     #     for i in range(len(color_list)):
     #         data.append({"colorlist" : color_list[i], "speclist" : spec_list[i]})
-    #         i+=1
+    #         i += 1
     #     python_data = {
     #         "measurement" : measurement,
     #         "imi" : imi,
@@ -100,7 +111,7 @@ class CalibDataFile(object):
     #     #Write me to file
 
 
-    def writeDataTXT(self, grayvals=None, rgb=None, xyY=None, voltage=None,
+    def write_data_txt(self, grayvals=None, rgb=None, xyY=None, voltage=None,
             spec_list=None, delimiter="\t"):
         # Fundamentally different to JSON, as can write to buffer on the fly
         #  - i.e. does not need complete structure to write
@@ -109,45 +120,45 @@ class CalibDataFile(object):
         # Write grayvals from 2 element list
         if grayvals != None:
             for i in range(2):
-                writestr+=str(grayvals[i])+str(delimiter)
+                writestr += str(grayvals[i])+str(delimiter)
         else:
             for i in range(2):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
         #Write RGB values from 3 element list (should really be tuple as different data)
         if rgb != None:
             for i in range(3):
-                writestr+=str(rgb[i])+str(delimiter)
+                writestr += str(rgb[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
         #Write xyY values from 3 element list (should really be tuple as different data)
         if xyY != None:
             for i in range(3):
-                writestr+=str(xyY[i])+str(delimiter)
+                writestr += str(xyY[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
         #Write voltage_{r,g,b} values from 3 element list (should really be tuple as different data)
         if voltage != None:
             for i in range(3):
-                writestr+=str(voltage[i])+str(delimiter)
+                writestr += str(voltage[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
           #Write spectral values from 36 element list
         if spec_list != None:
             for i in range(36):
-                writestr+=str(spec_list[i])+str(delimiter)
+                writestr += str(spec_list[i])+str(delimiter)
         else:
             for i in range(36):
-                writestr+="NA"+str(delimiter)
-            writestr=writestr[:-1] #remove trailing delimiter
+                writestr += "NA"+str(delimiter)
+            writestr = writestr[:-1] #remove trailing delimiter
         #Terminate record with newline
-        writestr+="\n"
+        writestr += "\n"
         self.file_object.write(writestr)
 
         #rgb_r rgb_g rgb_b x y Y  voltage_r voltage_g voltage_b l1 l2 l3 ...
@@ -155,6 +166,9 @@ class CalibDataFile(object):
 
         #"{rgb_r}  {}".format(rgb_r="NA", ...
         #                 " ".join(list of strings)
+
+    def write(self, text):
+        self.file_object(text)
 
     def close(self):
         self.file_object.close()
@@ -163,111 +177,145 @@ class ExperimentDataFile(object):
     """
     ExperimentDataFile provides a new method to
     write the experiment  data to a comma separated file.
-    TODO add arguments, etc. here
 
-    Use with closing() from the contextlib module as follows: ::
-
-        from contextlib import closing
-        import printing
-        with closing(printing.ExperimentDataFile(prefix="YourPrefixHere")) as file_name:
-            #code here
-            filename.writeTXT(stimuliName=..., leftmean=..., leftvar=..., leftgrayplus=..., leftseed="...", rightmean=..., rightvar=..., rightgrayplus=..., rightseed="...", bg=..., voltages=..., rtTime=..., key=..., thisResp=...)
-            #more code
+    Example
+    -------
+    >>> import printing
+    >>> with printing.ExperimentDataFile(prefix="YourPrefixHere") as file_name:
+    >>>     #code here
+    >>>     filename.write_data_txt(stimuliName=..., leftmean=..., leftvar=..., leftgrayplus=..., leftseed="...", rightmean=..., rightvar=..., rightgrayplus=..., rightseed="...", bg=..., voltages=..., rtTime=..., key=..., thisResp=...)
+    >>>     #more code
 
     This way if there is an error, inside the with context, it will immediately
     close and write to the file, so data is not lost.
 
     """
-    def __init__(self, path, expInfo):
+    def __init__(self, path, exp_info, delimiter="\t"):
+        """
+        Parameters
+        ----------
+        path : str
+            file name prefix
+        exp_info : dict
+            dictionary with keys "Versuchsleiter", "Versuchsperson",
+            "Session", "Datum"
+
+        """
         #For now only works with justmeasure, can generalise this later
-        self.fileName = str(path) + expInfo['Versuchsleiter'] + expInfo['Versuchsperson'] + expInfo['Session'] + '_' + expInfo['Datum']
-        self.file_object=open(self.fileName + ".txt", "a")
-        #print "init"
-        #Open file object here
+        self.delimiter = delimiter
+        self.file_name = (str(path) + exp_info['Versuchsleiter'] +
+                exp_info['Versuchsperson'] + exp_info['Session'] + '_' +
+                exp_info['Datum'])
+        self.file_object = open(self.file_name + ".txt", "a")
 
-    def writeDataTXT(self, stimuliName=None, leftmean=None, leftvar=None, leftgrayplus=None, leftseed="1", rightmean=None, rightvar=None, rightgrayplus=None, rightseed="1", bg=None, voltages=None, rtTime=None, key=None, thisResp=None, delimiter="\t"):
-        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
-        #If at 0, write headers:
+    def __enter__(self):
+        """
+        When entering a context return this object.
 
+        """
+        delimiter = self.delimiter
         #thisResp, rtTime, key, stimuliname, leftmean, leftvar, rightmean, rightvar, leftgreyplus, rightgreyplus, bg
-        if self.file_object.tell()==0:
-            writestr="stimuliName" + str(delimiter) + "leftmean" + str(delimiter) + "leftvar"+str(delimiter)+"leftgrayplus"+str(delimiter)+"seedleft"+str(delimiter)+"rightmean"+str(delimiter)+"rightvar"+str(delimiter)+"rightgrayplus"+str(delimiter)+"seedright"+str(delimiter)+"bg"+str(delimiter)+"voltageR"+str(delimiter)+"voltageG"+str(delimiter)+"voltageB"+str(delimiter)+"rtTime"+str(delimiter)+"key"+str(delimiter)+"thisResp"
-            writestr+="\n"
-            self.file_object.write(writestr)
+        writestr = ("stimuliName" + str(delimiter) + "leftmean" +
+                str(delimiter) + "leftvar" + str(delimiter) +
+                "leftgrayplus" + str(delimiter) + "seedleft" +
+                str(delimiter) + "rightmean" + str(delimiter) + "rightvar"
+                + str(delimiter) + "rightgrayplus" + str(delimiter) +
+                "seedright" + str(delimiter) + "bg" + str(delimiter) +
+                "voltageR" + str(delimiter) + "voltageG" + str(delimiter) +
+                "voltageB" + str(delimiter) + "rtTime" + str(delimiter) +
+                "key" + str(delimiter) + "thisResp")
+        writestr += "\n"
+        self.file_object.write(writestr)
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
+
+    def write_data_txt(self, stimuliName=None, leftmean=None, leftvar=None,
+            leftgrayplus=None, leftseed="1", rightmean=None, rightvar=None,
+            rightgrayplus=None, rightseed="1", bg=None, voltages=None,
+            rtTime=None, key=None, thisResp=None):
+        delimiter = self.delimiter
+        # Fundamentally different to JSON, as can write to buffer on the
+        # fly - i.e. does not need complete structure to write
 
         writestr = ""
         # Write grayvals from 2 element list
         if stimuliName != None:
-            writestr+=str(stimuliName)+str(delimiter)
+            writestr += str(stimuliName)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if leftmean != None:
-            writestr+=str(leftmean)+str(delimiter)
+            writestr += str(leftmean)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if leftvar != None:
-            writestr+=str(leftvar)+str(delimiter)
+            writestr += str(leftvar)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if leftgrayplus != None:
-            writestr+=str(leftgrayplus)+str(delimiter)
+            writestr += str(leftgrayplus)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
-        writestr+=str(leftseed)+str(delimiter)
+        writestr += str(leftseed)+str(delimiter)
 
 
         if rightmean != None:
-            writestr+=str(rightmean)+str(delimiter)
+            writestr += str(rightmean)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if rightvar != None:
-            writestr+=str(rightvar)+str(delimiter)
+            writestr += str(rightvar)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if rightgrayplus != None:
-            writestr+=str(rightgrayplus)+str(delimiter)
+            writestr += str(rightgrayplus)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
-        writestr+=str(rightseed)+str(delimiter)
+        writestr += str(rightseed)+str(delimiter)
 
         if bg != None:
-            writestr+=str(bg)+str(delimiter)
+            writestr += str(bg)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if voltages != None:
             for i in range(3):
-                writestr+=str(voltages[i])+str(delimiter)
+                writestr += str(voltages[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
         if rtTime != None:
-            writestr+=str(rtTime)+str(delimiter)
+            writestr += str(rtTime)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if key != None:
-            writestr+=str(key)+str(delimiter)
+            writestr += str(key)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
         if thisResp != None:
-            writestr+=str(thisResp)+str(delimiter)
+            writestr += str(thisResp)+str(delimiter)
         else:
-            writestr+="NA"+str(delimiter)
+            writestr += "NA"+str(delimiter)
 
-            writestr=writestr[:-1] #remove trailing delimiter
-        #Terminate record with newline
-        writestr+="\n"
+            writestr=writestr[:-1] # remove trailing delimiter
+        # Terminate record with newline
+        writestr += "\n"
         self.file_object.write(writestr)
+
+    def write(self, text):
+        self.file_object(text)
 
     def close(self):
         self.file_object.close()
@@ -276,65 +324,101 @@ class TubesDataFile(object):
     """
     TubesDataFile provides a new method to
     write the calibration of the tubes data to a comma separated file.
-    TODO add arguments, etc. here
 
-    Use with closing() from the contextlib module as follows::
-
-        from contextlib import closing
-        import printing
-        with closing(printing.CalibDataFile(prefix="YourPrefixHere")) as filename:
-            #code here
-            filename.writeTXT(rgb=rgb, xyY=None, voltage=None, spec_list=spec_list, delimiter="\t")
-            #more code
+    Example
+    -------
+    >>> import printing
+    >>> with printing.CalibDataFile(prefix="YourPrefixHere",
+    ...             delimiter="\t") as filename:
+    >>>     #code here
+    >>>     filename.write_data_txt(rgb=rgb, xyY=None, voltage=None,
+    ...             spec_list=spec_list)
+    >>>     #more code
 
     This way if there is an error, inside the with context, it will immediately
     close and write to the file, so data is not lost.
 
     """
+    def __init__(self, prefix="measure_tubes_", delimiter="\t"):
+        """
+        Parameters
+        ----------
+        prefix : str
+            file name prefix
+        delimiter : str
+            delimiter which separates the values
 
-    def __init__(self, prefix="measure_tubes_"):
-        self.file_object=open(str(prefix) + time.strftime("%Y%m%d_%H%M") + ".txt", "w")
-        #Open file object here
+        """
+        self.delimiter = delimiter
+        self.file_object = open(str(prefix) + time.strftime("%Y%m%d_%H%M")
+                + ".txt", "w")
 
-    def writeDataTXTloop(self, xyY=None, voltage=None, spec_list=None, delimiter="\t"):
-        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
-        #If at 0, write headers:
+    def __enter__(self):
+        """
+        Print header to file_object.
+
+        When entering a context print the header to the file_object.
+
+        """
+        delimiter = self.delimiter
+        writestr = ("x" + str(delimiter) + "y" + str(delimiter) + "Y" +
+                str(delimiter) + "voltage_r" + str(delimiter) + "voltage_g"
+                + str(delimiter) + "voltage_b")
+        for i in range(36):
+            writestr += str(delimiter) + "l" + str(i+1)
+        writestr += "\n"
+        self.file_object.write(writestr)
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+        return False
+
+    def write_data_txt_loop(self, xyY=None, voltage=None, spec_list=None):
+        delimiter = self.delimiter
+        # Fundamentally different to JSON, as can write to buffer on the fly
+        # - i.e. does not need complete structure to write
+        # If at 0, write headers:
         for p in range(len(xyY)):
-            if self.file_object.tell()==0:
-                writestr="x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
+            if self.file_object.tell() == 0:
+                writestr = ("x" + str(delimiter) + "y" + str(delimiter) +
+                        "Y" + str(delimiter) + "voltage_r" + str(delimiter)
+                        + "voltage_g" + str(delimiter) + "voltage_b")
                 for i in range(36):
-                    writestr+=str(delimiter) +"l"+str(i+1)
-                writestr+="\n"
+                    writestr += str(delimiter) + "l" + str(i+1)
+                writestr += "\n"
                 self.file_object.write(writestr)
 
             writestr = ""
 
-            #Write xyY values from 3 element list (should really be tuple as different data)
+            # Write xyY values from 3 element list (should really be tuple
+            # as different data)
             if xyY != None:
                 for i in range(3):
-                    writestr+=str(xyY[p][i])+str(delimiter)
+                    writestr += str(xyY[p][i]) + str(delimiter)
             else:
                 for i in range(3):
-                    writestr+="NA"+str(delimiter)
+                    writestr += "NA" + str(delimiter)
 
-            #Write voltage_{r,g,b} values from 3 element list (should really be tuple as different data)
+            # Write voltage_{r,g,b} values from 3 element list (should
+            # really be tuple as different data)
             if voltage != None:
                 for i in range(3):
-                    writestr+=str(voltage[p][i])+str(delimiter)
+                    writestr += str(voltage[p][i]) + str(delimiter)
             else:
                 for i in range(3):
-                    writestr+="NA"+str(delimiter)
+                    writestr += "NA" + str(delimiter)
 
-            #Write spectral values from 36 element list
+            # Write spectral values from 36 element list
             if spec_list != None:
                 for i in range(36):
-                    writestr+=str(spec_list[p][i])+str(delimiter)
+                    writestr += str(spec_list[p][i])+str(delimiter)
             else:
                 for i in range(36):
-                    writestr+="NA"+str(delimiter)
+                    writestr += "NA"+str(delimiter)
                 writestr=writestr[:-1] #remove trailing delimiter
-            #Terminate record with newline
-            writestr+="\n"
+            # Terminate record with newline
+            writestr += "\n"
             self.file_object.write(writestr)
 
             #rgb_r rgb_g rgb_b x y Y  voltage_r voltage_g voltage_b l1 l2 l3 ...
@@ -343,44 +427,40 @@ class TubesDataFile(object):
             #"{rgb_r}  {}".format(rgb_r="NA", ...
             #                 " ".join(list of strings)
 
-    def writeDataTXT(self, xyY=None, voltage=None, spec_list=None, delimiter="\t"):
-        #Fundamentally different to JSON, as can write to buffer on the fly - i.e. does not need complete structure to write
-        #If at 0, write headers:
-        if self.file_object.tell()==0:
-            writestr="x"+str(delimiter)+"y"+str(delimiter)+"Y"+str(delimiter)+"voltage_r"+str(delimiter)+"voltage_g"+str(delimiter)+"voltage_b"
-            for i in range(36):
-                writestr+=str(delimiter) +"l"+str(i+1)
-            writestr+="\n"
-            self.file_object.write(writestr)
-
+    def write_data_txt(self, xyY=None, voltage=None, spec_list=None):
+        delimiter = self.delimiter
+        # Fundamentally different to JSON, as can write to buffer on the
+        # fly - i.e. does not need complete structure to write
         writestr = ""
 
-        #Write xyY values from 3 element list (should really be tuple as different data)
+        # Write xyY values from 3 element list (should really be tuple as
+        # different data)
         if xyY != None:
             for i in range(3):
-                writestr+=str(xyY[i])+str(delimiter)
+                writestr += str(xyY[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
-        #Write voltage_{r,g,b} values from 3 element list (should really be tuple as different data)
+        # Write voltage_{r,g,b} values from 3 element list (should really
+        # be tuple as different data)
         if voltage != None:
             for i in range(3):
-                writestr+=str(voltage[i])+str(delimiter)
+                writestr += str(voltage[i])+str(delimiter)
         else:
             for i in range(3):
-                writestr+="NA"+str(delimiter)
+                writestr += "NA"+str(delimiter)
 
-        #Write spectral values from 36 element list
+        # Write spectral values from 36 element list
         if spec_list != None:
             for i in range(36):
-                writestr+=str(spec_list[i])+str(delimiter)
+                writestr += str(spec_list[i])+str(delimiter)
         else:
             for i in range(36):
-                writestr+="NA"+str(delimiter)
-            writestr=writestr[:-1] #remove trailing delimiter
-        #Terminate record with newline
-        writestr+="\n"
+                writestr += "NA"+str(delimiter)
+            writestr=writestr[:-1] # remove trailing delimiter
+        # Terminate record with newline
+        writestr += "\n"
         self.file_object.write(writestr)
 
         #rgb_r rgb_g rgb_b x y Y  voltage_r voltage_g voltage_b l1 l2 l3 ...
@@ -388,6 +468,9 @@ class TubesDataFile(object):
 
         #"{rgb_r}  {}".format(rgb_r="NA", ...
         #                 " ".join(list of strings)
+
+    def write(self, text):
+        self.file_object(text)
 
     def close(self):
         self.file_object.close()

@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 19:02 KS
+# last mod 2013-01-01 10:52 KS
 
 """
 The tubes class gives an easy interface to handle the tubes and CalibTubes
@@ -24,7 +24,6 @@ provides convenient methods to measure and calibrate the tubes.
 
 import devtubes
 from colorentry import ColorEntry
-
 
 # TODO: Paths
 #from os import chdir, path
@@ -37,7 +36,8 @@ class Tubes(object):
     This class hides all the hardware specifications and has no
     dependencies on the eyeone module.
 
-    :Example:
+    Example
+    -------
 
         >>> tub = Tubes(dummy=True)
         >>> tub.setVoltages((1000, 1000, 1000))

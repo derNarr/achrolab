@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-07-11 15:37 KS
+# last mod 2013-01-01 10:47 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -46,7 +46,8 @@ class Calibrate(object):
        your own visual system and adjust if necessary
     6. store final calibration in color entry
 
-    :Example:
+    Example
+    -------
 
         >>> from achrolab.eyeone.eyeone import EyeOne
         >>> from achrolab.calibmonitor import CalibMonitor
@@ -128,8 +129,8 @@ class Calibrate(object):
 
     def __init__(self, calibmonitor, calibtubes):
         """
-        :Parameters:
-
+        Parameters
+        ----------
             calibmonitor : calibmonitor.CalibMonitor object
                 the CalibMonitor object is used to present the stimuli on the
                 monitor and to measure the corresponding values
@@ -159,8 +160,8 @@ class Calibrate(object):
 
         Returns the final triple (voltages, xyY, spectrum).
 
-        :Parameters:
-
+        Parameters
+        ----------
             xyY : (x, y, Y)
                 triple containing the three values for the xyY color
             start_voltages : *None* or (vol_red, vol_green, vol_blue)
@@ -188,8 +189,8 @@ class Calibrate(object):
 
         Returns the final triple of voltages.
 
-        :Parameters:
-
+        Parameters
+        ----------
             color : color, that can be used by monitor.Monitor.setColor
                 this color will be presented by monitor.Monitor.setColor
                 and is the target color to which you want to match the

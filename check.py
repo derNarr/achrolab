@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-05-29 KS
+# last mod 2013-01-01 10:43 KS
 
 """
 This module bundles some functions to check if a calibration for the tubes
@@ -23,7 +23,9 @@ It gives the possiblility to measure the colors on the wall and on the
 monitor with a photometer or to just present the corresponding values on
 the monitor and on the screen to see with your own visual system, if they
 still match.
+
 """
 
+raise NotImplementedError("")
 # TODO
 

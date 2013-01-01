@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 17:43 KS
+# last mod 2013-01-01 10:42 KS
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -32,7 +32,8 @@ class CalibMonitor(Monitor):
     provides an easy interface to measure psychopy.visual.PatchStim
     colors with an EyeOne Pro.
 
-    :Example:
+    Example
+    -------
 
         >>> from eyeone import eyeone
         >>> eyeone = eyeone.EyeOne(dummy=True)
@@ -72,7 +73,8 @@ class CalibMonitor(Monitor):
         """
         Measures patch_stim_value on monitor.
 
-        :Parameters:
+        Parameters
+        ----------
             patch_stim_value : triple, float or string
                 psychopy.visual.PatchStim color value
             n : *1* or any other positive integer
@@ -108,7 +110,8 @@ class CalibMonitor(Monitor):
         Converts xyY color (triple of floats) to psychopy.visual.PatchStim
         color and measures color on monitor.
 
-        :Parameters:
+        Parameters
+        ----------
             color : triple of float
                 xyY color list or tuple of three floats
             patch_stim_value : triple, float or string
@@ -117,6 +120,7 @@ class CalibMonitor(Monitor):
                 number of measurements
 
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
+
         """
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()

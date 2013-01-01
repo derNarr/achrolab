@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2012-06-30 18:29 KS
+# last mod 2013-01-01 10:51 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -78,8 +78,8 @@ class SetTubesManualBase(object):
 
     def __init__(self, tubes, start_voltages=None, target_color=None):
         """
-        :Parameters:
-
+        Parameters
+        ----------
             tubes : tubes.Tubes
                 Tubes object to change the voltages of the tubes
             start_voltages : *None* or (vol_r, vol_g, vol_b)
@@ -146,12 +146,12 @@ class SetTubesManualBase(object):
         self.tub.setVoltages(self.voltages)
         self.tellme(str(self.voltages))
 
-    def tellme(self, s):
+    def tellme(self, text):
         """
-        function to write *s* to the stdout.
+        function to write *text* to the stdout.
 
         """
-        print(s)
+        print(text)
 
     def run(self):
         """
@@ -209,7 +209,8 @@ class SetTubesManualVision(SetTubesManualBase):
     creates an interactive screen, which shows the target color and allows
     to adjust the tubes with key strokes.
 
-    :Example:
+    Example
+    -------
 
         >>> from achrolab.tubes import Tubes
         >>> from achrolab.monitor import Monitor
@@ -346,8 +347,8 @@ class SetTubesManualPlot(SetTubesManualBase):
 
     def __init__(self, calibtubes, start_voltages=None, target_color=None):
         """
-        :Parameters:
-
+        Parameters
+        ----------
             calibtubes : calibtubes.CalibTubes
                 CalibTubes object to change the voltages of the tubes and
                 to get access to an eyeone.eyeone.EyeOne instance

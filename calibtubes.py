@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-08-29 17:36 KS
+# last mod 2013-01-01 12:11 KS
 
 """
 This modules provides CalibTubes.
@@ -31,7 +31,6 @@ import pickle
 
 from tubes import Tubes
 from eyeone.constants import TRISTIMULUS_SIZE, SPECTRUM_SIZE, eNoError
-from contextlib import closing
 import printing
 
 class CalibTubes(Tubes):
@@ -39,7 +38,8 @@ class CalibTubes(Tubes):
     CalibTubes provides an easy interface to measure a color with EyeOne
     Pro and to find corresponding voltages for a given color.
 
-    :Example:
+    Example
+    -------
 
         >>> from eyeone.eyeone import EyeOne
         >>> eyeone = EyeOne(dummy=True)
@@ -165,8 +165,8 @@ class CalibTubes(Tubes):
 
     def __init__(self, eyeone):
         """
-        :Parameters:
-
+        Parameters
+        ----------
             eyeone: eyeone.eyeone.EyeOne instance
                 needed for measuring the tubes
 
@@ -200,8 +200,8 @@ class CalibTubes(Tubes):
         """
         Measures color of tubes for given voltages.
 
-        :Parameters:
-
+        Parameters
+        ----------
             voltages : ( (vol_r1, vol_g1, volb1), (vol_r2, vol_g2, vol_b2), ...)
                 a list of triples of integers
             imi : *0.5* or any positive float
@@ -230,7 +230,7 @@ class CalibTubes(Tubes):
         # with open(filename, 'w') as calibfile:
         #     calibfile.write("volR, volG, volB, x, y, Y," +
         #             ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
-        with closing(printing.TubesDataFile(prefix="calibdata/measurements/measure_tubes_")) as calibfile:
+        with printing.TubesDataFile(prefix="calibdata/measurements/measure_tubes_") as calib_file:
             print("Starting measurement...")
             for voltage in voltages:
                 for i in range(each):
@@ -253,7 +253,7 @@ class CalibTubes(Tubes):
                     #         ", " + ", ".join([str(x) for x in spectrum]) +
                     #         "\n")
                     # calibfile.flush()
-                    calibfile.writeDataTXT(xyY=tri_stim, voltage=voltage, spec_list=spectrum)
+                    calib_file.write_data_txt(xyY=tri_stim, voltage=voltage, spec_list=spectrum)
                     #store data in lists
                     vol_col_spec_list.append( (voltage, tri_stim, spectrum) )
         return vol_col_spec_list
@@ -264,8 +264,8 @@ class CalibTubes(Tubes):
         Calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
         connected to the computer. The calibration takes around 2 ?? minutes.
 
-        :Paramter:
-
+        Parameters
+        ----------
             imi : *0.5* or any positive float
                 inter measurement interval in seconds
             n : *50* or any positive integer greater 2
@@ -342,7 +342,7 @@ class CalibTubes(Tubes):
         # write data to hard drive
         # TODO output.py
 
-        with closing(printing.TubesDataFile(prefix="calibdata/measurements/calibration_tubes_raw_")) as calibFile:
+        with printing.TubesDataFile(prefix="calibdata/measurements/calibration_tubes_raw_") as calib_file:
             #with open('calibdata/measurements/calibration_tubes_raw_' +
             #time.strftime("%Y%m%d_%H%M") +  '.txt', 'w') as calibFile:
             #calibFile.write("voltage, xyY, spectra\n") # TODO not just with 3 values but with 3 + 3 + 36
@@ -358,7 +358,7 @@ class CalibTubes(Tubes):
                     #                 ", " + ", ".join([str(x) for x in
                     #                     spectra[i]]) +
                     #                 "\n")
-                    calibFile.writeDataTXTloop(xyY=xyY, voltage=voltages, spec_list=spectra)
+                    calib_file.write_data_txt_loop(xyY=xyY, voltage=voltages, spec_list=spectra)
         with open('calibdata/measurements/calibration_tubes_raw_' +
                 time.strftime("%Y%m%d_%H%M") +  '.pkl', 'w') as f:
             pickle.dump(voltages_r, f)
@@ -576,8 +576,8 @@ class CalibTubes(Tubes):
         channel is taken from an old calibration that looked good and
         assumes that the ratio of red, green, and blue is constant for
         different intensities. This is of course very crude!
-        """
 
+        """
         Y_r = 6.173447/(6.173447+22.92364+4.036948)*Y
         Y_g = 22.92364/(6.173447+22.92364+4.036948)*Y
         Y_b = 4.036948/(6.173447+22.92364+4.036948)*Y

@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2013-01-01 10:37 KS
+# last mod 2013-01-01 10:40 KS
 
 from __future__ import print_function
 import sys
@@ -28,7 +28,8 @@ class DevTubes(object):
     DevTubes encapsulates all functions controlling fluorescent tubes in the
     booth. It provides all low level functionality.
 
-    :Example:
+    Example
+    -------
 
         >>> devtub = DevTubes(dummy=True)
         >>> devtub.setVoltages((1000, 1000, 1000))

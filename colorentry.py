@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-07-11 18:09 KS
+# last mod 2013-01-01 10:44 KS
 
 """
 This modules provides the class ColorEntry, which stores all important
@@ -27,8 +27,8 @@ class ColorEntry(object):
     ColorEntry contains all information for one color that we need in the
     lab.
 
-    :Attributes:
-
+    Attributes
+    ----------
         name : string
             name of the color
         patch_stim_value : float, triple or string
@@ -44,7 +44,8 @@ class ColorEntry(object):
         tubes_xyY_sd : triple of floats
             standard deviation for xyY values
 
-    :Example:
+    Example
+    -------
 
         >>> ce1 = ColorEntry(name="grey1", patch_stim_value="#404040FF")
         >>> ce2 = ColorEntry(name="grey2", voltages=(0xA00, 0xA00, 0xA00))
@@ -55,8 +56,8 @@ class ColorEntry(object):
         """
         initializes the ColorEntry instance.
 
-        :Parameters:
-
+        Parameters
+        ----------
             name : string
                 name of the color
             patch_stim_value : *None*, float, triple or string

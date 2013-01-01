@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2012-07-11 18:52 KS
+# last mod 2013-01-01 10:49 KS
 
 """
 This module provides the class Monitor, which capsulates the presentation
@@ -44,7 +44,8 @@ class Monitor(object):
     Monitor provides a convenient interface to present a color on the
     monitor and get key strokes.
 
-    :Example:
+    Example
+    -------
 
         >>> mon = Monitor()
         >>> mon.setColor("#00FF00FF")
