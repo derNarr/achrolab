@@ -49,7 +49,7 @@ class DevTubes(object):
         self.green_out = DAOUT1
         self.blue_out = DAOUT2
         self.low_threshold = 0x200 # min voltages must be integer
-        self.low_warning = 0x800 # low warning voltages must be integer
+        self.low_warning = 0x400 # low warning voltages must be integer
         self.high_threshold = 0xFFF # max voltages must be integer
 
         # voltage which is set at the moment
