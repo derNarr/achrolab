@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 JM
-# last mod 2013-01-01 12:13 KS
+# last mod 2013-01-22 14:12 KS
 
 
 """
@@ -80,7 +80,7 @@ class CalibDataFile(object):
                     str(delimiter) + "voltage_r" + str(delimiter) +
                     "voltage_g" + str(delimiter) + "voltage_b")
             for i in range(36):
-                 writestr += str(delimiter) + "l" + str(i+1)
+                writestr += str(delimiter) + "l" + str(i+1)
             writestr += "\n"
             self.file_object.write(writestr)
         return self
@@ -89,7 +89,9 @@ class CalibDataFile(object):
         self.close()
         return False
 
-    # def writeDataJSON(self, grayvals=None, rgb=None, xyY=None, voltage=None, spec_list=None, measurement=None, imi=None, times=None, recalibrate=None):
+    # def writeDataJSON(self, grayvals=None, rgb=None, xyY=None,
+    # voltage=None, spec_list=None, measurement=None, imi=None, times=None,
+    # recalibrate=None):
     #     #Make list of dictionaries to do nested JSON
     #     #Needs to be modified to include all variables
     #     #Can this be modified to save data whilst running?
@@ -98,7 +100,8 @@ class CalibDataFile(object):
     #     i = 0
     #     color_list = grayvals
     #     for i in range(len(color_list)):
-    #         data.append({"colorlist" : color_list[i], "speclist" : spec_list[i]})
+    #         data.append({"colorlist" : color_list[i], "speclist" :
+    #         spec_list[i]})
     #         i += 1
     #     python_data = {
     #         "measurement" : measurement,
@@ -125,7 +128,8 @@ class CalibDataFile(object):
             for i in range(2):
                 writestr += "NA"+str(delimiter)
 
-        #Write RGB values from 3 element list (should really be tuple as different data)
+        # Write RGB values from 3 element list (should really be tuple as
+        # different data)
         if rgb != None:
             for i in range(3):
                 writestr += str(rgb[i])+str(delimiter)
@@ -133,7 +137,8 @@ class CalibDataFile(object):
             for i in range(3):
                 writestr += "NA"+str(delimiter)
 
-        #Write xyY values from 3 element list (should really be tuple as different data)
+        # Write xyY values from 3 element list (should really be tuple as
+        # different data)
         if xyY != None:
             for i in range(3):
                 writestr += str(xyY[i])+str(delimiter)
@@ -141,7 +146,8 @@ class CalibDataFile(object):
             for i in range(3):
                 writestr += "NA"+str(delimiter)
 
-        #Write voltage_{r,g,b} values from 3 element list (should really be tuple as different data)
+        # Write voltage_{r,g,b} values from 3 element list (should really
+        # be tuple as different data)
         if voltage != None:
             for i in range(3):
                 writestr += str(voltage[i])+str(delimiter)
@@ -149,7 +155,7 @@ class CalibDataFile(object):
             for i in range(3):
                 writestr += "NA"+str(delimiter)
 
-          #Write spectral values from 36 element list
+        # Write spectral values from 36 element list
         if spec_list != None:
             for i in range(36):
                 writestr += str(spec_list[i])+str(delimiter)
@@ -173,152 +179,6 @@ class CalibDataFile(object):
     def close(self):
         self.file_object.close()
 
-class ExperimentDataFile(object):
-    """
-    ExperimentDataFile provides a new method to
-    write the experiment  data to a comma separated file.
-
-    Example
-    -------
-    >>> import printing
-    >>> with printing.ExperimentDataFile(prefix="YourPrefixHere") as file_name:
-    >>>     #code here
-    >>>     filename.write_data_txt(stimuliName=..., leftmean=..., leftvar=..., leftgrayplus=..., leftseed="...", rightmean=..., rightvar=..., rightgrayplus=..., rightseed="...", bg=..., voltages=..., rtTime=..., key=..., thisResp=...)
-    >>>     #more code
-
-    This way if there is an error, inside the with context, it will immediately
-    close and write to the file, so data is not lost.
-
-    """
-    def __init__(self, path, exp_info, delimiter="\t"):
-        """
-        Parameters
-        ----------
-        path : str
-            file name prefix
-        exp_info : dict
-            dictionary with keys "Versuchsleiter", "Versuchsperson",
-            "Session", "Datum"
-
-        """
-        #For now only works with justmeasure, can generalise this later
-        self.delimiter = delimiter
-        self.file_name = (str(path) + exp_info['Versuchsleiter'] +
-                exp_info['Versuchsperson'] + exp_info['Session'] + '_' +
-                exp_info['Datum'])
-        self.file_object = open(self.file_name + ".txt", "a")
-
-    def __enter__(self):
-        """
-        When entering a context return this object.
-
-        """
-        delimiter = self.delimiter
-        #thisResp, rtTime, key, stimuliname, leftmean, leftvar, rightmean, rightvar, leftgreyplus, rightgreyplus, bg
-        writestr = ("stimuliName" + str(delimiter) + "leftmean" +
-                str(delimiter) + "leftvar" + str(delimiter) +
-                "leftgrayplus" + str(delimiter) + "seedleft" +
-                str(delimiter) + "rightmean" + str(delimiter) + "rightvar"
-                + str(delimiter) + "rightgrayplus" + str(delimiter) +
-                "seedright" + str(delimiter) + "bg" + str(delimiter) +
-                "voltageR" + str(delimiter) + "voltageG" + str(delimiter) +
-                "voltageB" + str(delimiter) + "rtTime" + str(delimiter) +
-                "key" + str(delimiter) + "thisResp")
-        writestr += "\n"
-        self.file_object.write(writestr)
-        return self
-
-    def __exit__(self, *exc):
-        self.close()
-        return False
-
-    def write_data_txt(self, stimuliName=None, leftmean=None, leftvar=None,
-            leftgrayplus=None, leftseed="1", rightmean=None, rightvar=None,
-            rightgrayplus=None, rightseed="1", bg=None, voltages=None,
-            rtTime=None, key=None, thisResp=None):
-        delimiter = self.delimiter
-        # Fundamentally different to JSON, as can write to buffer on the
-        # fly - i.e. does not need complete structure to write
-
-        writestr = ""
-        # Write grayvals from 2 element list
-        if stimuliName != None:
-            writestr += str(stimuliName)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if leftmean != None:
-            writestr += str(leftmean)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if leftvar != None:
-            writestr += str(leftvar)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if leftgrayplus != None:
-            writestr += str(leftgrayplus)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        writestr += str(leftseed)+str(delimiter)
-
-
-        if rightmean != None:
-            writestr += str(rightmean)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if rightvar != None:
-            writestr += str(rightvar)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if rightgrayplus != None:
-            writestr += str(rightgrayplus)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        writestr += str(rightseed)+str(delimiter)
-
-        if bg != None:
-            writestr += str(bg)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if voltages != None:
-            for i in range(3):
-                writestr += str(voltages[i])+str(delimiter)
-        else:
-            for i in range(3):
-                writestr += "NA"+str(delimiter)
-
-        if rtTime != None:
-            writestr += str(rtTime)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if key != None:
-            writestr += str(key)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-        if thisResp != None:
-            writestr += str(thisResp)+str(delimiter)
-        else:
-            writestr += "NA"+str(delimiter)
-
-            writestr=writestr[:-1] # remove trailing delimiter
-        # Terminate record with newline
-        writestr += "\n"
-        self.file_object.write(writestr)
-
-    def write(self, text):
-        self.file_object(text)
-
-    def close(self):
-        self.file_object.close()
 
 class TubesDataFile(object):
     """
