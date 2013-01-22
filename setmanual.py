@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2013-01-01 10:51 KS
+# last mod 2013-01-22 15:37 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -23,6 +23,9 @@ the target color are plottet in a figure, so that you know in which
 direction you should change your illumination.
 
 """
+
+import matplotlib
+matplotlib.use('TkAgg') # do this before importing pylab
 
 import matplotlib.pyplot as plt
 import numpy as np

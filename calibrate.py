@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2013-01-01 10:47 KS
+# last mod 2013-01-22 14:50 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -215,8 +215,8 @@ class Calibrate(object):
         convinient function to calibrate a colortable. Changes the
         colortable object!
 
-        :Parameters:
-
+        Parameters
+        ----------
             colortable : colortable.ColorTable
                 all color is the ColorTable object will be calibrated
             each : *5* or int
@@ -254,8 +254,8 @@ class Calibrate(object):
         convenient function to calibrate a single colorentry object.
         Changes the colorentry object!
 
-        :Parameters:
-
+        Parameters
+        ----------
             colorentry : colorentry.ColorEntry
                 the ColorEntry object will be calibrated
             n : *5* or int
