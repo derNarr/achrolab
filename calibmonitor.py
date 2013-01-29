@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2013-01-01 10:42 KS
+# last mod 2013-01-29 11:18 KS
 
 """
 This module provides the calls CalibMonitor which handles measuring of the
@@ -29,7 +29,7 @@ from monitor import Monitor
 
 class CalibMonitor(Monitor):
     """
-    provides an easy interface to measure psychopy.visual.PatchStim
+    provides an easy interface to measure psychopy.visual.GratingStim
     colors with an EyeOne Pro.
 
     Example
@@ -38,7 +38,7 @@ class CalibMonitor(Monitor):
         >>> from eyeone import eyeone
         >>> eyeone = eyeone.EyeOne(dummy=True)
         >>> mon = CalibMonitor(eyeone)
-        >>> mon.measurePatchStimColor("#FF0000FF", n=2) # doctest: +ELLIPSIS
+        >>> mon.measureGratingStimColor("#FF0000FF", n=2) # doctest: +ELLIPSIS
         Measurement mode set to SingleEmission.
         Color space set to CIExyY.
         <BLANKLINE>
@@ -69,14 +69,14 @@ class CalibMonitor(Monitor):
             time.sleep(0.01)
         print("Starting measurement...")
 
-    def measurePatchStimColor(self, patch_stim_value, n=1):
+    def measureGratingStimColor(self, patch_stim_value, n=1):
         """
         Measures patch_stim_value on monitor.
 
         Parameters
         ----------
             patch_stim_value : triple, float or string
-                psychopy.visual.PatchStim color value
+                psychopy.visual.GratingStim color value
             n : *1* or any other positive integer
                 number of measurements (positive integer)
 
@@ -107,7 +107,7 @@ class CalibMonitor(Monitor):
 
     def measureColor(self, color, n=1):
         """
-        Converts xyY color (triple of floats) to psychopy.visual.PatchStim
+        Converts xyY color (triple of floats) to psychopy.visual.GratingStim
         color and measures color on monitor.
 
         Parameters
@@ -115,10 +115,12 @@ class CalibMonitor(Monitor):
             color : triple of float
                 xyY color list or tuple of three floats
             patch_stim_value : triple, float or string
-                psychopy.visual.PatchStim color value
+                psychopy.visual.GratingStim color value
             n : *1* or any other positive integer
                 number of measurements
 
+        Returns
+        -------
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
 
         """

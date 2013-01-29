@@ -13,7 +13,7 @@
 # output: --
 #
 # created 2010
-# last mod 2012-09-23 13:14 KS
+# last mod 2013-01-29 11:19 KS
 
 import pickle
 import exceptions
@@ -26,7 +26,7 @@ from colorentry import ColorEntry
 class ColorTable(object):
     """
     ColorTable stores colors in xyY coordinates and all data needed for
-    psychopy.visual.PatchStim, the monitor, and the tubes.
+    psychopy.visual.GratingStim, the monitor, and the tubes.
 
     The colors in ColorTable are indexed. So there is a first and a last
     color.

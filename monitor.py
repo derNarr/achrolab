@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2013-01-01 10:49 KS
+# last mod 2013-01-29 11:19 KS
 
 """
 This module provides the class Monitor, which capsulates the presentation
@@ -56,7 +56,7 @@ class Monitor(object):
         self.psychopy_win = psychopy_win
         if not psychopy_win:
             self.psychopy_win = visual.Window(size=(800, 600))
-        self.patch_stim = visual.PatchStim(self.psychopy_win, tex=None,
+        self.patch_stim = visual.GratingStim(self.psychopy_win, tex=None,
                 size=(2, 2), color=0, colorSpace="rgb255")
         self.e = Event() # small object storing one key
 

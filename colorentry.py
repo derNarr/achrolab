@@ -14,7 +14,7 @@
 # output: --
 #
 # created 2010
-# last mod 2013-01-01 10:44 KS
+# last mod 2013-01-29 11:19 KS
 
 """
 This modules provides the class ColorEntry, which stores all important
@@ -32,7 +32,7 @@ class ColorEntry(object):
         name : string
             name of the color
         patch_stim_value : float, triple or string
-            a value that can be used to set the color of psychopy.PatchStim
+            a value that can be used to set the color of psychopy.GratingStim
         monitor_xyY : triple of floats
             measured xyY values for monitor
         monitor_xyY_sd : triple of floats
@@ -61,7 +61,7 @@ class ColorEntry(object):
             name : string
                 name of the color
             patch_stim_value : *None*, float, triple or string
-                default value that is used to set the color of psychopy.PatchStim
+                default value that is used to set the color of psychopy.GratingStim
             voltages : *None* or triple of int
                 default voltages for color tubes
 

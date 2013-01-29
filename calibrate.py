@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2013-01-22 14:50 KS
+# last mod 2013-01-29 11:18 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -280,7 +280,7 @@ class Calibrate(object):
         self._measureColorEntryTubes(colorentry, n=n)
 
     def _measureColorEntryMonitor(self, colorentry, n=5):
-        xyY_list = self.calibmonitor.measurePatchStimColor(
+        xyY_list = self.calibmonitor.measureGratingStimColor(
                 colorentry.patch_stim_value, n)
         colorentry.monitor_xyY = (
                 scipy.mean([xyY[0] for xyY in xyY_list]),
