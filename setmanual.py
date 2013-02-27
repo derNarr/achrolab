@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # ./setTubesManual.py
 #
-# (c) 2010 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# (c) 2010-2013 Konstantin Sering, Nora Umbach, Dominik Wabersich
 # <colorlab[at]psycho.uni-tuebingen.de>
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2013-02-27 17:46 KS
+# last mod 2013-02-27 19:00 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -99,7 +99,7 @@ class SetTubesManualBase(object):
         self.tub = tubes
         self.imi = 0.5
         self.each = 5 #number of measurements per voltage
-        self.colortube = ('red', 0)
+        self.colortube = ('all', None)
         self.step = 10
         self.i = 0 # number of measurement
 
@@ -182,11 +182,16 @@ class SetTubesManualBase(object):
 
         """
         key = event.key
-        self.key = key
         #print(key)
-        # workaround (buggy alt+r input under windows)
+        # begin workaround (buggy alt+r input under windows)
+        # removes every "alt+", "ctrl+alt+" prefixes
         if not key == '+':
-            key = key.split('+')[-1] # removes every "alt+", "ctrl+alt+" prefixes
+            if key == 'alt++':
+                key = '+'
+            else:
+                key = key.split('+')[-1]
+        # end workaround
+        self.key = key
         if key in ('r', 'g', 'b', 'a'):
             self.colortube = setColorTube(key)
             self.tellme('Now change ' + self.colortube[0] + ' tubes.')
@@ -199,9 +204,6 @@ class SetTubesManualBase(object):
             self.tellme('start measuring...')
             self.measureVoltage()
             self.tellme('measured!')
-        elif key == 'c':
-            # close and reprint figure
-            self.newFigure()
         elif key == 'escape':
             self.tellme('finished')
             self.stop = True
@@ -415,7 +417,7 @@ class SetTubesManualPlot(SetTubesManualBase):
             + ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n'
             + 'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
             + '\nTo trigger measurement press [space].'
-            + '\nPress [c] or close figure to redraw figure.'
+            + '\nClose figure to redraw figure.'
             + '\nPress [escape] to quit (and save last voltages)'
             + "\n\nDon't press the [down] key due to a bug." )
             self.stop = False
