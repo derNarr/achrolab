@@ -13,7 +13,7 @@
 # output: --
 #
 # created
-# last mod 2013-01-22 15:37 KS
+# last mod 2013-02-27 17:46 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -24,17 +24,12 @@ direction you should change your illumination.
 
 """
 
-import matplotlib
-matplotlib.use('TkAgg') # do this before importing pylab
-
 import matplotlib.pyplot as plt
 import numpy as np
 import time
 from ctypes import c_float
 
-from eyeone.constants import  (eNoError,
-                                    SPECTRUM_SIZE,
-                                    TRISTIMULUS_SIZE)
+from eyeone.constants import eNoError, SPECTRUM_SIZE, TRISTIMULUS_SIZE
 
 def setColorTube(key):
     """
@@ -132,17 +127,17 @@ class SetTubesManualBase(object):
         key = self.key
         step = self.step
         colortube = self.colortube
-        if colortube[0] == "all" and key == "up":
+        if colortube[0] == "all" and key == "+":
             self.voltages[0] = self.voltages[0] + step
             self.voltages[1] = self.voltages[1] + step
             self.voltages[2] = self.voltages[2] + step
-        elif colortube[0] == "all" and key == "down":
+        elif colortube[0] == "all" and key == "-":
             self.voltages[0] = self.voltages[0] - step
             self.voltages[1] = self.voltages[1] - step
             self.voltages[2] = self.voltages[2] - step
-        elif not colortube[0] == "all" and key == "up":
+        elif not colortube[0] == "all" and key == "+":
             self.voltages[colortube[1]] = self.voltages[colortube[1]] + step
-        elif not colortube[0] == "all" and key == "down":
+        elif not colortube[0] == "all" and key == "-":
             self.voltages[colortube[1]] = self.voltages[colortube[1]] - step
         else:
             pass
@@ -189,13 +184,16 @@ class SetTubesManualBase(object):
         key = event.key
         self.key = key
         #print(key)
-        if key == 'r' or key == 'g' or key == 'b' or key == 'a':
+        # workaround (buggy alt+r input under windows)
+        if not key == '+':
+            key = key.split('+')[-1] # removes every "alt+", "ctrl+alt+" prefixes
+        if key in ('r', 'g', 'b', 'a'):
             self.colortube = setColorTube(key)
             self.tellme('Now change ' + self.colortube[0] + ' tubes.')
-        elif key == '1' or key == '2' or key == '3' or key == '4' or key == '5':
+        elif key in ('1', '2', '3', '4', '5'):
             self.step = setStepSize(key)
             self.tellme('Step size set to ' + str(self.step))
-        elif key == 'up' or key == 'down':
+        elif key in ('+', '-'):
             self.adjustTube()
         elif key in ('space', ' '):
             self.tellme('start measuring...')
@@ -205,6 +203,7 @@ class SetTubesManualBase(object):
             # close and reprint figure
             self.newFigure()
         elif key == 'escape':
+            self.tellme('finished')
             self.stop = True
 
 class SetTubesManualVision(SetTubesManualBase):
@@ -248,8 +247,8 @@ class SetTubesManualVision(SetTubesManualBase):
 
     def __init__(self, tubes, monitor, start_voltages=None, target_color=None):
         """
-        :Parameters:
-
+        Parameters
+        ----------
             tubes : tubes.Tubes
                 Tubes object to change the voltages of the tubes
             monitor : monitor.Monitor
@@ -280,14 +279,14 @@ class SetTubesManualVision(SetTubesManualBase):
         self.tub.setVoltages(self.voltages)
         self.mon.setColor( self.target_color )
         print('\n\nManual adjustment of tubes` color\n\n' +
-              'Press [up] for higher intensity ' +
-              'or press [down] for lower intensity.\n' +
+              'Press [+] for higher intensity ' +
+              'or press [-] for lower intensity.\n' +
               'To set tube color and step size press the following buttons:\n' +
               'Stepsize:\n' +
               ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n' +
               'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
               + '\nPress [escape] to quit (and save last voltages)')
-        self.stop=False
+        self.stop = False
         while not self.stop:
             time.sleep(0.01)
             self.mon.waitForButtonPress()
@@ -300,8 +299,8 @@ class SetTubesManualPlot(SetTubesManualBase):
     creates an interactive figure with matplotlib, so that you can adjust
     the tubes and plot you measurements in this figure.
 
-    :Example:
-
+    Example
+    -------
         >>> from achrolab.eyeone.eyeone import EyeOne
         >>> from achrolab.calibtubes import CalibTubes
         >>> eyeone = EyeOne()
@@ -407,24 +406,26 @@ class SetTubesManualPlot(SetTubesManualBase):
                 time.strftime("%Y%m%d_%H%M") + '.txt', 'w') as self.calibfile:
             self.calibfile.write("volR, volG, volB, x, y, Y," +
                     ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
-
-            #set figures
-            print('\n\nWait until first measurement is done.')
-            self.newFigure()
             print(
             '\n\nManual adjustment of tubes` color\n\n'
-            + 'Press [up] for higher intensity '
-            + 'or press [down] for lower intensity.\n'
+            + 'Press [+] for higher intensity '
+            + 'or press [-] for lower intensity.\n'
             + 'To set tube color and step size press the following buttons:\n'
             + 'Stepsize:\n'
             + ' [1] - 1\n [2] - 5\n [3] - 10\n [4] - 50\n [5] - 100\n'
             + 'Colortube:\n [r] - Red\n [g] - Green\n [b] - Blue\n [a] - all'
             + '\nTo trigger measurement press [space].'
-            + '\nPress [c] to redraw figure.'
-            + '\nPress [escape] to quit (and save last voltages)')
-            self.stop=False
+            + '\nPress [c] or close figure to redraw figure.'
+            + '\nPress [escape] to quit (and save last voltages)'
+            + "\n\nDon't press the [down] key due to a bug." )
+            self.stop = False
             while not self.stop:
-                plt.waitforbuttonpress()
+                # key presses are handled by registered call back function
+                # registration happens in self.newFigure
+                # call back is self.onKeyPress
+                self.newFigure()
+                plt.show()
+                #plt.waitforbuttonpress()
             # cast all data to python float and deep copy them
             voltages = self.last_vol_xyY_spect[0][:]
             color = [float(x) for x in self.last_vol_xyY_spect[1]]
@@ -439,20 +440,26 @@ class SetTubesManualPlot(SetTubesManualBase):
         respond to drawing command.
 
         """
+        x, y, Y = self.target_color
         if self.fig:
             plt.close(self.fig)
         self.fig = plt.figure(1)
         plt.clf()
         self.plot_xy = plt.subplot(1,2,1)
-        self.plot_xy.axis([0.29, 0.31, 0.29, 0.31])
-        self.plot_xy.plot(self.target_color[0], self.target_color[1], "rx")
+        self.plot_xy.axis([x-0.1, x+0.1, y-0.1, y+0.1])
+        self.plot_xy.plot(x, y, "rx")
         self.plot_xy.set_aspect(1)
         self.plot_Y = plt.subplot(1,2,2)
-        self.plot_Y.axis([0, 10, 19, 23])
-        self.plot_Y.axhline(y=self.target_color[2], color="r", xmin=0,
-                xmax=1000)
+        self.plot_Y.axis([0, 10, Y-2, Y+2])
+        self.plot_Y.axhline(y=Y, color="r", xmin=0, xmax=1000)
         self.tellme('Get to the red cross')
+        manager, canvas = self.fig.canvas.manager, self.fig.canvas
+        canvas.mpl_disconnect(manager.key_press_handler_id)
         self.fig.canvas.mpl_connect('key_press_event', self.onKeyPress)
+        def handle_esc(event):
+            if event.key in ['escape', 'alt+escape']:
+                plt.close()
+        self.fig.canvas.mpl_connect('key_press_event', handle_esc)
         # reset self.i
         self.i = 0
         # measure once to draw current point
