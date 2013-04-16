@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# ./setTubesManual.py
+# ./setmanual.py
 #
 # (c) 2010-2013 Konstantin Sering, Nora Umbach, Dominik Wabersich
 # <colorlab[at]psycho.uni-tuebingen.de>
@@ -12,8 +12,8 @@
 # input: --
 # output: --
 #
-# created
-# last mod 2013-02-27 19:00 KS
+# created 2010
+# last mod 2013-04-16 16:41 KS
 
 """
 This module provides a class to manually adjust the tubes. With key strokes
@@ -74,12 +74,14 @@ class SetTubesManualBase(object):
 
     """
 
-    def __init__(self, tubes, start_voltages=None, target_color=None):
+    def __init__(self, tubes, knobs, start_voltages=None, target_color=None):
         """
         Parameters
         ----------
             tubes : tubes.Tubes
                 Tubes object to change the voltages of the tubes
+            knobs : devknobs.DevKnobs
+                Knobs to control the lightning tubes.
             start_voltages : *None* or (vol_r, vol_g, vol_b)
                 triple of int containing the start_voltages for the tubes,
                 if *None* than the start_voltages has to be assigned before
@@ -97,11 +99,13 @@ class SetTubesManualBase(object):
             self.voltages = None
         self.target_color = target_color
         self.tub = tubes
+        self.knobs = knobs
         self.imi = 0.5
         self.each = 5 #number of measurements per voltage
         self.colortube = ('all', None)
         self.step = 10
         self.i = 0 # number of measurement
+        self.interface = "keyboard"
 
     def __setattr__(self, name, value):
         """
@@ -175,6 +179,15 @@ class SetTubesManualBase(object):
         """
         pass
 
+    def setVoltagesKnobs(self):
+        """
+        set the voltages dependant on the states of the knobs.
+
+        """
+        self.voltages = self.knobs.states[:3]
+        self.tub.setVoltages(self.voltages)
+        self.tellme(str(self.voltages))
+
     def onKeyPress(self, event):
         """
         handles the different key presses and calls the corresponding
@@ -192,21 +205,29 @@ class SetTubesManualBase(object):
                 key = key.split('+')[-1]
         # end workaround
         self.key = key
-        if key in ('r', 'g', 'b', 'a'):
-            self.colortube = setColorTube(key)
-            self.tellme('Now change ' + self.colortube[0] + ' tubes.')
-        elif key in ('1', '2', '3', '4', '5'):
-            self.step = setStepSize(key)
-            self.tellme('Step size set to ' + str(self.step))
-        elif key in ('+', '-'):
-            self.adjustTube()
-        elif key in ('space', ' '):
+        if self.interface == "keyboard":
+            if key in ('r', 'g', 'b', 'a'):
+                self.colortube = setColorTube(key)
+                self.tellme('Now change ' + self.colortube[0] + ' tubes.')
+            elif key in ('1', '2', '3', '4', '5'):
+                self.step = setStepSize(key)
+                self.tellme('Step size set to ' + str(self.step))
+            elif key in ('+', '-'):
+                self.adjustTube()
+        # the following keys work always
+        if key in ('space', ' '):
             self.tellme('start measuring...')
             self.measureVoltage()
             self.tellme('measured!')
         elif key == 'escape':
             self.tellme('finished')
             self.stop = True
+        elif key == 'k':
+            self.tellme('interface=keyboard')
+            self.interface = 'keyboard'
+        elif key == 'o':
+            self.tellme('interface=knobs')
+            self.interface = 'knobs'
 
 class SetTubesManualVision(SetTubesManualBase):
     """
@@ -217,10 +238,12 @@ class SetTubesManualVision(SetTubesManualBase):
     -------
 
         >>> from achrolab.tubes import Tubes
+        >>> from achrolab.devknobs import DevKnobs
         >>> from achrolab.monitor import Monitor
         >>> tubes = Tubes()
+        >>> knobs = DevKnobs()
         >>> monitor = Monitor()
-        >>> man_vision = SetTubesManualVision(tubes, monitor,
+        >>> man_vision = SetTubesManualVision(tubes, knobs, monitor,
         ...         start_voltages=(1561, 2253, 2181), target_color=(0,
         ...         100, 0))
         >>> final_voltages = man_vision.run()
@@ -228,6 +251,7 @@ class SetTubesManualVision(SetTubesManualBase):
         <BLANKLINE>
         Manual adjustment of tubes` color
         <BLANKLINE>
+        Press [o] to use knObs or press [k] to use Keyboard (default).
         Press [up] for higher intensity or press [down] for lower intensity.
         To set tube color and step size press the following buttons:
         Stepsize:
@@ -247,12 +271,14 @@ class SetTubesManualVision(SetTubesManualBase):
 
     """
 
-    def __init__(self, tubes, monitor, start_voltages=None, target_color=None):
+    def __init__(self, tubes, knobs, monitor, start_voltages=None, target_color=None):
         """
         Parameters
         ----------
             tubes : tubes.Tubes
                 Tubes object to change the voltages of the tubes
+            knobs : devknobs.DevKnobs
+                Knobs to control the lightning tubes.
             monitor : monitor.Monitor
                 Monitor object allows presenting the color on the monitor
                 and handles key strokes
@@ -265,7 +291,7 @@ class SetTubesManualVision(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(self, tubes, start_voltages, target_color)
+        SetTubesManualBase.__init__(self, tubes, knobs, start_voltages, target_color)
         self.mon = monitor
 
     def run(self):
@@ -281,6 +307,8 @@ class SetTubesManualVision(SetTubesManualBase):
         self.tub.setVoltages(self.voltages)
         self.mon.setColor( self.target_color )
         print('\n\nManual adjustment of tubes` color\n\n' +
+              'Press [o] to use knObs or ' +
+              'press [k] to use Keyboard (default).\n' +
               'Press [+] for higher intensity ' +
               'or press [-] for lower intensity.\n' +
               'To set tube color and step size press the following buttons:\n' +
@@ -291,8 +319,10 @@ class SetTubesManualVision(SetTubesManualBase):
         self.stop = False
         while not self.stop:
             time.sleep(0.01)
-            self.mon.waitForButtonPress()
+            self.mon.checkForButtonPress()
             self.onKeyPress(self.mon.e)
+            if self.interface == "knobs":
+                self.setVoltagesKnobs()
         return( self.voltages )
 
 
@@ -305,10 +335,13 @@ class SetTubesManualPlot(SetTubesManualBase):
     -------
         >>> from achrolab.eyeone.eyeone import EyeOne
         >>> from achrolab.calibtubes import CalibTubes
+        >>> from achrolab.devknobs import DevKnobs
         >>> eyeone = EyeOne()
         >>> calibtubes = CalibTubes(eyeone)
-        >>> man_plot = SetTubesManualPlot(calibtubes, start_voltages=(1561,
-        ...         2253, 2181), target_color=(0.298, 0.321, 64.1))
+        >>> knobs = DevKnobs()
+        >>> man_plot = SetTubesManualPlot(calibtubes, knobs,
+        ...         start_voltages=(1561, 2253, 2181), target_color=(0.298,
+        ...                 0.321, 64.1))
         Measurement mode set to SingleEmission.
         Color space set to CIExyY.
         <BLANKLINE>
@@ -328,6 +361,7 @@ class SetTubesManualPlot(SetTubesManualBase):
         <BLANKLINE>
         Manual adjustment of tubes` color
         <BLANKLINE>
+        Press [o] to use knObs or press [k] to use Keyboard (default).
         Press [up] for higher intensity or press [down] for lower intensity.
         To set tube color and step size press the following buttons:
         Stepsize:
@@ -344,18 +378,22 @@ class SetTubesManualPlot(SetTubesManualBase):
         To trigger measurement press [space].
         Press [c] to redraw figure.
         Press [escape] to quit (and save last voltages)
+        <BLANKLINE>
+        Don't press the [down] key due to a bug.
         >>> print(final_measurement) #doctest: +ELLIPSIS
         ([...,...,...], [...,...,...], [...])
 
     """
 
-    def __init__(self, calibtubes, start_voltages=None, target_color=None):
+    def __init__(self, calibtubes, knobs, start_voltages=None, target_color=None):
         """
         Parameters
         ----------
             calibtubes : calibtubes.CalibTubes
                 CalibTubes object to change the voltages of the tubes and
                 to get access to an eyeone.eyeone.EyeOne instance
+            knobs : devknobs.DevKnobs
+                Knobs to control the lightning tubes.
             start_voltages : *None* or (vol_r, vol_g, vol_b)
                 triple of int containing the start_voltages for the tubes,
                 if *None* than the start_voltages has to be assigned before
@@ -367,7 +405,7 @@ class SetTubesManualPlot(SetTubesManualBase):
                 method run() is called
 
         """
-        SetTubesManualBase.__init__(self, calibtubes, start_voltages,
+        SetTubesManualBase.__init__(self, calibtubes, knobs, start_voltages,
                 target_color)
         self.eyeone = calibtubes.eyeone
         self.fig = None
@@ -410,6 +448,8 @@ class SetTubesManualPlot(SetTubesManualBase):
                     ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
             print(
             '\n\nManual adjustment of tubes` color\n\n'
+            + 'Press [o] to use knObs or '
+            + 'press [k] to use Keyboard (default).\n'
             + 'Press [+] for higher intensity '
             + 'or press [-] for lower intensity.\n'
             + 'To set tube color and step size press the following buttons:\n'
@@ -457,6 +497,7 @@ class SetTubesManualPlot(SetTubesManualBase):
         self.tellme('Get to the red cross')
         manager, canvas = self.fig.canvas.manager, self.fig.canvas
         canvas.mpl_disconnect(manager.key_press_handler_id)
+        canvas.new_timer(interval=20, callbacks=[self.setVoltagesKnobs,])
         self.fig.canvas.mpl_connect('key_press_event', self.onKeyPress)
         def handle_esc(event):
             if event.key in ['escape', 'alt+escape']:

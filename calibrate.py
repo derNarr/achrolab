@@ -15,7 +15,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2013-01-29 11:18 KS
+# last mod 2013-04-16 16:38 KS
 
 """
 The module calibrate provides the classes to calibrate lightning tubes and
@@ -26,6 +26,7 @@ the color of a monitor to each other with a photometer.
 import math
 import scipy
 
+from devknobs import DevKnobs
 from setmanual import SetTubesManualPlot, SetTubesManualVision
 
 class Calibrate(object):
@@ -146,9 +147,11 @@ class Calibrate(object):
             Calibrate object with CalibTubes where an old parameters file
             is loaded!""")
             # TODO insert reasonable exception here
-        self.set_manually_plot = SetTubesManualPlot(self.calibtubes)
+        self.knobs = DevKnobs()
+        self.set_manually_plot = SetTubesManualPlot(self.calibtubes,
+                self.knobs)
         self.set_manually_vision = SetTubesManualVision(self.calibtubes,
-                self.calibmonitor)
+                self.knobs, self.calibmonitor)
 
     def adjustManualPlot(self, xyY, start_voltages=None):
         """

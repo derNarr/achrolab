@@ -12,7 +12,7 @@
 # output: --
 #
 # created 2012-05-29 KS
-# last mod 2013-01-29 11:19 KS
+# last mod 2013-04-16 16:02 KS
 
 """
 This module provides the class Monitor, which capsulates the presentation
@@ -81,4 +81,16 @@ class Monitor(object):
             keys = event.getKeys()
             if keys:
                 self.e.key = keys[0]
+
+    def checkForButtonPress(self):
+        """
+        checks for a key press and stores key press in self.e.key.
+
+        """
+        self.e.key = ""
+        core.wait(0.01)
+        keys = event.getKeys()
+        if keys:
+            self.e.key = keys[0]
+        event.clearEvents()
 
