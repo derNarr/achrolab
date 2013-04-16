@@ -52,8 +52,8 @@ class DevKnobs(object):
         self.wasco_card = wasco.Wasco(dummy=dummy)    # create wasco object
         self.boardId = self.wasco_card.boardId
 
-        self.channels = (("red", 60), ("green", 61), ("blue", 62), ("all", 63))
-        self.reference_voltage = 0xFFF
+        self.channels = (("red", 62), ("green", 61), ("blue", 60), ("all", 63))
+        self.reference_voltage = 0x800
 
         # initialize wasco card
         self.wasco_card.wasco_outportW(self.boardId, AD_ADCONT, 0x91) # A/D-Modus:
@@ -97,7 +97,9 @@ class DevKnobs(object):
             else:
                 print(("\nA/D-Statusregister: %x") % status)
                 values.append(None)
-        return values
+        # transform from (0x800, 0xFFF) -> (0x000, 0xFFF)
+        return [(value - 0x800)*2 for value in values if value]
+
 
     @property
     def states(self):

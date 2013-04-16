@@ -19,7 +19,7 @@
 from __future__ import print_function
 import sys
 from wasco.wasco import Wasco
-from wasco.constants import DAOUT1, DAOUT2, DAOUT3
+from wasco.constants import DAOUT2, DAOUT3, DAOUT4
 import time
 
 
@@ -46,7 +46,7 @@ class DevTubes(object):
         self.wasco_boardId = self.wascocard.boardId
 
         self.red_out = DAOUT3
-        self.green_out = DAOUT1
+        self.green_out = DAOUT4
         self.blue_out = DAOUT2
         self.low_threshold = 0x200 # min voltages must be integer
         self.low_warning = 0x400 # low warning voltages must be integer

@@ -474,6 +474,17 @@ class SetTubesManualPlot(SetTubesManualBase):
             spectrum = [float(x) for x in self.last_vol_xyY_spect[2]]
             return( (voltages, color, spectrum) )
 
+    def runKnobs(self):
+        """
+        check if interface is knobs and set voltages according to the
+        interface.
+
+        Is used as a callback for a timer in matplotlib.
+
+        """
+        if self.interface == "knobs":
+            self.setVoltagesKnobs()
+
     def newFigure(self):
         """
         closes figure and recreates it.
@@ -497,7 +508,9 @@ class SetTubesManualPlot(SetTubesManualBase):
         self.tellme('Get to the red cross')
         manager, canvas = self.fig.canvas.manager, self.fig.canvas
         canvas.mpl_disconnect(manager.key_press_handler_id)
-        canvas.new_timer(interval=20, callbacks=[self.setVoltagesKnobs,])
+        self.timer = canvas.new_timer(interval=20)
+        self.timer.add_callback(self.runKnobs)
+        self.timer.start()
         self.fig.canvas.mpl_connect('key_press_event', self.onKeyPress)
         def handle_esc(event):
             if event.key in ['escape', 'alt+escape']:
