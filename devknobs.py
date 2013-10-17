@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # devknobs.py
 #
-# (c) 2013 Konstantin Sering, Nora Umbach, Dominik Wabersich
+# (c) 2013 Konstantin Sering, Nora Umbach
 # <colorlab[at]psycho.uni-tuebingen.de>
 #
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
