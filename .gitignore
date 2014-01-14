@@ -4,6 +4,8 @@
 *.csv
 *.RData
 *.swp
+*.db
+
 calibdata/measurements/*
 \#*\#
 
