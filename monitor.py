@@ -27,7 +27,7 @@ from psychopy import visual, event, core
 
 class Event(object):
     """
-    very small class to store a key stroke
+    Very small class to store a key stroke.
 
     """
 
@@ -44,11 +44,10 @@ class Monitor(object):
     Monitor provides a convenient interface to present a color on the
     monitor and get key strokes.
 
-    Example
-    -------
+    Example:
 
-        >>> mon = Monitor()
-        >>> mon.setColor("#00FF00FF")
+    >>> mon = Monitor()
+    >>> mon.setColor("#00FF00FF")
 
     """
 
@@ -62,7 +61,7 @@ class Monitor(object):
 
     def setColor(self, psychopy_color, colorSpace="rgb255"):
         """
-        presents one color at the monitor.
+        Presents one color at the monitor.
 
         """
         self.patch_stim.setColor(psychopy_color, colorSpace=colorSpace)
@@ -71,7 +70,7 @@ class Monitor(object):
 
     def waitForButtonPress(self):
         """
-        waits for a key press and stores button press in self.e.key.
+        Waits for a key press and stores button press in self.e.key.
 
         """
         event.clearEvents()
@@ -84,7 +83,7 @@ class Monitor(object):
 
     def checkForButtonPress(self):
         """
-        checks for a key press and stores key press in self.e.key.
+        Checks for a key press and stores key press in self.e.key.
 
         """
         self.e.key = ""

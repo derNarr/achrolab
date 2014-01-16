@@ -32,24 +32,23 @@ class CalibMonitor(Monitor):
     provides an easy interface to measure psychopy.visual.GratingStim
     colors with an EyeOne Pro.
 
-    Example
-    -------
+    Example:
 
-        >>> from eyeone import eyeone
-        >>> eyeone = eyeone.EyeOne(dummy=True)
-        >>> mon = CalibMonitor(eyeone)
-        >>> mon.measureGratingStimColor("#FF0000FF", n=2) # doctest: +ELLIPSIS
-        Measurement mode set to SingleEmission.
-        Color space set to CIExyY.
-        <BLANKLINE>
-        Please put EyeOne Pro on calibration plate and press key to start calibration.
-        Calibration of EyeOne Pro done.
-        <BLANKLINE>
-        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
-        <BLANKLINE>
-        Please put EyeOne Pro in measurement position for MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)
-        Starting measurement...
-        [(...), ...]
+    >>> from eyeone import eyeone
+    >>> eyeone = eyeone.EyeOne(dummy=True)
+    >>> mon = CalibMonitor(eyeone)
+    >>> mon.measureGratingStimColor("#FF0000FF", n=2) # doctest: +ELLIPSIS
+    Measurement mode set to SingleEmission.
+    Color space set to CIExyY.
+    <BLANKLINE>
+    Please put EyeOne Pro on calibration plate and press key to start calibration.
+    Calibration of EyeOne Pro done.
+    <BLANKLINE>
+    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    <BLANKLINE>
+    Please put EyeOne Pro in measurement position for MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)
+    Starting measurement...
+    [(...), ...]
 
     """
 
@@ -73,11 +72,11 @@ class CalibMonitor(Monitor):
         """
         Measures patch_stim_value on monitor.
 
-        Parameters
-        ----------
-            patch_stim_value : triple, float or string
+        Parameters:
+            patch_stim_value: triple, float or string
                 psychopy.visual.GratingStim color value
-            n : *1* or any other positive integer
+
+            n: *1* or any other positive integer
                 number of measurements (positive integer)
 
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
@@ -110,17 +109,17 @@ class CalibMonitor(Monitor):
         Converts xyY color (triple of floats) to psychopy.visual.GratingStim
         color and measures color on monitor.
 
-        Parameters
-        ----------
-            color : triple of float
+        Parameters:
+            color: triple of float
                 xyY color list or tuple of three floats
-            patch_stim_value : triple, float or string
+
+            patch_stim_value: triple, float or string
                 psychopy.visual.GratingStim color value
-            n : *1* or any other positive integer
+
+            n: *1* or any other positive integer
                 number of measurements
 
-        Returns
-        -------
+        Returns:
         Returns list of tuples of xyY values [(x1, y1, Y1), (x2, y2, Y2), ...]
 
         """

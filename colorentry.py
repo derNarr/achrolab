@@ -27,42 +27,46 @@ class ColorEntry(object):
     ColorEntry contains all information for one color that we need in the
     lab.
 
-    Attributes
-    ----------
-        name : string
+    Attributes:
+        name: string
             name of the color
-        patch_stim_value : float, triple or string
+
+        patch_stim_value: float, triple or string
             a value that can be used to set the color of psychopy.GratingStim
-        monitor_xyY : triple of floats
+
+        monitor_xyY: triple of floats
             measured xyY values for monitor
-        monitor_xyY_sd : triple of floats
+
+        monitor_xyY_sd: triple of floats
             standard deviation for xyY values
-        voltages : triple of int
+
+        voltages: triple of int
             corresponding voltages for color tubes
-        tubes_xyY : triple of floats
+
+        tubes_xyY: triple of floats
             measured xyY values for tubes
-        tubes_xyY_sd : triple of floats
+
+        tubes_xyY_sd: triple of floats
             standard deviation for xyY values
 
-    Example
-    -------
+    Example:
 
-        >>> ce1 = ColorEntry(name="grey1", patch_stim_value="#404040FF")
-        >>> ce2 = ColorEntry(name="grey2", voltages=(0xA00, 0xA00, 0xA00))
+    >>> ce1 = ColorEntry(name="grey1", patch_stim_value="#404040FF")
+    >>> ce2 = ColorEntry(name="grey2", voltages=(0xA00, 0xA00, 0xA00))
 
     """
 
     def __init__(self, name, patch_stim_value=None, voltages=None):
         """
-        initializes the ColorEntry instance.
+        Initializes the ColorEntry instance.
 
-        Parameters
-        ----------
-            name : string
+        Parameters:
+            name: string
                 name of the color
-            patch_stim_value : *None*, float, triple or string
+
+            patch_stim_value: *None*, float, triple or string
                 default value that is used to set the color of psychopy.GratingStim
-            voltages : *None* or triple of int
+            voltages: *None* or triple of int
                 default voltages for color tubes
 
         """

@@ -28,11 +28,10 @@ class DevTubes(object):
     DevTubes encapsulates all functions controlling fluorescent tubes in the
     booth. It provides all low level functionality.
 
-    Example
-    -------
+    Example:
 
-        >>> devtub = DevTubes(dummy=True)
-        >>> devtub.setVoltages((1000, 1000, 1000))
+    >>> devtub = DevTubes(dummy=True)
+    >>> devtub.setVoltages((1000, 1000, 1000))
 
     """
     def __init__(self, dummy=False):

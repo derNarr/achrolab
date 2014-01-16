@@ -34,11 +34,10 @@ class DevKnobs(object):
     """
     DevKnobs encapsulates all functions getting input from the knobs.
 
-    Example
-    -------
+    Example:
 
-        >>> devknobs = DevKnobs(dummy=True)
-        >>> states = devknobs.getStates()
+    >>> devknobs = DevKnobs(dummy=True)
+    >>> states = devknobs.getStates()
 
     """
     def __init__(self, dummy=False):

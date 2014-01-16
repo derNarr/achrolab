@@ -31,8 +31,8 @@ class CalibDataFile(object):
     write the calibration data of the monitor/photometer to a comma
     separated file.
 
-    Example
-    -------
+    Example:
+
     >>> import printing
     >>> with printing.CalibDataFile(prefix="YourPrefixHere",
     ...             delimiter="\t") as filename:
@@ -47,15 +47,16 @@ class CalibDataFile(object):
     """
     def __init__(self, prefix="calibdata_", file_type="txt", delimiter="\t"):
         """
-        Parameters
-        ----------
-        prefix : str
-            file name prefix
-        file_type : str
-            one of "txt"...
-            not used at the moment
-        delimiter : str
-            delimiter which separates the values
+        Parameters:
+            prefix: str
+                file name prefix
+
+            file_type: str
+                one of "txt"...
+                not used at the moment
+
+            delimiter: str
+                delimiter which separates the values
 
         """
         self.file_type = file_type
@@ -185,8 +186,8 @@ class TubesDataFile(object):
     TubesDataFile provides a new method to
     write the calibration of the tubes data to a comma separated file.
 
-    Example
-    -------
+    Example:
+
     >>> import printing
     >>> with printing.CalibDataFile(prefix="YourPrefixHere",
     ...             delimiter="\t") as filename:
@@ -201,12 +202,12 @@ class TubesDataFile(object):
     """
     def __init__(self, prefix="measure_tubes_", delimiter="\t"):
         """
-        Parameters
-        ----------
-        prefix : str
-            file name prefix
-        delimiter : str
-            delimiter which separates the values
+        Parameters:
+            prefix: str
+                file name prefix
+
+            delimiter: str
+                delimiter which separates the values
 
         """
         self.delimiter = delimiter

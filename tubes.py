@@ -36,18 +36,17 @@ class Tubes(object):
     This class hides all the hardware specifications and has no
     dependencies on the eyeone module.
 
-    Example
-    -------
+    Example:
 
-        >>> tub = Tubes(dummy=True)
-        >>> tub.setVoltages((1000, 1000, 1000))
-        >>> tub.printNote()
-        <BLANKLINE>
-                Note:
-                The tubes must be switched on for at least four (!!) hours to come
-                in a state where they are not changing the illumination a
-                significant amount.
-        <BLANKLINE>
+    >>> tub = Tubes(dummy=True)
+    >>> tub.setVoltages((1000, 1000, 1000))
+    >>> tub.printNote()
+    <BLANKLINE>
+            Note:
+            The tubes must be switched on for at least four (!!) hours to come
+            in a state where they are not changing the illumination a
+            significant amount.
+    <BLANKLINE>
 
 
     """
@@ -59,9 +58,9 @@ class Tubes(object):
         gets a triple of integers and sets the voltages of the tubes. The
         devtubes object takes care of all the hardware stuff.
 
-        :Parameters:
+        Parameters:
 
-            dummy : *False* or True
+            dummy: *False* or True
                 If dummy=True no wasco runtimelibraries will be loaded.
 
         """
@@ -86,7 +85,7 @@ class Tubes(object):
 
     def printNote(self):
         """
-        prints a note, that states what is important, when you use the
+        Prints a note, that states what is important, when you use the
         tubes.
 
         """

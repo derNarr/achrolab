@@ -38,135 +38,133 @@ class CalibTubes(Tubes):
     CalibTubes provides an easy interface to measure a color with EyeOne
     Pro and to find corresponding voltages for a given color.
 
-    Example
-    -------
+    Example:
 
-        >>> from eyeone.eyeone import EyeOne
-        >>> eyeone = EyeOne(dummy=True)
-        >>> caltub = CalibTubes(eyeone)
-        >>> caltub.calibrate(imi=0.1, n=10, each=2)
-        <BLANKLINE>
-                Note:
-                The tubes must be switched on for at least four (!!) hours to come
-                in a state where they are not changing the illumination a
-                significant amount.
-        <BLANKLINE>
-        Measurement mode set to SingleEmission.
-        Color space set to CIExyY.
-        <BLANKLINE>
-        Please put EyeOne Pro on calibration plate and press key to start calibration.
-        Calibration of EyeOne Pro done.
-        <BLANKLINE>
-        Please put EyeOne-Pro in measurement positionand hit button to start measurement.
-        <BLANKLINE>
-        Please put EyeOne Pro in measurement position and press key to start measurement.
-        <BLANKLINE>
-        Turn off blue and green tubes!
-        Press key to start measurement of RED tubes.
-        Starting measurement...
-        (1024, 4095, 4095)
-        (1024, 4095, 4095)
-        (1365, 4095, 4095)
-        (1365, 4095, 4095)
-        (1706, 4095, 4095)
-        (1706, 4095, 4095)
-        (2047, 4095, 4095)
-        (2047, 4095, 4095)
-        (2388, 4095, 4095)
-        (2388, 4095, 4095)
-        (2729, 4095, 4095)
-        (2729, 4095, 4095)
-        (3070, 4095, 4095)
-        (3070, 4095, 4095)
-        (3411, 4095, 4095)
-        (3411, 4095, 4095)
-        (3752, 4095, 4095)
-        (3752, 4095, 4095)
-        (4093, 4095, 4095)
-        (4093, 4095, 4095)
-        <BLANKLINE>
-        Turn off red and blue tubes!
-        Press key to start measurement of GREEN tubes.
-        Starting measurement...
-        (4095, 1024, 4095)
-        (4095, 1024, 4095)
-        (4095, 1365, 4095)
-        (4095, 1365, 4095)
-        (4095, 1706, 4095)
-        (4095, 1706, 4095)
-        (4095, 2047, 4095)
-        (4095, 2047, 4095)
-        (4095, 2388, 4095)
-        (4095, 2388, 4095)
-        (4095, 2729, 4095)
-        (4095, 2729, 4095)
-        (4095, 3070, 4095)
-        (4095, 3070, 4095)
-        (4095, 3411, 4095)
-        (4095, 3411, 4095)
-        (4095, 3752, 4095)
-        (4095, 3752, 4095)
-        (4095, 4093, 4095)
-        (4095, 4093, 4095)
-        <BLANKLINE>
-        Turn off red and green tubes!
-        Press key to start measurement of BLUE tubes.
-        Starting measurement...
-        (4095, 4095, 1024)
-        (4095, 4095, 1024)
-        (4095, 4095, 1365)
-        (4095, 4095, 1365)
-        (4095, 4095, 1706)
-        (4095, 4095, 1706)
-        (4095, 4095, 2047)
-        (4095, 4095, 2047)
-        (4095, 4095, 2388)
-        (4095, 4095, 2388)
-        (4095, 4095, 2729)
-        (4095, 4095, 2729)
-        (4095, 4095, 3070)
-        (4095, 4095, 3070)
-        (4095, 4095, 3411)
-        (4095, 4095, 3411)
-        (4095, 4095, 3752)
-        (4095, 4095, 3752)
-        (4095, 4095, 4093)
-        (4095, 4095, 4093)
-        <BLANKLINE>
-        Turn ON red, green and blue tubes!
-        Press key to start measurement of ALL tubes.
-        Starting measurement...
-        (1024, 1024, 1024)
-        (1024, 1024, 1024)
-        (1365, 1365, 1365)
-        (1365, 1365, 1365)
-        (1706, 1706, 1706)
-        (1706, 1706, 1706)
-        (2047, 2047, 2047)
-        (2047, 2047, 2047)
-        (2388, 2388, 2388)
-        (2388, 2388, 2388)
-        (2729, 2729, 2729)
-        (2729, 2729, 2729)
-        (3070, 3070, 3070)
-        (3070, 3070, 3070)
-        (3411, 3411, 3411)
-        (3411, 3411, 3411)
-        (3752, 3752, 3752)
-        (3752, 3752, 3752)
-        (4093, 4093, 4093)
-        (4093, 4093, 4093)
-        Measurement finished.
-        FAILED to estimate parameters of tubes.
-        Look at calibration_tubes_raw_XX.txt for the data.
-        >>> caltub.saveParameter("example_tube_calibration.pkl")
+    >>> from eyeone.eyeone import EyeOne
+    >>> eyeone = EyeOne(dummy=True)
+    >>> caltub = CalibTubes(eyeone)
+    >>> caltub.calibrate(imi=0.1, n=10, each=2)
+    <BLANKLINE>
+            Note:
+            The tubes must be switched on for at least four (!!) hours to come
+            in a state where they are not changing the illumination a
+            significant amount.
+    <BLANKLINE>
+    Measurement mode set to SingleEmission.
+    Color space set to CIExyY.
+    <BLANKLINE>
+    Please put EyeOne Pro on calibration plate and press key to start calibration.
+    Calibration of EyeOne Pro done.
+    <BLANKLINE>
+    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    <BLANKLINE>
+    Please put EyeOne Pro in measurement position and press key to start measurement.
+    <BLANKLINE>
+    Turn off blue and green tubes!
+    Press key to start measurement of RED tubes.
+    Starting measurement...
+    (1024, 4095, 4095)
+    (1024, 4095, 4095)
+    (1365, 4095, 4095)
+    (1365, 4095, 4095)
+    (1706, 4095, 4095)
+    (1706, 4095, 4095)
+    (2047, 4095, 4095)
+    (2047, 4095, 4095)
+    (2388, 4095, 4095)
+    (2388, 4095, 4095)
+    (2729, 4095, 4095)
+    (2729, 4095, 4095)
+    (3070, 4095, 4095)
+    (3070, 4095, 4095)
+    (3411, 4095, 4095)
+    (3411, 4095, 4095)
+    (3752, 4095, 4095)
+    (3752, 4095, 4095)
+    (4093, 4095, 4095)
+    (4093, 4095, 4095)
+    <BLANKLINE>
+    Turn off red and blue tubes!
+    Press key to start measurement of GREEN tubes.
+    Starting measurement...
+    (4095, 1024, 4095)
+    (4095, 1024, 4095)
+    (4095, 1365, 4095)
+    (4095, 1365, 4095)
+    (4095, 1706, 4095)
+    (4095, 1706, 4095)
+    (4095, 2047, 4095)
+    (4095, 2047, 4095)
+    (4095, 2388, 4095)
+    (4095, 2388, 4095)
+    (4095, 2729, 4095)
+    (4095, 2729, 4095)
+    (4095, 3070, 4095)
+    (4095, 3070, 4095)
+    (4095, 3411, 4095)
+    (4095, 3411, 4095)
+    (4095, 3752, 4095)
+    (4095, 3752, 4095)
+    (4095, 4093, 4095)
+    (4095, 4093, 4095)
+    <BLANKLINE>
+    Turn off red and green tubes!
+    Press key to start measurement of BLUE tubes.
+    Starting measurement...
+    (4095, 4095, 1024)
+    (4095, 4095, 1024)
+    (4095, 4095, 1365)
+    (4095, 4095, 1365)
+    (4095, 4095, 1706)
+    (4095, 4095, 1706)
+    (4095, 4095, 2047)
+    (4095, 4095, 2047)
+    (4095, 4095, 2388)
+    (4095, 4095, 2388)
+    (4095, 4095, 2729)
+    (4095, 4095, 2729)
+    (4095, 4095, 3070)
+    (4095, 4095, 3070)
+    (4095, 4095, 3411)
+    (4095, 4095, 3411)
+    (4095, 4095, 3752)
+    (4095, 4095, 3752)
+    (4095, 4095, 4093)
+    (4095, 4095, 4093)
+    <BLANKLINE>
+    Turn ON red, green and blue tubes!
+    Press key to start measurement of ALL tubes.
+    Starting measurement...
+    (1024, 1024, 1024)
+    (1024, 1024, 1024)
+    (1365, 1365, 1365)
+    (1365, 1365, 1365)
+    (1706, 1706, 1706)
+    (1706, 1706, 1706)
+    (2047, 2047, 2047)
+    (2047, 2047, 2047)
+    (2388, 2388, 2388)
+    (2388, 2388, 2388)
+    (2729, 2729, 2729)
+    (2729, 2729, 2729)
+    (3070, 3070, 3070)
+    (3070, 3070, 3070)
+    (3411, 3411, 3411)
+    (3411, 3411, 3411)
+    (3752, 3752, 3752)
+    (3752, 3752, 3752)
+    (4093, 4093, 4093)
+    (4093, 4093, 4093)
+    Measurement finished.
+    FAILED to estimate parameters of tubes.
+    Look at calibration_tubes_raw_XX.txt for the data.
+    >>> caltub.saveParameter("example_tube_calibration.pkl")
 
     """
 
     def __init__(self, eyeone):
         """
-        Parameters
-        ----------
+        Parameters:
             eyeone: eyeone.eyeone.EyeOne instance
                 needed for measuring the tubes
 
@@ -200,13 +198,12 @@ class CalibTubes(Tubes):
         """
         Measures color of tubes for given voltages.
 
-        Parameters
-        ----------
-            voltages : ( (vol_r1, vol_g1, volb1), (vol_r2, vol_g2, vol_b2), ...)
+        Parameters:
+            voltages: ( (vol_r1, vol_g1, volb1), (vol_r2, vol_g2, vol_b2), ...)
                 a list of triples of integers
-            imi : *0.5* or any positive float
+            imi: *0.5* or any positive float
                 inter measurement interval in seconds
-            each : *1* or any positive integer
+            each: *1* or any positive integer
                 number of measurements per voltage
 
         Returns list of tripels (voltages, yxY, spectrum). All elements of
@@ -264,14 +261,15 @@ class CalibTubes(Tubes):
         Calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
         connected to the computer. The calibration takes around 2 ?? minutes.
 
-        Parameters
-        ----------
-            imi : *0.5* or any positive float
+        Parameters:
+            imi: *0.5* or any positive float
                 inter measurement interval in seconds
-            n : *50* or any positive integer greater 2
+
+            n: *50* or any positive integer greater 2
                 number of steps per tube to calibrate (must be greater
                 equal 2)
-            each : *1* or any positive integer
+
+            each: *1* or any positive integer
                 number of measurements per color
 
         """

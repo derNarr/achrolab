@@ -34,15 +34,15 @@ class ColorTable(object):
     ColorTable is a list of ColorEntries with some useful functions defined
     on this list.
 
-    Example
-    -------
-        >>> from colorentry import ColorEntry
-        >>> coltab = ColorTable()
-        >>> coltab.addColorEntry(ColorEntry("grey1",
-        ...    patch_stim_value="#505050FF"))
-        >>> ce = coltab.getColorByName("grey1")
-        >>> print(ce.patch_stim_value)
-        #505050FF
+    Example:
+
+    >>> from colorentry import ColorEntry
+    >>> coltab = ColorTable()
+    >>> coltab.addColorEntry(ColorEntry("grey1",
+    ...    patch_stim_value="#505050FF"))
+    >>> ce = coltab.getColorByName("grey1")
+    >>> print(ce.patch_stim_value)
+    #505050FF
 
     """
 
@@ -65,10 +65,9 @@ class ColorTable(object):
         """
         Adds a color entry to the color table.
 
-        Parameters
-        ----------
-        ce : colorentry.ColorEntry instance
-            object that stores a color entry
+        Parameters:
+            ce: colorentry.ColorEntry instance
+                object that stores a color entry
 
         """
         if not isinstance(ce, ColorEntry):
@@ -79,15 +78,13 @@ class ColorTable(object):
         """
         Returns the first object in color_list with the given name.
 
-        Parameters
-        ----------
-        name : string
-            name of colorentry.ColorEntry object
+        Parameters:
+            name: string
+                name of colorentry.ColorEntry object
 
-        Returns
-        -------
-        out : ColorEntry
-            first object in color_list with the given name.
+        Returns:
+            out: ColorEntry
+                first object in color_list with the given name.
 
         """
         for ce in self.color_list:
@@ -99,16 +96,14 @@ class ColorTable(object):
         """
         Returns ColorEntry objects in a list, ordered after name_list.
 
-        Parameters
-        ----------
-        names : sequence of strings
-            list with names of colorentry.ColorEntry objects
+        Parameters:
+            names: sequence of strings
+                list with names of colorentry.ColorEntry objects
 
-        Returns
-        -------
-        out : sequence of ColorEntry objects
-            list with colorentry.ColorEntry objects corresponding to the names
-            given in names
+        Returns:
+            out: sequence of ColorEntry objects
+                list with colorentry.ColorEntry objects corresponding to
+                the names given in names
 
         """
         color_entries = []
@@ -120,10 +115,9 @@ class ColorTable(object):
         """
         Saves object to comma separated text file (.csv).
 
-        Parameters
-        ----------
-        filename : string
-            string that gives the filename and the location of the file.
+        Parameters:
+            filename: string
+                string that gives the filename and the location of the file.
 
         """
         with open(filename, "w") as f:
@@ -166,10 +160,9 @@ class ColorTable(object):
         """
         Saves object to pickle file (.pkl).
 
-        Parameters
-        ----------
-        filename : string
-            string that gives the filename and the location of the file.
+        Parameters:
+            filename: string
+                string that gives the filename and the location of the file.
 
         """
         with open(filename, "wb") as f:
@@ -179,10 +172,9 @@ class ColorTable(object):
         """
         Loads object from comma separated text file (.csv).
 
-        Parameters
-        ----------
-        filename : string
-            string that gives the filename and the location of the file.
+        Parameters:
+            filename: string
+                string that gives the filename and the location of the file.
 
         """
         def float_None(x):
@@ -220,10 +212,9 @@ class ColorTable(object):
         """
         Loads object from pickle file (.pkl).
 
-        Parameters
-        ----------
-        filename : string
-            string that gives the filename and the location of the file.
+        Parameters:
+            filename: string
+                string that gives the filename and the location of the file.
 
         """
         with open(filename, "rb") as f:
@@ -233,10 +224,9 @@ class ColorTable(object):
         """
         Loads object from R data file.
 
-        Parameters
-        ----------
-        filename : string
-            string that gives the filename and the location of the file.
+        Parameters:
+            filename: string
+                string that gives the filename and the location of the file.
 
         """
         raise exceptions.NotImplementedError("not implemented to load from Rdata file")
