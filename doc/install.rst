@@ -1,6 +1,6 @@
 .. _achrolab_install:
 
-How to install *achrolab* on your computer
+How to Install *achrolab* on Your Computer
 ==========================================
 
 The easiest way to get all the code is to clone it directly from

@@ -1,6 +1,6 @@
 .. _achrolab_submodules:
 
-Classes of submodules
+Classes of Submodules
 =====================
 
 Submodule eyeone

@@ -14,7 +14,7 @@ it as smooth as possible.
 You might want to check out our :ref:`lab conventions
 <colorlab_convention>` as well.
 
-How *achrolab* interacts
+How *achrolab* Interacts
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: figs/modules.png
@@ -57,7 +57,7 @@ We follow the `Style Guide for Python Code
 <http://www.python.org/dev/peps/pep-0008/>`_ for more details see :ref:`lab
 conventions for Python <colorlab_convention_python>`.
 
-Git and github
+Git and Github
 ++++++++++++++
 
 The source code is hosted on https://github.com/derNarr/achrolabutils and

@@ -30,14 +30,6 @@ illumination conditions in our :ref:`color laboratory <colorlab_colorlab>`.
     :undoc-members:
     :inherited-members:
 
-`Check`
-~~~~~~~~~~~~~~
-
-.. automodule:: achrolab.check
-    :members:
-    :undoc-members:
-    :inherited-members:
-
 `ColorEntry`
 ~~~~~~~~~~~~
 
@@ -62,6 +54,14 @@ illumination conditions in our :ref:`color laboratory <colorlab_colorlab>`.
     :undoc-members:
     :inherited-members:
 
+`DevKnobs`
+~~~~~~~~~~~~~~
+
+.. automodule:: achrolab.devknobs
+    :members:
+    :undoc-members:
+    :inherited-members:
+
 `DevTubes`
 ~~~~~~~~~~~~~~
 
@@ -78,10 +78,18 @@ illumination conditions in our :ref:`color laboratory <colorlab_colorlab>`.
     :undoc-members:
     :inherited-members:
 
-`Output`
-~~~~~~~~~
+`CalibDataFile`
+~~~~~~~~~~~~~~~
 
-.. automodule:: achrolab.output
+.. automodule:: achrolab.printing
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+`SetTubesManual`
+~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: achrolab.setmanual
     :members:
     :undoc-members:
     :inherited-members:

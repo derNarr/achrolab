@@ -29,6 +29,9 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
               'sphinx.ext.intersphinx', 'sphinx.ext.mathjax',
               'sphinx.ext.autosummary', 'numpydoc']
 
+# get rid of all the warnings for "empty" toctree entries
+numpydoc_show_class_members = False
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -50,7 +53,7 @@ copyright = u'2011, Konstantin Sering, Dominik Wabersich, Nora Umbach'
 # built documents.
 #
 # The short X.Y version.
-version = '1'
+version = '0'
 # The full version, including alpha/beta/rc tags.
 release = '1'
 

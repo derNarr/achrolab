@@ -9,9 +9,9 @@ Schematic folder overview of the python package *achrolab*::
 
      achrolabutils (useful scripts)
      |
-     +--achrolab (main classes and interfaces to use the lab)
+     +--achrolab (main classes and interfaces to use in the lab)
          |
-         +--eyeone (wrapper for EyeOne Pro photometer)
+         +--eyeone (wrapper for i1 Pro photometer)
          |
          +--wasco (wrapper for wasco multifunction card)
 
