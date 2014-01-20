@@ -231,8 +231,8 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'python':('http://docs.python.org/3.2', None),
-        'colorlab':('../../../../../documentation-colorlab/_build/html',
-            '../../../documentation-colorlab/_build/html/objects.inv')}
+        'colorlab':('file:///U:/labs/colorlab/documentation-colorlab/_build/html',
+            'U:/labs/colorlab/documentation-colorlab/_build/html/objects.inv')}
 
 #intersphinx_mapping = {'python':('http://docs.python.org/3.2', None),
 #        'colorlab':(str('../colorlab'),
