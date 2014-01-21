@@ -5,8 +5,8 @@
 
 .. _achrolab_index:
 
-Python Module *achrolab*
-========================
+Python Package *achrolab*
+=========================
 
 Our research group is interested in the characterization of the perceptual
 space of achromatic colors. We wrote a python package called *achrolab* to
