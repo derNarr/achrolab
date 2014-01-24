@@ -46,7 +46,8 @@ class CalibMonitor(Monitor):
     <BLANKLINE>
     Please put EyeOne-Pro in measurement positionand hit button to start measurement.
     <BLANKLINE>
-    Please put EyeOne Pro in measurement position for MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)
+    Please put EyeOne Pro in measurement position for MONITOR and press key to start
+    measurement. (Measure through the Box! Not directly on the monitor.)
     Starting measurement...
     [(...), ...]
 
