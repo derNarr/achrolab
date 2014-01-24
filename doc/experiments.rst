@@ -1,6 +1,6 @@
 .. _achrolab_experiments:
 
-How to use in experiments
+How to Use in Experiments
 =========================
 
 We now want to use the colors we defined when calibrating our booth (See
