@@ -67,12 +67,14 @@ class Calibrate(object):
     Measurement mode set to SingleEmission.
     Color space set to CIExyY.
     <BLANKLINE>
-    Please put EyeOne Pro on calibration plate and press key to start calibration.
-    Calibration of EyeOne Pro done.
+    Please put EyeOne Pro on calibration plate and press key to start
+    calibration. Calibration of EyeOne Pro done.
     <BLANKLINE>
-    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    Please put EyeOne-Pro in measurement positionand hit button to start
+    measurement.
     <BLANKLINE>
-    Please put EyeOne Pro in measurement position and press key to start measurement.
+    Please put EyeOne Pro in measurement position and press key to start
+    measurement.
     <BLANKLINE>
     Turn off blue and green tubes!
     Press key to start measurement of RED tubes.
