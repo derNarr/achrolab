@@ -25,8 +25,8 @@ import time
 
 class DevTubes(object):
     """
-    DevTubes encapsulates all functions controlling fluorescent tubes in the
-    booth. It provides all low level functionality.
+    Encapsulates all functions controlling fluorescent tubes in the booth.
+    It provides all low level functionality.
 
     Example:
 
@@ -35,9 +35,10 @@ class DevTubes(object):
 
     """
     def __init__(self, dummy=False):
-        """Setting some "global" variables.
+        """
+        Setting some "global" variables.
 
-        If dummy=True no wasco runtimelibraries will be loaded.
+        If dummy=True no wasco runtime libraries will be loaded.
 
         """
 
@@ -59,8 +60,8 @@ class DevTubes(object):
 
     def setVoltages(self, U_rgb):
         """
-        setVoltages sets voltage in list or tuple of U_rgb to wasco card.
-        U_rgb should contain three integers between self.low_threshold and
+        Sets voltage in list or tuple of U_rgb to wasco card. U_rgb should
+        contain three integers between self.low_threshold and
         self.high_threshold.
 
         """

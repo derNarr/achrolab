@@ -25,7 +25,7 @@ from colorentry import ColorEntry
 
 class ColorTable(object):
     """
-    ColorTable stores colors in xyY coordinates and all data needed for
+    Stores colors in xyY coordinates and all data needed for
     psychopy.visual.GratingStim, the monitor, and the tubes.
 
     The colors in ColorTable are indexed. So there is a first and a last
@@ -39,9 +39,9 @@ class ColorTable(object):
     >>> from colorentry import ColorEntry
     >>> coltab = ColorTable()
     >>> coltab.addColorEntry(ColorEntry("grey1",
-    ...    patch_stim_value="#505050FF"))
+    ...    grating_stim_value="#505050FF"))
     >>> ce = coltab.getColorByName("grey1")
-    >>> print(ce.patch_stim_value)
+    >>> print(ce.grating_stim_value)
     #505050FF
 
     """
@@ -71,12 +71,12 @@ class ColorTable(object):
 
         """
         if not isinstance(ce, ColorEntry):
-            raise ValueError("ce must be colorentry.ColorEntry instance")
+            raise ValueError("ce must be colorentry.ColorEntry instance.")
         self.color_list.append( ce )
 
     def getColorByName(self, name):
         """
-        Returns the first object in color_list with the given name.
+        Returns the first object in color_list for the name given.
 
         Parameters:
             name: string
@@ -84,7 +84,7 @@ class ColorTable(object):
 
         Returns:
             out: ColorEntry
-                first object in color_list with the given name.
+                first object in color_list for the name given.
 
         """
         for ce in self.color_list:
@@ -117,18 +117,18 @@ class ColorTable(object):
 
         Parameters:
             filename: string
-                string that gives the filename and the location of the file.
+                string that gives the filename and the location of the file
 
         """
         with open(filename, "w") as f:
-            f.write("name, patch_stim_value, "
+            f.write("name, grating_stim_value, "
                     +"monitor_xyY_x, monitor_xyY_y, monitor_xyY_Y, "
                     +"monitor_xyY_sd_x, monitor_xyY_sd_y, monitor_xyY_sd_Y, "
                     +"voltages_r, voltages_g, voltages_b, "
                     +"tubes_xyY_x, tubes_xyY_y, tubes_xyY_Y, "
                     +"tubes_xyY_sd_x, tubes_xyY_sd_y, tubes_xyY_sd_Y\n")
             for ce in self.color_list:
-                f.write(ce.name+", "+str(ce.patch_stim_value))
+                f.write(ce.name+", "+str(ce.grating_stim_value))
                 if not ce.monitor_xyY:
                     f.write(", NA, NA, NA")
                 else:
@@ -162,7 +162,7 @@ class ColorTable(object):
 
         Parameters:
             filename: string
-                string that gives the filename and the location of the file.
+                string that gives the filename and the location of the file
 
         """
         with open(filename, "wb") as f:
@@ -174,7 +174,7 @@ class ColorTable(object):
 
         Parameters:
             filename: string
-                string that gives the filename and the location of the file.
+                string that gives the filename and the location of the file
 
         """
         def float_None(x):
@@ -189,7 +189,7 @@ class ColorTable(object):
                 currentline = currentline.split(',')
                 currentline = [x.strip() for x in currentline]
                 ce = ColorEntry(currentline[0])
-                ce.patch_stim_value = float_None(currentline[1])
+                ce.grating_stim_value = float_None(currentline[1])
                 ce.monitor_xyY = (float_None(currentline[2]),
                                   float_None(currentline[3]),
                                   float_None(currentline[4]))
@@ -214,7 +214,7 @@ class ColorTable(object):
 
         Parameters:
             filename: string
-                string that gives the filename and the location of the file.
+                string that gives the filename and the location of the file
 
         """
         with open(filename, "rb") as f:
@@ -226,7 +226,7 @@ class ColorTable(object):
 
         Parameters:
             filename: string
-                string that gives the filename and the location of the file.
+                string that gives the filename and the location of the file
 
         """
         raise exceptions.NotImplementedError("not implemented to load from Rdata file")

@@ -43,9 +43,8 @@ class Tubes(object):
     >>> tub.printNote()
     <BLANKLINE>
             Note:
-            The tubes must be switched on for at least four (!!) hours to come
-            in a state where they are not changing the illumination a
-            significant amount.
+            The tubes must be switched on for at least four (!!) hours in
+            order to radiate a stable amount of light.
     <BLANKLINE>
 
 
@@ -54,14 +53,14 @@ class Tubes(object):
         """
         Initializes tubes object.
 
-        devtub contains an object with a method setVoltages. This method
-        gets a triple of integers and sets the voltages of the tubes. The
-        devtubes object takes care of all the hardware stuff.
+        Contains an object with a method setVoltages. This method gets a
+        triple of integers and sets the voltages of the tubes. The devtubes
+        object takes care of all the hardware stuff.
 
         Parameters:
 
             dummy: *False* or True
-                If dummy=True no wasco runtimelibraries will be loaded.
+                If dummy=True no wasco runtime libraries will be loaded.
 
         """
         self.devtub = devtubes.DevTubes(dummy=dummy)
@@ -73,7 +72,7 @@ class Tubes(object):
         If setVoltages gets an ColorEntry object, it extracts the voltages
         from this object and sets the tubes accordingly.
 
-        WARNING: Don't set the tubes directly (e.g. via wasco), because
+        WARNING: Don't set the tubes directly (e.g., via wasco), because
         the change in voltage has to be smoothly. This prevents the
         fluorescent tubes to accidentally give out.
 
@@ -91,8 +90,7 @@ class Tubes(object):
         """
         print("""
         Note:
-        The tubes must be switched on for at least four (!!) hours to come
-        in a state where they are not changing the illumination a
-        significant amount.
+        The tubes must be switched on for at least four (!!) hours in order
+        to radiate a stable amount of light.
         """)
 

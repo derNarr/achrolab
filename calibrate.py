@@ -18,8 +18,9 @@
 # last mod 2013-04-16 16:38 KS
 
 """
-The module calibrate provides the classes to calibrate lightning tubes and
-the color of a monitor to each other with a photometer.
+The module calibrate provides the classes to match fluorescent tubes
+illuminating a wall and the color of a monitor to each other with a
+photometer.
 
 """
 
@@ -31,11 +32,11 @@ from setmanual import SetTubesManualPlot, SetTubesManualVision
 
 class Calibrate(object):
     """
-    Calibrate capsulates the hardware dependencies to the photometer and to
-    the tubes and the monitor.
+    Encapsulates the hardware dependencies to the photometer and to the
+    tubes and the monitor.
 
     This class also implements the calibration procedure. This calibration
-    start, when calibrateColorTable or calibrateColorEntry are called.
+    starts, when calibrateColorTable or calibrateColorEntry are called.
 
     1. test if the tubes are calibrated, if not abort
     2. test if the color entry was measured at the monitor, if not skip this
@@ -43,8 +44,8 @@ class Calibrate(object):
     3. guess starting voltages from color entry values (or use given)
     4. start adjustManualPlot so that you can adjust the tubes by hand and
        see your result measured with the photometer
-    5. start adjustManualVision check if the achieved calibration fits to
-       your own visual system and adjust if necessary
+    5. start adjustManualVision to check if the achieved calibration is
+       satisfactory and adjust if necessary
     6. store final calibration in color entry
 
     Example:
@@ -60,20 +61,19 @@ class Calibrate(object):
     >>> calibtubes.calibrate(imi=0.1, n=4, each=1) #doctest: +ELLIPSIS
     <BLANKLINE>
             Note:
-            The tubes must be switched on for at least four (!!) hours to come
-            in a state where they are not changing the illumination a
-            significant amount.
+            The tubes must be switched on for at least four (!!) hours in
+            order to radiate a stable amount of light.
     <BLANKLINE>
     Measurement mode set to SingleEmission.
     Color space set to CIExyY.
     <BLANKLINE>
-    Please put EyeOne Pro on calibration plate and press key to start
-    calibration. Calibration of EyeOne Pro done.
+    Please put i1 Pro on calibration plate and press key to start
+    calibration. Calibration of i1 Pro done.
     <BLANKLINE>
-    Please put EyeOne-Pro in measurement positionand hit button to start
+    Please put i1 Pro in measurement positionand hit button to start
     measurement.
     <BLANKLINE>
-    Please put EyeOne Pro in measurement position and press key to start
+    Please put i1 Pro in measurement position and press key to start
     measurement.
     <BLANKLINE>
     Turn off blue and green tubes!
@@ -145,7 +145,7 @@ class Calibrate(object):
         self.calibtubes = calibtubes
         if not calibtubes.is_calibrated:
             print("""STOP: Please calibrate tubes first or initialize
-            Calibrate object with CalibTubes where an old parameters file
+            Calibrate object with CalibTubes where an old parameter file
             is loaded!""")
             # TODO insert reasonable exception here
         self.knobs = DevKnobs()
@@ -156,7 +156,7 @@ class Calibrate(object):
 
     def adjustManualPlot(self, xyY, start_voltages=None):
         """
-        changes the tubes with key strokes in order to match the color and
+        Changes the tubes with key strokes in order to match the color and
         luminance of the wall to a given color value.
 
         In order to match the values they are measured with the photometer
@@ -184,7 +184,7 @@ class Calibrate(object):
 
     def adjustManualVision(self, color, start_voltages=None):
         """
-        changes the tubes with key strokes in order to match the color and
+        Changes the tubes with key strokes in order to match the color and
         luminance of the wall to a given color value.
 
         The changed values are not measured, they are simply shown on the
@@ -194,7 +194,7 @@ class Calibrate(object):
         Returns the final triple of voltages.
 
         Parameters:
-            color: color, that can be used by monitor.Monitor.setColor
+            color: color which can be used by monitor.Monitor.setColor
                 this color will be presented by monitor.Monitor.setColor
                 and is the target color to which you want to match the
                 tubes
@@ -205,7 +205,7 @@ class Calibrate(object):
 
         """
         if not start_voltages:
-            print("guess voltages via calibration of the tubes")
+            print("Guess voltages via calibration of the tubes.")
             start_voltages = self.calibtubes.guessVoltages(color[2])
         self.calibtubes.setVoltages(start_voltages)
         self.calibtubes.printNote()
@@ -216,12 +216,12 @@ class Calibrate(object):
 
     def calibrateColorTable(self, colortable, each=5):
         """
-        convinient function to calibrate a colortable. Changes the
+        Convenient function to calibrate a colortable. Changes the
         colortable object!
 
         Parameters:
             colortable: colortable.ColorTable
-                all color is the ColorTable object will be calibrated
+                every color in the ColorTable object will be calibrated
 
             each: *5* or int
                 number of repeated measurements per colorentry
@@ -255,7 +255,7 @@ class Calibrate(object):
 
     def calibrateColorEntry(self, colorentry, n=5):
         """
-        convenient function to calibrate a single colorentry object.
+        Convenient function to calibrate a single colorentry object.
         Changes the colorentry object!
 
         Parameters:

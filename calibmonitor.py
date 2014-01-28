@@ -16,7 +16,7 @@
 # last mod 2013-01-29 11:18 KS
 
 """
-This module provides the calls CalibMonitor which handles measuring of the
+This module provides the class CalibMonitor which handles measuring of the
 monitor.
 
 """
@@ -29,8 +29,8 @@ from monitor import Monitor
 
 class CalibMonitor(Monitor):
     """
-    provides an easy interface to measure psychopy.visual.GratingStim
-    colors with an EyeOne Pro.
+    Provides an easy interface to measure psychopy.visual.GratingStim
+    colors with an i1 Pro.
 
     Example:
 
@@ -41,12 +41,12 @@ class CalibMonitor(Monitor):
     Measurement mode set to SingleEmission.
     Color space set to CIExyY.
     <BLANKLINE>
-    Please put EyeOne Pro on calibration plate and press key to start calibration.
-    Calibration of EyeOne Pro done.
+    Please put i1 Pro on calibration plate and press key to start calibration.
+    Calibration of i1 Pro done.
     <BLANKLINE>
-    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    Please put i1 Pro in measurement position and hit button to start measurement.
     <BLANKLINE>
-    Please put EyeOne Pro in measurement position for MONITOR and press key to start
+    Please put i1 Pro in measurement position for MONITOR and press key to start
     measurement. (Measure through the Box! Not directly on the monitor.)
     Starting measurement...
     [(...), ...]
@@ -60,21 +60,21 @@ class CalibMonitor(Monitor):
 
     def startMeasurement(self):
         """
-        Simply prompts to move EyeOne Pro to measurement position and
+        Simply prompts to move i1 Pro to measurement position and
         waits for button response.
 
         """
-        print("\nPlease put EyeOne Pro in measurement position for" + " MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)")
+        print("\nPlease put i1 Pro in measurement position for" + " MONITOR and press key to start measurement. (Measure through the Box! Not directly on the monitor.)")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
         print("Starting measurement...")
 
-    def measureGratingStimColor(self, patch_stim_value, n=1):
+    def measureGratingStimColor(self, grating_stim_value, n=1):
         """
-        Measures patch_stim_value on monitor.
+        Measures grating_stim_value on monitor.
 
         Parameters:
-            patch_stim_value: triple, float or string
+            grating_stim_value: triple, float or string
                 psychopy.visual.GratingStim color value
 
             n: *1* or any other positive integer
@@ -87,13 +87,13 @@ class CalibMonitor(Monitor):
         #    self.eyeone.calibrate()
         #    self.startMeasurement()
 
-        self.setColor(patch_stim_value)
+        self.setColor(grating_stim_value)
         xyY_list = []
         tri_stim = (c_float * TRISTIMULUS_SIZE)()
 
         #start measurement
         for i in range(n):
-            self.patch_stim.draw()
+            self.grating_stim.draw()
             self.psychopy_win.flip()
             time.sleep(.5)
 
@@ -114,7 +114,7 @@ class CalibMonitor(Monitor):
             color: triple of float
                 xyY color list or tuple of three floats
 
-            patch_stim_value: triple, float or string
+            grating_stim_value: triple, float or string
                 psychopy.visual.GratingStim color value
 
             n: *1* or any other positive integer

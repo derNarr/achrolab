@@ -17,9 +17,9 @@
 
 """
 This module bundles some functions to check if a calibration for the tubes
-and the monitor still matches.
+and the monitor still holds.
 
-It gives the possiblility to measure the colors on the wall and on the
+It gives the possibility to measure the colors on the wall and on the
 monitor with a photometer or to just present the corresponding values on
 the monitor and on the screen to see with your own visual system, if they
 still match.

@@ -16,7 +16,8 @@
 # last mod 2013-01-01 12:11 KS
 
 """
-This modules provides CalibTubes.
+This module provides the class CalibTubes. An easy interface to measure a
+color with the i1 Pro photometer.
 
 """
 
@@ -35,8 +36,8 @@ import printing
 
 class CalibTubes(Tubes):
     """
-    CalibTubes provides an easy interface to measure a color with EyeOne
-    Pro and to find corresponding voltages for a given color.
+    CalibTubes provides an easy interface to measure a color with i1 Pro
+    and to find corresponding voltages for a given color.
 
     Example:
 
@@ -46,19 +47,20 @@ class CalibTubes(Tubes):
     >>> caltub.calibrate(imi=0.1, n=10, each=2)
     <BLANKLINE>
             Note:
-            The tubes must be switched on for at least four (!!) hours to come
-            in a state where they are not changing the illumination a
-            significant amount.
+            The tubes must be switched on for at least four (!!) hours in
+            order to radiate a stable amount of light.
     <BLANKLINE>
     Measurement mode set to SingleEmission.
     Color space set to CIExyY.
     <BLANKLINE>
-    Please put EyeOne Pro on calibration plate and press key to start calibration.
-    Calibration of EyeOne Pro done.
+    Please put i1 Pro on calibration plate and press key to start
+    calibration. Calibration of i1 Pro done.
     <BLANKLINE>
-    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    Please put i1 Pro in measurement positionand hit button to start
+    measurement.
     <BLANKLINE>
-    Please put EyeOne Pro in measurement position and press key to start measurement.
+    Please put i1 Pro in measurement position and press key to start
+    measurement.
     <BLANKLINE>
     Turn off blue and green tubes!
     Press key to start measurement of RED tubes.
@@ -156,8 +158,8 @@ class CalibTubes(Tubes):
     (4093, 4093, 4093)
     (4093, 4093, 4093)
     Measurement finished.
-    FAILED to estimate parameters of tubes.
-    Look at calibration_tubes_raw_XX.txt for the data.
+    FAILED to estimate parameters for tubes.
+    Look at calibration_tubes_raw_XX.txt for data.
     >>> caltub.saveParameter("example_tube_calibration.pkl")
 
     """
@@ -184,11 +186,11 @@ class CalibTubes(Tubes):
 
     def startMeasurement(self):
         """
-        Simply prompts to move EyeOne Pro to measurement position and
-        wait for button response.
+        Simply prompts to move i1 Pro to measurement position and
+        to wait for button response.
 
         """
-        print("\nPlease put EyeOne Pro in measurement position for TUBES"
+        print("\nPlease put i1 Pro in measurement position for TUBES"
                 + " and press key to start measurement.")
         while(self.eyeone.I1_KeyPressed() != eNoError):
             time.sleep(0.01)
@@ -206,7 +208,7 @@ class CalibTubes(Tubes):
             each: *1* or any positive integer
                 number of measurements per voltage
 
-        Returns list of tripels (voltages, yxY, spectrum). All elements of
+        Returns list of triples (voltages, yxY, spectrum). All elements of
         the triples are tuples as well. For example: [( (vol_r1, vol_g1,
         vol_b1), (x1, y1, Y1), (l_1, l_2, l_3, ..., l_36) ), ...]
 
@@ -216,14 +218,14 @@ class CalibTubes(Tubes):
             self.eyeone.calibrate()
 
         vol_col_spec_list = list()
-        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where i1 Pro
                                                   # saves tristim.
-        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where EyeOne Pro
+        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where i1 Pro
                                                   # saves spectrum.
         #start measurement
         filename = ('calibdata/measurements/measure_tubes_' +
                     time.strftime("%Y%m%d_%H%M") + '.txt')
-        print("writing measurements in " + filename)
+        print("Writing measurements in " + filename)
         # with open(filename, 'w') as calibfile:
         #     calibfile.write("volR, volG, volB, x, y, Y," +
         #             ", ".join(["l" + str(x) for x in range(1,37)]) + "\n")
@@ -233,7 +235,7 @@ class CalibTubes(Tubes):
                 for i in range(each):
                     self.setVoltages(voltage)
                     print(voltage)
-                    time.sleep(imi) # to give the EyeOne Pro time to adapt
+                    time.sleep(imi) # to give the i1 Pro time to adapt
                                     # and to reduce carry-over effects
                     if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                         print("Measurement failed for voltage %s ."
@@ -258,15 +260,15 @@ class CalibTubes(Tubes):
 
     def calibrate(self, imi=0.5, n=50, each=1):
         """
-        Calibrate calibrates tubes with EyeOne Pro. EyeOne Pro should be
-        connected to the computer. The calibration takes around 2 ?? minutes.
+        Calibrates tubes with i1 Pro. i1 Pro should be connected to the
+        computer. The calibration takes around 2 ?? minutes.
 
         Parameters:
             imi: *0.5* or any positive float
                 inter measurement interval in seconds
 
             n: *50* or any positive integer greater 2
-                number of steps per tube to calibrate (must be greater
+                number of steps per tube to calibrate (must be greater or
                 equal 2)
 
             each: *1* or any positive integer
@@ -284,7 +286,7 @@ class CalibTubes(Tubes):
 
         # Measurement
         self.setVoltages( (0xFFF, 0xFFF, 0xFFF) )
-        print("\nPlease put EyeOne Pro in measurement position and "
+        print("\nPlease put i1 Pro in measurement position and "
         + "press key to start measurement.")
         print("\nTurn off blue and green tubes!"
         + "\nPress key to start measurement of RED tubes.")
@@ -397,7 +399,7 @@ class CalibTubes(Tubes):
 
             print("Parameters estimated.")
         except:
-            print("FAILED to estimate parameters of tubes.\n" +
+            print("FAILED to estimate parameters for tubes.\n" +
                   "Look at calibration_tubes_raw_XX.txt for the data.")
             return
 
@@ -445,7 +447,8 @@ class CalibTubes(Tubes):
     def measureOneColorChannel(self, color, imi=0.5, n=50, each=1,
             insertfunction=voltageSteps):
         """
-        Measures one color tubes from low to high luminosity.
+        Measures one color of the tubes (red, green, or blue) from lowest
+        to highest luminance.
 
             * color -- string one of "red", "green", "blue", "all"
             * imi -- inter measurement interval in seconds
@@ -494,9 +497,9 @@ class CalibTubes(Tubes):
             raise ValueError("color in measureOneColorChannel must be one"
             + "of 'red', 'green', 'blue' and not %s" %str(color))
 
-        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne Pro
+        tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where i1 Pro
                                                   # saves tristim.
-        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where EyeOne Pro
+        spectrum = (c_float * SPECTRUM_SIZE)()    # memory where i1 Pro
                                                   # saves spectrum.
         rgb_list = list()
         spectra_list = list()
@@ -504,7 +507,7 @@ class CalibTubes(Tubes):
         for voltage in voltages:
             self.setVoltages(voltage)
             print(voltage)
-            time.sleep(imi) # to give the EyeOne Pro time to adapt and to
+            time.sleep(imi) # to give the i1 Pro time to adapt and to
                             # reduce carry-over effects
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed for voltage %s ." %str(voltage))
@@ -557,8 +560,7 @@ class CalibTubes(Tubes):
 
     def plotCalibration(self):
         """
-        plotCalibration plots luminance curves for each channel (data and
-        fitted curve).
+        Plots luminance curves for each channel (data and fitted curve).
 
         """
         # TODO implement with matplotlib --> till then use

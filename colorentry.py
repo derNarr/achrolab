@@ -17,21 +17,21 @@
 # last mod 2013-01-29 11:19 KS
 
 """
-This modules provides the class ColorEntry, which stores all important
+This modules provides the class ColorEntry which stores all important
 information for one color.
 
 """
 
 class ColorEntry(object):
     """
-    ColorEntry contains all information for one color that we need in the
+    ColorEntry contains all information for one color which we need in the
     lab.
 
     Attributes:
         name: string
             name of the color
 
-        patch_stim_value: float, triple or string
+        grating_stim_value: float, triple or string
             a value that can be used to set the color of psychopy.GratingStim
 
         monitor_xyY: triple of floats
@@ -51,12 +51,12 @@ class ColorEntry(object):
 
     Example:
 
-    >>> ce1 = ColorEntry(name="grey1", patch_stim_value="#404040FF")
+    >>> ce1 = ColorEntry(name="grey1", grating_stim_value="#404040FF")
     >>> ce2 = ColorEntry(name="grey2", voltages=(0xA00, 0xA00, 0xA00))
 
     """
 
-    def __init__(self, name, patch_stim_value=None, voltages=None):
+    def __init__(self, name, grating_stim_value=None, voltages=None):
         """
         Initializes the ColorEntry instance.
 
@@ -64,8 +64,10 @@ class ColorEntry(object):
             name: string
                 name of the color
 
-            patch_stim_value: *None*, float, triple or string
-                default value that is used to set the color of psychopy.GratingStim
+            grating_stim_value: *None*, float, triple or string
+                default value that is used to set the color of
+                psychopy.GratingStim
+
             voltages: *None* or triple of int
                 default voltages for color tubes
 
@@ -74,7 +76,7 @@ class ColorEntry(object):
         self.name = name
 
         # monitor values
-        self.patch_stim_value = patch_stim_value
+        self.grating_stim_value = grating_stim_value
         self.monitor_xyY = None
         self.monitor_xyY_sd = None
 

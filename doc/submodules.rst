@@ -24,7 +24,7 @@ Submodule wasco
 ~~~~~~~~~~~~~~~
 
 We use the submodule `wasco <https://github.com/derNarr/wasco>`_ to control
-the multifunction card IODA-PCI12K4EXTENDED PCI that drives our dimmable
+the multifunction card ADIODA-PCIF12 MDA PCI that drives our dimmable
 tubes. We use four sets of tubes each with three Osram T8 fluorescent tubes
 red (58W / color 60), green (58W / color 66), and blue (58W / color 67). 
 

@@ -27,9 +27,8 @@ import time
 #Fix inheriting from file later, need way of working with open()
 class CalibDataFile(object):
     """
-    CalibDataFile provides a new method to
-    write the calibration data of the monitor/photometer to a comma
-    separated file.
+    Provides a new method to write the calibration data of the
+    monitor/photometer to a comma separated file.
 
     Example:
 
@@ -41,8 +40,8 @@ class CalibDataFile(object):
     ...             spec_list=spec_list)
     >>>     #more code
 
-    This way if there is an error, inside the with context, it will immediately
-    close and write to the file, so data is not lost.
+    If there is an error inside the with context, it will immediately close
+    and write to the file, so data are not lost.
 
     """
     def __init__(self, prefix="calibdata_", file_type="txt", delimiter="\t"):
@@ -69,7 +68,7 @@ class CalibDataFile(object):
         """
         Print header to file_object.
 
-        When entering a context print the header to the file_object.
+        When entering a context, print the header to the file_object.
 
         """
         delimiter = self.delimiter
@@ -183,8 +182,8 @@ class CalibDataFile(object):
 
 class TubesDataFile(object):
     """
-    TubesDataFile provides a new method to
-    write the calibration of the tubes data to a comma separated file.
+    Provides a new method to write the calibration of the tubes data to a
+    comma separated file.
 
     Example:
 
@@ -196,8 +195,8 @@ class TubesDataFile(object):
     ...             spec_list=spec_list)
     >>>     #more code
 
-    This way if there is an error, inside the with context, it will immediately
-    close and write to the file, so data is not lost.
+    If there is an error inside the with context, it will immediately close
+    and write to the file, so data are not lost.
 
     """
     def __init__(self, prefix="measure_tubes_", delimiter="\t"):
@@ -218,7 +217,7 @@ class TubesDataFile(object):
         """
         Print header to file_object.
 
-        When entering a context print the header to the file_object.
+        When entering a context, print the header to the file_object.
 
         """
         delimiter = self.delimiter

@@ -18,7 +18,7 @@
 """
 This module provides a class to manually adjust the tubes. With key strokes
 you can adjust the color of the tubes and then with another key stroke
-measure the current color with the EyeOne photometer. The measurements and
+measure the current color with the i1 photometer. The measurements and
 the target color are plottet in a figure, so that you know in which
 direction you should change your illumination.
 
@@ -33,7 +33,7 @@ from eyeone.constants import eNoError, SPECTRUM_SIZE, TRISTIMULUS_SIZE
 
 def setColorTube(key):
     """
-    Defines which color tubes should be changed.
+    Defines which color of the tubes should be changed.
 
     Returns tuple (color channel, index).
 
@@ -70,7 +70,7 @@ def setStepSize(key):
 class SetTubesManualBase(object):
     """
     Base class for SetTubesManualPlot and SetTubesManualVision implementing
-    all the stuff with the tubes.
+    all the stuff for the tubes.
 
     """
 
@@ -81,7 +81,7 @@ class SetTubesManualBase(object):
                 Tubes object to change the voltages of the tubes
 
             knobs: devknobs.DevKnobs
-                Knobs to control the lightning tubes.
+                Knobs object to control the fluorescent tubes
 
             start_voltages: *None* or (vol_r, vol_g, vol_b)
                 triple of int containing the start_voltages for the tubes,
@@ -112,7 +112,7 @@ class SetTubesManualBase(object):
     def __setattr__(self, name, value):
         """
         Cast the voltages to list, if they are set, to make them mutable.
-        Additionally, if start_voltages are assigned, then set voltages
+        Additionally, if start_voltages are assigned, set voltages
         accordingly.
 
         """
@@ -126,8 +126,8 @@ class SetTubesManualBase(object):
 
     def adjustTube(self):
         """
-        Enables up and down arrow to adjust tubes' color step by step (lower if
-        down and higher if up).
+        Enables up and down arrow to adjust tubes' color step by step
+        (lower if down and higher if up).
 
         """
         key = self.key
@@ -183,7 +183,7 @@ class SetTubesManualBase(object):
 
     def setVoltagesKnobs(self):
         """
-        Set the voltages dependant on the states of the knobs.
+        Set the voltages depending on the states of the knobs.
 
         """
         self.voltages = self.knobs.states[:3]
@@ -279,7 +279,7 @@ class SetTubesManualVision(SetTubesManualBase):
                 Tubes object to change the voltages of the tubes
 
             knobs: devknobs.DevKnobs
-                Knobs to control the lightning tubes.
+                Knobs object to control the fluorescent tubes
 
             monitor: monitor.Monitor
                 Monitor object allows presenting the color on the monitor
@@ -290,7 +290,7 @@ class SetTubesManualVision(SetTubesManualBase):
                 if *None* than the start_voltages has to be assigned before
                 method run() is called
 
-            target_color: *None* or color, that Monitor.setColor accepts
+            target_color: *None* or color which Monitor.setColor accepts
                 if *None* than the target_color has to be assigned before
                 method run() is called
 
@@ -333,7 +333,7 @@ class SetTubesManualVision(SetTubesManualBase):
 class SetTubesManualPlot(SetTubesManualBase):
     """
     Creates an interactive figure with matplotlib, so that you can adjust
-    the tubes and plot you measurements in this figure.
+    the tubes and plot your measurements in this figure.
 
     Example:
 
@@ -349,10 +349,10 @@ class SetTubesManualPlot(SetTubesManualBase):
     Measurement mode set to SingleEmission.
     Color space set to CIExyY.
     <BLANKLINE>
-    Please put EyeOne Pro on calibration plate and press key to start calibration.
-    Calibration of EyeOne Pro done.
+    Please put i1 Pro on calibration plate and press key to start calibration.
+    Calibration of i1 Pro done.
     <BLANKLINE>
-    Please put EyeOne-Pro in measurement positionand hit button to start measurement.
+    Please put i1 Pro in measurement positionand hit button to start measurement.
     <BLANKLINE>
     Initializing search mode complete.
     >>> final_measurement = man_plot.run() #doctest: +ELLIPSIS
@@ -397,7 +397,7 @@ class SetTubesManualPlot(SetTubesManualBase):
                 to get access to an eyeone.eyeone.EyeOne instance
 
             knobs: devknobs.DevKnobs
-                Knobs to control the lightning tubes.
+                Knobs to control the fluorescent tubes.
 
             start_voltages: *None* or (vol_r, vol_g, vol_b)
                 triple of int containing the start_voltages for the tubes,
@@ -417,12 +417,12 @@ class SetTubesManualPlot(SetTubesManualBase):
         self.fig = None
         self.last_vol_xyY_spect = None
 
-        # calibrate EyeOne
+        # calibrate i1
         if not self.eyeone.is_calibrated:
             self.eyeone.calibrate()
-        self.tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where EyeOne
+        self.tri_stim = (c_float * TRISTIMULUS_SIZE)() # memory where i1
                                                        # saves tristim.
-        self.spectrum = (c_float * SPECTRUM_SIZE)()    # memory where EyeOne
+        self.spectrum = (c_float * SPECTRUM_SIZE)()    # memory where i1
                                                        # saves spectrum.
         print('\nInitializing search mode complete.')
 
@@ -495,7 +495,7 @@ class SetTubesManualPlot(SetTubesManualBase):
         """
         Closes figure and recreates it.
 
-        This is necessary because sometimes the figure hangs and does not
+        This is necessary because sometimes the figure freezes and does not
         respond to drawing command.
 
         """
@@ -541,8 +541,8 @@ class SetTubesManualPlot(SetTubesManualBase):
         for i in range(self.each):
             self.tub.setVoltages(self.voltages)
             #print(self.voltages)
-            time.sleep(self.imi) # to give the EyeOne Pro time to adapt and to
-                            # reduce carry-over effects
+            time.sleep(self.imi) # to give the i1 Pro time to adapt and to
+                                 # reduce carry-over effects
             if(self.eyeone.I1_TriggerMeasurement() != eNoError):
                 print("Measurement failed for voltage %s ."
                         %str(self.voltages))

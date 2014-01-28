@@ -16,8 +16,8 @@
 # last mod 2013-04-16 16:26 KS
 
 """
-Defines a class that encapsulates the triggering and reading out for the knobs
-from the user.
+Defines a class that encapsulates the triggering and reading out for the
+knobs from the user.
 
 """
 
@@ -32,7 +32,7 @@ from achrolab.wasco.constants import (AD_ADCONT, AD_ADDAT, AD_ADRANGE,
 
 class DevKnobs(object):
     """
-    DevKnobs encapsulates all functions getting input from the knobs.
+    Encapsulates all functions getting input from the knobs.
 
     Example:
 
@@ -44,7 +44,7 @@ class DevKnobs(object):
         """
         Setting attributes.
 
-        If dummy=True no wasco runtimelibraries will be loaded.
+        If dummy=True no wasco runtime libraries will be loaded.
 
         """
 
@@ -69,7 +69,7 @@ class DevKnobs(object):
 
     def getStates(self):
         """
-        returns (red, green, blue, all) as integer values between 0 and 0xFFF.
+        Returns (red, green, blue, all) as integer values between 0 and 0xFFF.
 
         Internally it triggers the measurement and reads out the values from
         the wasco card.

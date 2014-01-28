@@ -15,7 +15,7 @@
 # last mod 2013-04-16 16:02 KS
 
 """
-This module provides the class Monitor, which capsulates the presentation
+This module provides the class Monitor, which encapsulates the presentation
 of a color stimuli on the monitor.
 
 It is deprecated to use any other code than this in order to present one
@@ -33,7 +33,7 @@ class Event(object):
 
     def __init__(self):
         """
-        add attribute key
+        Add attribute key.
 
         """
         self.key = ""
@@ -41,8 +41,8 @@ class Event(object):
 
 class Monitor(object):
     """
-    Monitor provides a convenient interface to present a color on the
-    monitor and get key strokes.
+    Provides a convenient interface to present a color on the monitor and
+    get key strokes.
 
     Example:
 

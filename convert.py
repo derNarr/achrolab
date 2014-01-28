@@ -29,7 +29,7 @@ class Convert(object):
     Convert object of xyY coordinates to RGB coordinates. Object must be
     tuple of length three.
 
-    In order to convert xyY to RGB we need to steps:
+    In order to convert xyY to RGB we need two steps:
 
     1. Transform xyY back to XYZ.
     2. Use transformation matrix to convert XYZ to RGB. This matrix is
@@ -94,7 +94,7 @@ class Convert(object):
         #             [-0.9692660,  1.8760108, 0.0415560],
         #             [ 0.0556434, -0.2040259, 1.0572252]])
         ## RGB Working Space: CIE RGB, Reference White: E
-        print("Convert: Using CIE RGB Working Space with Reference White E.")
+        print("Convert: Using CIE RGB working space with reference white E.")
         m = np.array([[2.3706743, -0.9000405, -0.4706338],
                         [-0.5138850, 1.4253036, 0.0885814],
                         [0.0052982, -0.0146949, 1.0093968]])
