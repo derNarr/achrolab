@@ -19,10 +19,6 @@ How *achrolab* Interacts
 .. figure:: figs/modules.png
    :align: center
 
-You can find a much more detailed graph about how *achrolab*'s classes
-interact with other python modules created using pyreverse `here
-<_images/classes_achrolab.png>`_.
-
 Dependencies
 ~~~~~~~~~~~~
 

@@ -4,9 +4,9 @@ How to Calibrate the Booth
 ==========================
 
 This tutorial is a step-by-step introduction on how to calibrate the tubes
-and set them so the walls have the same luminance as the monitor. We call
-this procedure "calibrating our booth." Most parts of this tutorial might
-only be interesting for people who actually work in our lab.
+and adjust them so that the walls have the same luminance as the monitor.
+We call this procedure 'calibrating our booth.' Most parts of this tutorial
+might only be interesting for people who actually work in our lab.
 
 In order to do this just run :meth:`~achrolab.calibrate.Calibrate` for the
 color(s) you are interested in and it will perform the following steps and
@@ -30,7 +30,7 @@ cut-out in the wall, that the tubes are switched off, and that the room is
 completely dark.
 
 We use a 10 bit black-and-white monitor (`EIZO GS320
-<http://www.eizo.com/global/products/radiforce/gs320/index.html>`_) that
+<http://www.eizo.com/global/products/radiforce/index.html>`_) that
 displays 1024 different shades of gray. We usually refer to the monitor
 colors by numbers between 0 and 1023; 0 being the lowest luminance value
 and 1023 the maximum luminance. 

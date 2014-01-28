@@ -16,7 +16,7 @@ Just type::
     git submodule update --recursive --init
 
 into your terminal or git bash. (Find a short introduction on how to setup
-git and github :ref:`here <colorlab_tipsandtricks>`.)
+git and github :ref:`here <colorlab_software>`.)
 
 .. highlight:: python
 

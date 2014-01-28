@@ -24,12 +24,12 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   folder
+   install
    classes
    submodules
    tutorial
    experiments
-   folder
-   install
    contribute
    contact
 
