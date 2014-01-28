@@ -1,8 +1,7 @@
 .. _achrolab_contribute:
 
-
-Contributing to achrolab
-========================
+Contributing to `achrolab`
+==========================
 
 `achrolab` is free software. You are free to modify the software under the
 terms of the license that is distributed with `achrolab`. We welcome

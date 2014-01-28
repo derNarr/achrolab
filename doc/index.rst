@@ -33,10 +33,9 @@ Contents:
    contribute
    contact
 
-Indices and Tables
+Indices and Search
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
